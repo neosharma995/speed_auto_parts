@@ -39,8 +39,22 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
+        if (($user->status ?? 'active') === 'suspended') {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => 'Your account has been suspended. Please contact the administrator.',
+            ]);
+        }
+
         if ($user->isAdmin() || $user->isEditor()) {
             return redirect()->intended(route('admin.dashboard'));
+        }
+
+        if ($user->isSupplier()) {
+            return redirect()->intended(route('supplier.dashboard'));
         }
 
         return redirect()->intended(route('customer.dashboard'));

@@ -16,6 +16,7 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductReview;
 use App\Models\ProductVariation;
 use App\Models\ProductVehicle;
+use App\Models\StockTransfer;
 use App\Models\TaxClass;
 use App\Models\TaxRate;
 use App\Models\User;
@@ -158,6 +159,8 @@ class AutomotiveCatalogSeeder extends Seeder
         ProductAttributeValue::firstOrCreate(['attribute_id' => $attrRotorDia->id, 'slug' => '355mm'], ['value' => '355 mm']);
 
         // 6. Products from prompt specifications
+        $supplier = User::where('email', 'supplier@autoparts.com')->first();
+
         // Product 1: Performance Summer Tire
         $pTire = Product::updateOrCreate(
             ['sku' => 'AP-TIRE-992'],
@@ -165,6 +168,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'brand_id' => $brands['michelin']->id,
                 'category_id' => $categories['tires']->id,
                 'tax_class_id' => $taxClassStandard->id,
+                'supplier_id' => $supplier?->id,
                 'name' => 'Performance Summer Tire',
                 'slug' => 'performance-summer-tire',
                 'part_number' => 'AP-12345',
@@ -180,7 +184,10 @@ class AutomotiveCatalogSeeder extends Seeder
                 'base_price' => 14500.00,
                 'sale_price' => 12999.00,
                 'cost_price' => 8500.00,
+                'supplier_price' => 8500.00,
                 'stock_quantity' => 45,
+                'supplier_stock' => 60,
+                'warehouse_stock' => 30,
                 'stock_status' => 'in_stock',
                 'weight' => 11.20,
                 'weight_unit' => 'kg',
@@ -238,6 +245,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'brand_id' => $brands['brembo']->id,
                 'category_id' => $categories['brakes']->id,
                 'tax_class_id' => $taxClassHigh->id,
+                'supplier_id' => $supplier?->id,
                 'name' => 'Slotted & Drilled Brake Rotor',
                 'slug' => 'slotted-drilled-brake-rotor',
                 'part_number' => 'AP-54012',
@@ -253,7 +261,10 @@ class AutomotiveCatalogSeeder extends Seeder
                 'base_price' => 11200.00,
                 'sale_price' => 9850.00,
                 'cost_price' => 6200.00,
+                'supplier_price' => 6200.00,
                 'stock_quantity' => 38,
+                'supplier_stock' => 40,
+                'warehouse_stock' => 25,
                 'stock_status' => 'in_stock',
                 'weight' => 9.40,
                 'weight_unit' => 'kg',
@@ -311,6 +322,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'brand_id' => $brands['borla']->id,
                 'category_id' => $categories['exhaust']->id,
                 'tax_class_id' => $taxClassStandard->id,
+                'supplier_id' => $supplier?->id,
                 'name' => 'Performance Cat-Back Exhaust',
                 'slug' => 'performance-cat-back-exhaust',
                 'part_number' => 'AP-88024',
@@ -325,7 +337,10 @@ class AutomotiveCatalogSeeder extends Seeder
                 'base_price' => 48500.00,
                 'sale_price' => 42999.00,
                 'cost_price' => 29000.00,
+                'supplier_price' => 29000.00,
                 'stock_quantity' => 12,
+                'supplier_stock' => 20,
+                'warehouse_stock' => 15,
                 'stock_status' => 'in_stock',
                 'weight' => 18.50,
                 'weight_unit' => 'kg',
@@ -348,6 +363,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'brand_id' => $brands['kn-engineering']->id,
                 'category_id' => $categories['intake']->id,
                 'tax_class_id' => $taxClassStandard->id,
+                'supplier_id' => $supplier?->id,
                 'name' => 'High-Flow Cold Air Intake System',
                 'slug' => 'high-flow-cold-air-intake-system',
                 'part_number' => 'AP-30109',
@@ -362,7 +378,10 @@ class AutomotiveCatalogSeeder extends Seeder
                 'base_price' => 24500.00,
                 'sale_price' => 21999.00,
                 'cost_price' => 14000.00,
+                'supplier_price' => 14000.00,
                 'stock_quantity' => 22,
+                'supplier_stock' => 30,
+                'warehouse_stock' => 18,
                 'stock_status' => 'in_stock',
                 'weight' => 5.20,
                 'weight_unit' => 'kg',
@@ -385,6 +404,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'brand_id' => $brands['bilstein']->id,
                 'category_id' => $categories['suspension']->id,
                 'tax_class_id' => $taxClassStandard->id,
+                'supplier_id' => $supplier?->id,
                 'name' => 'Track-Spec Adjustable Coilover Kit',
                 'slug' => 'track-spec-adjustable-coilover-kit',
                 'part_number' => 'AP-77001',
@@ -399,7 +419,10 @@ class AutomotiveCatalogSeeder extends Seeder
                 'base_price' => 74500.00,
                 'sale_price' => 68900.00,
                 'cost_price' => 48000.00,
+                'supplier_price' => 48000.00,
                 'stock_quantity' => 10,
+                'supplier_stock' => 18,
+                'warehouse_stock' => 12,
                 'stock_status' => 'in_stock',
                 'weight' => 24.00,
                 'weight_unit' => 'kg',
@@ -600,5 +623,46 @@ class AutomotiveCatalogSeeder extends Seeder
                 'is_approved' => true,
             ]
         );
+
+        // 11. Supplier-Created Draft Product + Pending Incoming Lot for Admin Warehouse
+        $pClutch = Product::updateOrCreate(
+            ['sku' => 'SUP-CLT-9001'],
+            [
+                'brand_id' => $brands['garrett-motion']->id,
+                'category_id' => $categories['brakes']->id,
+                'tax_class_id' => $taxClassStandard->id,
+                'supplier_id' => $supplier?->id,
+                'name' => 'Carbon Kevlar Racing Clutch Kit',
+                'slug' => 'carbon-kevlar-racing-clutch-kit',
+                'part_number' => 'SUP-9001',
+                'short_description' => 'Twin-disc carbon kevlar clutch assembly engineered for high-torque track builds.',
+                'description' => 'Supplied directly by Apex Motorsport Spares. Pending Admin Warehouse receiving and catalogue pricing before website publication.',
+                'main_image' => '/images/products/placeholder.jpg',
+                'product_type' => 'simple',
+                'base_price' => 18500.00,
+                'cost_price' => 18500.00,
+                'supplier_price' => 18500.00,
+                'stock_quantity' => 0,
+                'supplier_stock' => 35,
+                'warehouse_stock' => 0,
+                'stock_status' => 'out_of_stock',
+                'status' => 'draft',
+            ]
+        );
+
+        if ($supplier) {
+            StockTransfer::firstOrCreate(
+                ['lot_number' => 'LOT-20261120-DEMO', 'product_id' => $pClutch->id],
+                [
+                    'supplier_id' => $supplier->id,
+                    'initiated_by' => $supplier->id,
+                    'direction' => 'supplier_to_warehouse',
+                    'quantity' => 15,
+                    'unit_price' => 18500.00,
+                    'status' => 'pending',
+                    'notes' => 'Initial racing clutch shipment lot awaiting Admin Warehouse receipt.',
+                ]
+            );
+        }
     }
 }

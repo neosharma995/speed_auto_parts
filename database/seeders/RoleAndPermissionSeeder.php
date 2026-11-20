@@ -34,6 +34,9 @@ class RoleAndPermissionSeeder extends Seeder
         $customerRole = Role::firstOrCreate(['name' => UserRole::Customer->value, 'guard_name' => 'web']);
         $customerRole->syncPermissions(UserPermission::customerPermissions());
 
+        $supplierRole = Role::firstOrCreate(['name' => UserRole::Supplier->value, 'guard_name' => 'web']);
+        $supplierRole->syncPermissions(UserPermission::supplierPermissions());
+
         // 3. Default Admin user
         $adminUser = User::updateOrCreate(
             ['email' => 'admin@autoparts.com'],
@@ -72,5 +75,19 @@ class RoleAndPermissionSeeder extends Seeder
             ]
         );
         $customerUser->syncRoles([$customerRole]);
+
+        // 6. Default Supplier user
+        $supplierUser = User::updateOrCreate(
+            ['email' => 'supplier@autoparts.com'],
+            [
+                'name' => 'Rajesh Sharma',
+                'company_name' => 'Apex Motorsport Spares Pvt. Ltd.',
+                'phone' => '+91 98765 00003',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'status' => 'active',
+            ]
+        );
+        $supplierUser->syncRoles([$supplierRole]);
     }
 }

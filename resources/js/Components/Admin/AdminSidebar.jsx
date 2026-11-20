@@ -18,11 +18,13 @@ import {
     Shield, 
     X,
     Wrench,
-    Store
+    Store,
+    Truck
 } from 'lucide-react';
 
 export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
-    const { url } = usePage();
+    const { url, props } = usePage();
+    const pendingLotsCount = props?.pendingLotsCount || 0;
 
     const isCurrent = (path) => url.startsWith(path);
 
@@ -63,6 +65,23 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                     <Link href="/admin/inventory" className={isCurrent('/admin/inventory') ? 'active' : ''}>
                         <Boxes size={18} />
                         <span>Inventory</span>
+                    </Link>
+
+                    <span className="nav-group-title">Supply Chain</span>
+                    <Link href="/admin/suppliers" className={isCurrent('/admin/suppliers') ? 'active' : ''}>
+                        <Truck size={18} />
+                        <span>Suppliers</span>
+                    </Link>
+                    <Link href="/admin/warehouse" className={isCurrent('/admin/warehouse') ? 'active' : ''}>
+                        <Boxes size={18} />
+                        <span>Warehouse</span>
+                        {pendingLotsCount > 0 && (
+                            <span className="badge-count">{pendingLotsCount}</span>
+                        )}
+                    </Link>
+                    <Link href="/admin/catalogue" className={isCurrent('/admin/catalogue') ? 'active' : ''}>
+                        <Store size={18} />
+                        <span>Website Catalogue</span>
                     </Link>
 
                     <span className="nav-group-title">Automotive Catalog</span>
@@ -109,12 +128,6 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                     <Link href="/admin/settings" className={isCurrent('/admin/settings') ? 'active' : ''}>
                         <Settings size={18} />
                         <span>Store Settings</span>
-                    </Link>
-
-                    <span className="nav-group-title">Quick Links</span>
-                    <Link href="/" target="_blank">
-                        <Store size={18} />
-                        <span>View Storefront ↗</span>
                     </Link>
                 </nav>
 

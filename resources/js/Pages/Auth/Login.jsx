@@ -28,6 +28,12 @@ export default function Login({ status, canResetPassword }) {
                 password: 'password',
                 remember: true,
             });
+        } else if (role === 'supplier') {
+            setData({
+                email: 'supplier@autoparts.com',
+                password: 'password',
+                remember: true,
+            });
         } else {
             setData({
                 email: 'customer@autoparts.com',
@@ -64,7 +70,7 @@ export default function Login({ status, canResetPassword }) {
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
                     Quick Demo Credentials:
                 </span>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     <button 
                         type="button" 
                         onClick={() => fillDemo('admin')}
@@ -72,6 +78,14 @@ export default function Login({ status, canResetPassword }) {
                         style={{ flex: 1, fontSize: '11px' }}
                     >
                         Fill Admin Demo
+                    </button>
+                    <button 
+                        type="button" 
+                        onClick={() => fillDemo('supplier')}
+                        className="btn btn-outline btn-sm"
+                        style={{ flex: 1, fontSize: '11px' }}
+                    >
+                        Fill Supplier Demo
                     </button>
                     <button 
                         type="button" 

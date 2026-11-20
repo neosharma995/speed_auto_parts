@@ -4,9 +4,10 @@ namespace App\Http\Middleware;
 
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\Setting;
+use App\Models\StockTransfer;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -43,12 +44,22 @@ class HandleInertiaRequests extends Middleware
                     'name' => $user->name,
                     'email' => $user->email,
                     'phone' => $user->phone,
+                    'company_name' => $user->company_name,
+                    'status' => $user->status,
                     'email_verified_at' => $user->email_verified_at,
                     'created_at' => $user->created_at,
                     'roles' => $user->getRoleNames()->values()->all(),
                     'permissions' => $user->getAllPermissions()->pluck('name')->values()->all(),
                 ] : null,
             ],
+            'pendingLotsCount' => function () use ($user) {
+                if (! $user || ! $user->isStaff() || ! Schema::hasTable('stock_transfers')) {
+                    return 0;
+                }
+                return StockTransfer::where('direction', 'supplier_to_warehouse')
+                    ->where('status', 'pending')
+                    ->count();
+            },
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),

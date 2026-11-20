@@ -55,6 +55,14 @@ export default function Header() {
                                 </Link>
                             </>
                         )}
+                        {auth?.user?.roles?.includes('supplier') && (
+                            <>
+                                <span>|</span>
+                                <Link href="/supplier/dashboard" style={{ color: '#F36B16', fontWeight: 'bold' }}>
+                                    Supplier Dashboard
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
@@ -151,6 +159,11 @@ export default function Header() {
                                             Admin Dashboard
                                         </Link>
                                     )}
+                                    {auth.user.roles?.includes('supplier') && (
+                                        <Link href="/supplier/dashboard" className="header-dropdown-item">
+                                            Supplier Dashboard
+                                        </Link>
+                                    )}
                                     <Link href="/customer/dashboard" className="header-dropdown-item">
                                         My Dashboard
                                     </Link>
@@ -223,6 +236,11 @@ export default function Header() {
                             {auth?.user?.roles?.includes('admin') && (
                                 <Link href="/admin/dashboard" onClick={() => setMobileDrawerOpen(false)} style={{ color: '#F36B16', fontWeight: 'bold' }}>
                                     Admin Dashboard
+                                </Link>
+                            )}
+                            {auth?.user?.roles?.includes('supplier') && (
+                                <Link href="/supplier/dashboard" onClick={() => setMobileDrawerOpen(false)} style={{ color: '#F36B16', fontWeight: 'bold' }}>
+                                    Supplier Dashboard
                                 </Link>
                             )}
                         </div>

@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'staff' => \App\Http\Middleware\EnsureUserIsStaff::class,
+            'supplier' => \App\Http\Middleware\EnsureUserIsSupplier::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

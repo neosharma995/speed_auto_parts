@@ -11,14 +11,17 @@ import {
     Clock, 
     TrendingUp,
     ShieldAlert,
-    CheckCircle
+    CheckCircle,
+    Truck,
+    Boxes
 } from 'lucide-react';
 
 export default function AdminDashboard({ 
     stats = {}, 
     recentOrders = [], 
     lowStockProducts = [], 
-    pendingOrders = [] 
+    pendingOrders = [],
+    pendingLots = []
 }) {
     return (
         <AdminLayout title="Operations Overview">
@@ -63,6 +66,59 @@ export default function AdminDashboard({
                         <Package size={24} />
                     </div>
                 </div>
+            </div>
+
+            {/* Supply Chain Quick Card */}
+            <div className="admin-card" style={{ marginBottom: '24px' }}>
+                <div className="admin-card-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Truck size={18} color="#F36B16" />
+                        <h3>Supply Chain & Warehouse Pipeline</h3>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <Link href="/admin/suppliers" className="btn btn-outline btn-sm">
+                            Suppliers ({stats.total_suppliers || 0})
+                        </Link>
+                        <Link href="/admin/warehouse" className="btn btn-primary btn-sm">
+                            Warehouse ({stats.warehouse_units || 0} units{stats.pending_lots > 0 ? ` • ${stats.pending_lots} pending` : ''})
+                        </Link>
+                        <Link href="/admin/catalogue" className="btn btn-outline btn-sm">
+                            Website Catalogue
+                        </Link>
+                    </div>
+                </div>
+                {pendingLots.length > 0 && (
+                    <div className="admin-card-body" style={{ padding: 0 }}>
+                        <table className="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Incoming Lot #</th>
+                                    <th>Supplier</th>
+                                    <th>Product</th>
+                                    <th>Qty</th>
+                                    <th>Supplier Price</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pendingLots.map(lot => (
+                                    <tr key={lot.id}>
+                                        <td><code>{lot.lot_number}</code></td>
+                                        <td>{lot.supplier?.company_name || lot.supplier?.name || 'Supplier'}</td>
+                                        <td><strong>{lot.product?.name}</strong></td>
+                                        <td><span className="badge badge-warning">{lot.quantity} units</span></td>
+                                        <td>₹{Number(lot.unit_price || 0).toLocaleString('en-IN')}</td>
+                                        <td>
+                                            <Link href="/admin/warehouse" className="btn btn-primary btn-sm">
+                                                Review in Warehouse
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
             {/* Middle Grid: Pending Orders & Low Stock Alerts */}

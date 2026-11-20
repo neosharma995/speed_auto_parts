@@ -24,7 +24,7 @@ class ProductController extends Controller
     public function index(Request $request): Response
     {
         $query = Product::query()
-            ->with(['brand', 'category'])
+            ->with(['brand', 'category', 'supplier'])
             ->withCount('variations');
 
         if ($search = $request->query('search')) {

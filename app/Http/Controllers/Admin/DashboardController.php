@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\StockTransfer;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -26,6 +28,25 @@ class DashboardController extends Controller
             ->count();
 
         $totalProducts = Product::query()->count();
+
+        $totalSuppliers = User::query()
+            ->whereHas('roles', fn ($q) => $q->where('name', UserRole::Supplier->value))
+            ->count();
+
+        $pendingLotsCount = StockTransfer::query()
+            ->where('direction', 'supplier_to_warehouse')
+            ->where('status', 'pending')
+            ->count();
+
+        $warehouseUnits = (int) Product::query()->sum('warehouse_stock');
+
+        $pendingLots = StockTransfer::query()
+            ->where('direction', 'supplier_to_warehouse')
+            ->where('status', 'pending')
+            ->with(['product', 'supplier'])
+            ->latest()
+            ->take(5)
+            ->get();
 
         $recentOrders = Order::query()
             ->with(['items'])
@@ -51,10 +72,14 @@ class DashboardController extends Controller
                 'total_orders' => $totalOrders,
                 'total_customers' => $totalCustomers,
                 'total_products' => $totalProducts,
+                'total_suppliers' => $totalSuppliers,
+                'pending_lots' => $pendingLotsCount,
+                'warehouse_units' => $warehouseUnits,
             ],
             'recentOrders' => $recentOrders,
             'lowStockProducts' => $lowStockProducts,
             'pendingOrders' => $pendingOrders,
+            'pendingLots' => $pendingLots,
         ]);
     }
 }
