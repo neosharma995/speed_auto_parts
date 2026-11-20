@@ -11,14 +11,16 @@ export default function Shop({
     filters = {}, 
     activeVehicle = null 
 }) {
+    const safeFilters = filters && !Array.isArray(filters) ? filters : {};
+
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState(filters.category || '');
-    const [selectedBrand, setSelectedBrand] = useState(filters.brand || '');
-    const [selectedSort, setSelectedSort] = useState(filters.sort || 'latest');
-    const [minPrice, setMinPrice] = useState(filters.min_price || '');
-    const [maxPrice, setMaxPrice] = useState(filters.max_price || '');
-    const [inStockOnly, setInStockOnly] = useState(filters.in_stock === 'true' || filters.in_stock === true);
-    const [partNumberQuery, setPartNumberQuery] = useState(filters.part_number || '');
+    const [selectedCategory, setSelectedCategory] = useState(safeFilters.category || '');
+    const [selectedBrand, setSelectedBrand] = useState(safeFilters.brand || '');
+    const [selectedSort, setSelectedSort] = useState(typeof safeFilters.sort === 'string' ? safeFilters.sort : 'latest');
+    const [minPrice, setMinPrice] = useState(safeFilters.min_price || '');
+    const [maxPrice, setMaxPrice] = useState(safeFilters.max_price || '');
+    const [inStockOnly, setInStockOnly] = useState(safeFilters.in_stock === 'true' || safeFilters.in_stock === true);
+    const [partNumberQuery, setPartNumberQuery] = useState(safeFilters.part_number || '');
 
     const applyFilters = (overrides = {}) => {
         const query = {
@@ -29,7 +31,7 @@ export default function Shop({
             max_price: maxPrice,
             in_stock: inStockOnly ? 'true' : '',
             part_number: partNumberQuery,
-            vehicle_id: filters.vehicle_id || '',
+            vehicle_id: safeFilters.vehicle_id || '',
             ...overrides,
         };
 
@@ -69,16 +71,16 @@ export default function Shop({
                         <Link href="/" style={{ color: '#252525' }}>Home</Link>
                         <ChevronRight size={12} />
                         <span style={{ color: '#F36B16', fontWeight: 600 }}>Shop Catalog</span>
-                        {filters.category && (
+                        {safeFilters.category && (
                             <>
                                 <ChevronRight size={12} />
-                                <span style={{ textTransform: 'capitalize' }}>{filters.category}</span>
+                                <span style={{ textTransform: 'capitalize' }}>{safeFilters.category}</span>
                             </>
                         )}
-                        {filters.part_number && (
+                        {safeFilters.part_number && (
                             <>
                                 <ChevronRight size={12} />
-                                <span>Part #: {filters.part_number}</span>
+                                <span>Part #: {safeFilters.part_number}</span>
                             </>
                         )}
                     </div>

@@ -51,7 +51,7 @@ class ProductController extends Controller
             'products' => $products,
             'categories' => $categories,
             'brands' => $brands,
-            'filters' => $request->only(['search', 'category', 'brand']),
+            'filters' => (object) $request->only(['search', 'category', 'brand']),
         ]);
     }
 

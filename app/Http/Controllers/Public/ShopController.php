@@ -100,7 +100,7 @@ class ShopController extends Controller
             'products' => $products,
             'categories' => $categories,
             'brands' => $brands,
-            'filters' => $request->only(['category', 'brand', 'sort', 'min_price', 'max_price', 'in_stock', 'part_number', 'vehicle_id', 'search']),
+            'filters' => (object) $request->only(['category', 'brand', 'sort', 'min_price', 'max_price', 'in_stock', 'part_number', 'vehicle_id', 'search']),
             'activeVehicle' => $activeVehicle,
         ]);
     }

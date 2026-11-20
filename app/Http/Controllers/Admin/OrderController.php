@@ -38,7 +38,7 @@ class OrderController extends Controller
 
         return Inertia::render('Admin/Orders/Index', [
             'orders' => $orders,
-            'filters' => $request->only(['search', 'status', 'payment']),
+            'filters' => (object) $request->only(['search', 'status', 'payment']),
         ]);
     }
 

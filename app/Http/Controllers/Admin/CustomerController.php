@@ -31,7 +31,7 @@ class CustomerController extends Controller
 
         return Inertia::render('Admin/Customers/Index', [
             'customers' => $customers,
-            'filters' => $request->only(['search']),
+            'filters' => (object) $request->only(['search']),
         ]);
     }
 }
