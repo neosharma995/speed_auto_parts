@@ -9,7 +9,6 @@ import ProductCard from '@/Components/ProductCard';
 import { ArrowRight, Truck, ShieldCheck, Headphones, RotateCcw, Star, CheckCircle } from 'lucide-react';
 
 export default function Welcome({ 
-    heroBanner, 
     categories = [], 
     featuredProducts = [], 
     bestSellers = [], 
@@ -19,7 +18,7 @@ export default function Welcome({
     return (
         <AppLayout title="Performance Automotive Spare Parts">
             {/* 1. Hero Section */}
-            <Hero banner={heroBanner} />
+            <Hero />
 
             {/* 2. Vehicle Parts Finder (Directly below hero) */}
             <VehicleFinder />

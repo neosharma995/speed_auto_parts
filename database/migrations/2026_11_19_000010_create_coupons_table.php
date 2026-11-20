@@ -23,20 +23,10 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
-
-        Schema::create('coupon_usages', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('coupon_id')->constrained('coupons')->cascadeOnDelete();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->unsignedBigInteger('order_id')->nullable();
-            $table->decimal('discount_amount', 10, 2);
-            $table->timestamps();
-        });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('coupon_usages');
         Schema::dropIfExists('coupons');
     }
 };
