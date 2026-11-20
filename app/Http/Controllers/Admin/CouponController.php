@@ -16,7 +16,6 @@ class CouponController extends Controller
     public function index(): Response
     {
         $coupons = Coupon::query()
-            ->withCount('usages')
             ->latest()
             ->get();
 

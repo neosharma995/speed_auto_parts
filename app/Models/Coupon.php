@@ -6,7 +6,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Coupon extends Model
 {
@@ -38,11 +37,6 @@ class Coupon extends Model
         ];
     }
 
-    public function usages(): HasMany
-    {
-        return $this->hasMany(CouponUsage::class);
-    }
-
     public function isValidForAmount(float $subtotal, ?int $userId = null): array
     {
         if (!$this->is_active) {
@@ -66,7 +60,7 @@ class Coupon extends Model
         }
 
         if ($userId && $this->usage_per_user > 0) {
-            $userUses = $this->usages()->where('user_id', $userId)->count();
+            $userUses = Order::where('user_id', $userId)->where('coupon_code', $this->code)->count();
             if ($userUses >= $this->usage_per_user) {
                 return ['valid' => false, 'message' => 'You have already used this coupon maximum times.'];
             }

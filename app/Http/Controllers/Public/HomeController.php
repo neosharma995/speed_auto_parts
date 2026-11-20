@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\Banner;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
@@ -22,8 +21,6 @@ class HomeController extends Controller
 
     public function __invoke(Request $request): Response
     {
-        $heroBanner = Banner::where('type', 'hero')->where('is_active', true)->first();
-
         $categories = Category::where('is_active', true)
             ->where('is_featured', true)
             ->orderBy('sort_order')
@@ -54,7 +51,6 @@ class HomeController extends Controller
             ->get();
 
         return Inertia::render('Public/Welcome', [
-            'heroBanner' => $heroBanner,
             'categories' => $categories,
             'featuredProducts' => $featuredProducts,
             'bestSellers' => $bestSellers,

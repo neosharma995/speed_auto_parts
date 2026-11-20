@@ -19,7 +19,6 @@ enum UserPermission: string
     case ManageCoupons = 'manage coupons';
     case ManageTaxes = 'manage taxes';
     case ManageReviews = 'manage reviews';
-    case ManageBanners = 'manage banners';
     case ManageSettings = 'manage settings';
     case ManageStaff = 'manage staff';
     case ManageRoles = 'manage roles';
@@ -49,7 +48,6 @@ enum UserPermission: string
             self::ManageVehicles->value,
             self::ManageInventory->value,
             self::ManageReviews->value,
-            self::ManageBanners->value,
             self::ManageContent->value,
         ];
     }

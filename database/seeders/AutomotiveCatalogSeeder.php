@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\Banner;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Coupon;
@@ -599,21 +598,6 @@ class AutomotiveCatalogSeeder extends Seeder
                 'comment' => 'Rotors run much cooler than the stock blanks. The zinc coating keeps the hub bells looking brand new even after washings.',
                 'is_verified_purchase' => true,
                 'is_approved' => true,
-            ]
-        );
-
-        // 11. Banners
-        Banner::updateOrCreate(
-            ['type' => 'hero'],
-            [
-                'title' => 'BUILD UPGRADE PERFORM',
-                'eyebrow' => 'PERFORMANCE PARTS FOR DRIVERS',
-                'subtitle' => 'PREMIUM AUTOMOTIVE SPARE PARTS FOR STREET, TRACK, AND GARAGE BUILDS.',
-                'button_text' => 'SHOP PERFORMANCE',
-                'button_link' => '/shop',
-                'image' => '/images/hero/automotive-hero.png',
-                'is_active' => true,
-                'sort_order' => 1,
             ]
         );
     }

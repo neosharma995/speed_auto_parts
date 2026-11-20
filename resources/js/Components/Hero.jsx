@@ -2,11 +2,11 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import { ArrowRight, ShieldCheck, Zap, Disc } from 'lucide-react';
 
-export default function Hero({ banner = null }) {
-    const eyebrow = banner?.eyebrow || 'PERFORMANCE PARTS FOR DRIVERS';
-    const description = banner?.subtitle || 'PREMIUM AUTOMOTIVE SPARE PARTS FOR STREET, TRACK, AND GARAGE BUILDS.';
-    const ctaText = banner?.button_text || 'SHOP PERFORMANCE';
-    const ctaLink = banner?.button_link || '/shop';
+export default function Hero() {
+    const eyebrow = 'PERFORMANCE PARTS FOR DRIVERS';
+    const description = 'PREMIUM AUTOMOTIVE SPARE PARTS FOR STREET, TRACK, AND GARAGE BUILDS.';
+    const ctaText = 'SHOP PERFORMANCE';
+    const ctaLink = '/shop';
 
     return (
         <section className="home-hero">
