@@ -1,0 +1,328 @@
+// ==========================================================================
+// AUTO PARTS - Header & Navigation
+// STRICT RULE: No translate hover animations!
+// ==========================================================================
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: $color-white;
+  border-bottom: 1px solid $color-border;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  &-top {
+    background-color: $color-dark;
+    color: #AAAAAA;
+    font-size: 11px;
+    height: $header-top-height;
+    display: flex;
+    align-items: center;
+
+    @include respond-below('md') {
+      display: none;
+    }
+
+    &-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    &-contacts {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+
+      a {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color $transition-default;
+
+        &:hover {
+          color: $color-primary;
+        }
+      }
+    }
+
+    &-links {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      a {
+        transition: color $transition-default;
+
+        &:hover {
+          color: $color-white;
+        }
+      }
+    }
+  }
+
+  &-main {
+    height: $header-height;
+    display: flex;
+    align-items: center;
+
+    &-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 24px;
+    }
+  }
+
+  &-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    flex-shrink: 0;
+
+    &-icon {
+      width: 32px;
+      height: 32px;
+      background-color: $color-primary;
+      color: $color-white;
+      border-radius: $border-radius-sm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &-text {
+      display: flex;
+      flex-direction: column;
+
+      .brand-title {
+        font-size: 18px;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        color: $color-dark;
+        line-height: 1;
+
+        span {
+          color: $color-primary;
+        }
+      }
+
+      .brand-subtitle {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        color: $color-text-secondary;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  &-nav {
+    display: none;
+    align-items: center;
+    gap: 28px;
+
+    @include respond-to('lg') {
+      display: flex;
+    }
+
+    &-item {
+      position: relative;
+
+      &:hover > .header-dropdown {
+        display: block;
+      }
+    }
+
+    &-link {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: $color-dark;
+      padding: 8px 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color $transition-default;
+
+      &:hover,
+      &--active {
+        color: $color-primary;
+      }
+    }
+  }
+
+  &-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    &-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: $color-dark;
+      padding: 8px 12px;
+      border-radius: $border-radius-sm;
+      transition: background-color $transition-default, color $transition-default;
+
+      &:hover {
+        background-color: $color-background;
+        color: $color-primary;
+      }
+
+      .action-label {
+        font-size: 13px;
+        font-weight: 600;
+
+        @include respond-below('sm') {
+          display: none;
+        }
+      }
+    }
+
+    &-cart {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: $border-radius-sm;
+      background-color: $color-background;
+      color: $color-dark;
+      transition: background-color $transition-default, color $transition-default;
+
+      &:hover {
+        background-color: $color-primary-subtle;
+        color: $color-primary;
+      }
+
+      .cart-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background-color: $color-primary;
+        color: $color-white;
+        font-size: 10px;
+        font-weight: 700;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 4px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid $color-white;
+      }
+    }
+
+    &-mobile-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      color: $color-dark;
+
+      @include respond-to('lg') {
+        display: none;
+      }
+    }
+  }
+
+  &-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 220px;
+    background-color: $color-white;
+    border: 1px solid $color-border;
+    border-radius: $border-radius-sm;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 8px 0;
+    z-index: 100;
+
+    &-item {
+      display: block;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: $color-dark;
+      transition: background-color $transition-default, color $transition-default;
+
+      &:hover {
+        background-color: $color-background;
+        color: $color-primary;
+      }
+    }
+  }
+
+  // Mobile Drawer Navigation
+  &-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 100vh;
+    background-color: $color-white;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+
+    &-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid $color-border;
+    }
+
+    &-menu {
+      display: flex;
+      flex-direction: column;
+      padding: 16px 0;
+
+      a {
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        color: $color-dark;
+        border-left: 3px solid transparent;
+        transition: background-color $transition-default, border-color $transition-default, color $transition-default;
+
+        &:hover,
+        &.active {
+          background-color: $color-primary-subtle;
+          border-left-color: $color-primary;
+          color: $color-primary;
+        }
+      }
+    }
+
+    &-footer {
+      margin-top: auto;
+      padding: 16px;
+      border-top: 1px solid $color-border;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+
+  &-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1999;
+  }
+}

@@ -1,0 +1,54 @@
+// ==========================================================================
+// AUTO PARTS - Global Helper Classes
+// ==========================================================================
+@use '../abstracts/variables' as *;
+
+.site-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: $color-white;
+}
+
+.main-content {
+  flex: 1 0 auto;
+}
+
+// Notice: strictly no translate on hover
+.clickable {
+  cursor: pointer;
+  transition: opacity $transition-default, background-color $transition-default, border-color $transition-default;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.shadow-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-header {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.bg-light {
+  background-color: $color-background;
+}
+
+.bg-white {
+  background-color: $color-white;
+}
+
+.bg-dark {
+  background-color: $color-dark;
+  color: $color-white;
+}
+
+.border-b {
+  border-bottom: 1px solid $color-border;
+}
+
+.border-t {
+  border-top: 1px solid $color-border;
+}

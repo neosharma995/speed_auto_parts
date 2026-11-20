@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#181818"/>
+  <rect x="190" y="60" width="20" height="180" fill="#252525"/>
+  <path d="M 170 100 Q 230 110 170 120 Q 230 130 170 140 Q 230 150 170 160 Q 230 170 170 180 Q 230 190 170 200" stroke="#F36B16" stroke-width="8" fill="none"/>
+  <text x="200" y="260" font-family="Inter, sans-serif" font-size="16" font-weight="900" fill="#FFFFFF" text-anchor="middle">SUSPENSION</text>
+</svg>

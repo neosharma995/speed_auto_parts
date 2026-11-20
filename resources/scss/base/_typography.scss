@@ -1,0 +1,75 @@
+// ==========================================================================
+// AUTO PARTS - Typography
+// ==========================================================================
+@use '../abstracts/variables' as *;
+
+body {
+  font-family: $font-primary;
+  color: $color-text;
+  font-size: 14px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-heading;
+  color: $color-dark;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: 36px;
+}
+
+h2 {
+  font-size: 28px;
+}
+
+h3 {
+  font-size: 22px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
+h5 {
+  font-size: 16px;
+}
+
+h6 {
+  font-size: 14px;
+}
+
+p {
+  color: $color-text;
+  line-height: 1.6;
+}
+
+.text-primary {
+  color: $color-primary;
+}
+
+.text-dark {
+  color: $color-dark;
+}
+
+.text-muted {
+  color: $color-text-secondary;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}

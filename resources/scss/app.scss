@@ -1,0 +1,27 @@
+// ==========================================================================
+// AUTO PARTS - Main SCSS Application Entry Point
+// Pure SCSS Architecture - Zero Tailwind, Zero Inline Styles, BEM-inspired
+// STRICT RULE: No translate hover animations!
+// ==========================================================================
+
+@use './abstracts/variables' as *;
+@use './abstracts/mixins' as *;
+@use './base/reset' as *;
+@use './base/typography' as *;
+@use './base/global' as *;
+@use './layout/container' as *;
+@use './layout/header' as *;
+@use './layout/footer' as *;
+@use './layout/bottom-bar' as *;
+@use './components/buttons' as *;
+@use './components/forms' as *;
+@use './components/badges' as *;
+@use './components/product-card' as *;
+@use './components/category-card' as *;
+@use './components/cart-drawer' as *;
+@use './pages/home' as *;
+@use './pages/shop' as *;
+@use './pages/product-details' as *;
+@use './pages/checkout' as *;
+@use './pages/customer' as *;
+@use './admin/admin' as *;

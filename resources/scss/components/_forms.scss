@@ -1,0 +1,93 @@
+// ==========================================================================
+// AUTO PARTS - Form Inputs & Controls
+// ==========================================================================
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+
+  &--inline {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $color-dark;
+  letter-spacing: 0.01em;
+
+  .required {
+    color: $color-primary;
+    margin-left: 2px;
+  }
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  background-color: $color-white;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-sm;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: $color-text;
+  transition: border-color $transition-default, box-shadow $transition-default;
+
+  &::placeholder {
+    color: $color-text-muted;
+  }
+
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px rgba(243, 107, 22, 0.15);
+  }
+
+  &:disabled {
+    background-color: $color-background;
+    color: $color-text-muted;
+    cursor: not-allowed;
+  }
+
+  &--error {
+    border-color: $color-danger;
+
+    &:focus {
+      border-color: $color-danger;
+      box-shadow: 0 0 0 2px rgba(217, 48, 37, 0.15);
+    }
+  }
+}
+
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23252525' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-error {
+  font-size: 12px;
+  color: $color-danger;
+  margin-top: 4px;
+}
+
+.form-helper {
+  font-size: 12px;
+  color: $color-text-secondary;
+  margin-top: 4px;
+}

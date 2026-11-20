@@ -1,0 +1,464 @@
+// ==========================================================================
+// AUTO PARTS - Homepage Styles
+// STRICT RULE: No translate hover animations!
+// ==========================================================================
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.home-hero {
+  position: relative;
+  background: radial-gradient(circle at 70% 50%, #252525 0%, #151515 100%);
+  color: $color-white;
+  overflow: hidden;
+  padding: 60px 0 80px;
+
+  @include respond-to('md') {
+    padding: 80px 0 100px;
+  }
+
+  &-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: center;
+
+    @include respond-to('lg') {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 2;
+  }
+
+  &-eyebrow {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    color: $color-primary;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &::before {
+      content: '';
+      width: 24px;
+      height: 2px;
+      background-color: $color-primary;
+    }
+  }
+
+  &-heading {
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    color: $color-white;
+
+    @include respond-to('sm') {
+      font-size: 60px;
+    }
+
+    @include respond-to('xl') {
+      font-size: 72px;
+    }
+
+    .heading-orange {
+      color: $color-primary;
+      display: block;
+    }
+
+    .heading-white {
+      color: $color-white;
+      display: block;
+    }
+  }
+
+  &-desc {
+    font-size: 14px;
+    font-weight: 500;
+    color: #CCCCCC;
+    max-width: 520px;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    margin-top: 4px;
+  }
+
+  &-cta-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 12px;
+  }
+
+  &-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &-composition {
+      position: relative;
+      width: 100%;
+      max-width: 540px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(243, 107, 22, 0.15) 0%, rgba(21, 21, 21, 0) 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img.hero-main-car {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: $border-radius-md;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    &-badge {
+      position: absolute;
+      bottom: -15px;
+      left: 20px;
+      background-color: $color-dark-surface;
+      border: 1px solid rgba(243, 107, 22, 0.4);
+      border-radius: $border-radius-sm;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+
+      .badge-icon {
+        color: $color-primary;
+      }
+
+      .badge-text {
+        display: flex;
+        flex-direction: column;
+
+        strong {
+          font-size: 13px;
+          color: $color-white;
+          font-weight: 700;
+        }
+
+        span {
+          font-size: 11px;
+          color: #AAAAAA;
+        }
+      }
+    }
+  }
+}
+
+// Vehicle Parts Finder (Directly below hero)
+.vehicle-finder-bar {
+  background-color: $color-white;
+  border-bottom: 1px solid $color-border;
+  padding: 24px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  position: relative;
+  z-index: 10;
+  margin-top: -24px;
+  border-radius: $border-radius-md $border-radius-md 0 0;
+
+  &-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @include respond-to('lg') {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  &-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 800;
+    color: $color-dark;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+
+    svg {
+      color: $color-primary;
+    }
+  }
+
+  &-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    flex: 1;
+
+    @include respond-to('sm') {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to('lg') {
+      grid-template-columns: repeat(4, 1fr) auto auto;
+    }
+  }
+
+  &-active-vehicle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: $color-primary-subtle;
+    border: 1px solid rgba(243, 107, 22, 0.3);
+    border-radius: $border-radius-sm;
+    padding: 10px 16px;
+    margin-top: 12px;
+
+    .vehicle-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: $color-dark;
+
+      svg {
+        color: $color-primary;
+      }
+    }
+
+    .vehicle-clear {
+      font-size: 12px;
+      color: $color-danger;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Search by Part Number
+.part-number-search-strip {
+  background-color: $color-background;
+  border-top: 1px solid $color-border;
+  border-bottom: 1px solid $color-border;
+  padding: 24px 0;
+
+  &-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+
+    @include respond-to('md') {
+      flex-direction: row;
+    }
+  }
+
+  &-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 800;
+    color: $color-dark;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    svg {
+      color: $color-primary;
+    }
+  }
+
+  &-form {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    max-width: 520px;
+
+    input {
+      background-color: $color-white;
+      border: 1px solid $color-border;
+      border-radius: $border-radius-sm;
+      padding: 10px 16px;
+      font-size: 14px;
+      flex: 1;
+
+      &:focus {
+        border-color: $color-primary;
+      }
+    }
+  }
+}
+
+// Section Base Layout
+.section {
+  padding: 56px 0;
+
+  &-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    gap: 16px;
+
+    &-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: $color-dark;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      position: relative;
+      padding-bottom: 8px;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 32px;
+        height: 3px;
+        background-color: $color-primary;
+      }
+    }
+
+    &-link {
+      font-size: 13px;
+      font-weight: 700;
+      color: $color-primary;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color $transition-default;
+
+      &:hover {
+        color: $color-primary-hover;
+      }
+    }
+  }
+}
+
+// Product Grid Layout
+.product-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+
+  @include respond-to('xs') {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include respond-to('md') {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include respond-to('xl') {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// Why Choose Us
+.features-strip {
+  background-color: $color-white;
+  border-top: 1px solid $color-border;
+  border-bottom: 1px solid $color-border;
+  padding: 40px 0;
+
+  &-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+
+    @include respond-to('sm') {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to('lg') {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: $border-radius-sm;
+      background-color: $color-primary-subtle;
+      color: $color-primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .feature-text {
+      h4 {
+        font-size: 14px;
+        font-weight: 700;
+        color: $color-dark;
+        margin-bottom: 4px;
+      }
+
+      p {
+        font-size: 12px;
+        color: $color-text-secondary;
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+// Brands Grid
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  @include respond-to('sm') {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @include respond-to('lg') {
+    grid-template-columns: repeat(8, 1fr);
+  }
+
+  &-item {
+    background-color: $color-white;
+    border: 1px solid $color-border;
+    border-radius: $border-radius-sm;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 70px;
+    font-size: 14px;
+    font-weight: 700;
+    color: $color-dark;
+    text-transform: uppercase;
+    transition: border-color $transition-default, box-shadow $transition-default;
+
+    &:hover {
+      border-color: $color-primary;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      color: $color-primary;
+    }
+  }
+}

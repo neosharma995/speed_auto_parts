@@ -1,0 +1,48 @@
+// ==========================================================================
+// AUTO PARTS - Global Design Tokens & Variables
+// STRICT RULE: px units for dimensions, spacing, borders, font sizes, breakpoints
+// ==========================================================================
+
+// --- Color Palette ---
+$color-primary: #F36B16;
+$color-primary-hover: #D9560D;
+$color-primary-subtle: rgba(243, 107, 22, 0.1);
+$color-dark: #151515;
+$color-dark-surface: #1E1E1E;
+$color-text: #252525;
+$color-text-secondary: #666666;
+$color-text-muted: #888888;
+$color-white: #FFFFFF;
+$color-background: #F5F5F5;
+$color-background-subtle: #FAFAFA;
+$color-border: #DCDCDC;
+$color-border-light: #EEEEEE;
+$color-success: #168A35;
+$color-success-bg: #EAF5ED;
+$color-danger: #D93025;
+$color-danger-bg: #FCE8E6;
+$color-warning: #E37400;
+$color-warning-bg: #FEF7E0;
+
+// --- Typography ---
+$font-primary: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+$font-heading: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+// --- Dimensions & Layout ---
+$container-max-width: 1440px;
+$container-padding: 16px;
+$header-height: 64px;
+$header-top-height: 36px;
+$bottom-bar-height: 60px;
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$transition-default: 0.2s ease;
+
+// --- Responsive Breakpoints (Strictly in px) ---
+$bp-xs: 480px;
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;
+$bp-2xl: 1440px;
