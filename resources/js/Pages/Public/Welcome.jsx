@@ -42,12 +42,13 @@ export default function Welcome({
         { name: 'Lighting', slug: 'lighting', image: '/assets/images/categories/lighting.webp' },
     ];
 
-    // 4 Featured Products matching reference design exactly
+    // 5 Featured Products matching 5 performance categories
     const mockupProducts = [
         {
             id: 1,
             name: 'Pilot Sport 5 Performance Tire',
             slug: 'pilot-sport-5-performance-tire',
+            category: 'Tires',
             brand: { name: 'MICHELIN' },
             short_description: 'High-performance tire for maximum grip and control.',
             main_image: '/assets/images/products/performance-tire.webp',
@@ -62,6 +63,7 @@ export default function Welcome({
             id: 2,
             name: 'Slotted & Drilled Brake Rotor',
             slug: 'slotted-drilled-brake-rotor',
+            category: 'Brakes',
             brand: { name: 'BREMBO' },
             short_description: 'Enhanced stopping power and heat dissipation.',
             main_image: '/assets/images/products/brake-rotor.webp',
@@ -76,6 +78,7 @@ export default function Welcome({
             id: 3,
             name: 'Performance Cat-Back Exhaust',
             slug: 'performance-cat-back-exhaust',
+            category: 'Exhaust',
             brand: { name: 'BORLA' },
             short_description: 'Stainless steel system with deep, aggressive sound.',
             main_image: '/assets/images/products/performance-exhaust.webp',
@@ -90,6 +93,7 @@ export default function Welcome({
             id: 4,
             name: 'Cold-Air Intake System',
             slug: 'cold-air-intake-system',
+            category: 'Intake',
             brand: { name: 'K&N' },
             short_description: 'Increases horsepower and throttle response.',
             main_image: '/assets/images/products/cold-air-intake.webp',
@@ -100,9 +104,26 @@ export default function Welcome({
             rating_count: 102,
             is_in_stock: true,
         },
+        {
+            id: 5,
+            name: 'B16 PSS10 Coilover Suspension Kit',
+            slug: 'b16-pss10-coilover-suspension-kit',
+            category: 'Suspension',
+            brand: { name: 'BILSTEIN' },
+            short_description: 'Adjustable damping and ride height for track precision.',
+            main_image: '/assets/images/products/coilover-suspension.webp',
+            base_price: 1499.99,
+            effective_price: 1299.99,
+            discount_percentage: 13,
+            rating: 4.9,
+            rating_count: 64,
+            is_in_stock: true,
+        },
     ];
 
-    const displayProducts = mockupProducts;
+    const displayProducts = activeTab === 'All' 
+        ? mockupProducts 
+        : mockupProducts.filter(p => p.category?.toLowerCase() === activeTab.toLowerCase());
 
     // 5 Vehicle types
     const vehicleTypes = [
