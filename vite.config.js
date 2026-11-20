@@ -6,6 +6,9 @@ export default defineConfig({
     server: {
         host: '127.0.0.1',
         port: 5174,
+        headers: {
+            'Cache-Control': 'no-cache',
+        },
         hmr: {
             host: '127.0.0.1',
         },
@@ -27,6 +30,9 @@ export default defineConfig({
         entries: [
             'resources/js/app.jsx',
             'resources/js/Pages/**/*.jsx',
+            'resources/js/Components/**/*.jsx',
+            'resources/js/Layouts/**/*.jsx',
+            'resources/js/Context/**/*.jsx',
         ],
         include: [
             'react',
@@ -38,6 +44,7 @@ export default defineConfig({
             'axios',
             'lucide-react',
             'laravel-vite-plugin/inertia-helpers',
+            'three',
         ],
     },
 });
