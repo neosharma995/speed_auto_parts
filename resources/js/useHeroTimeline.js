@@ -154,3 +154,5 @@ export function useHeroTimeline() {
         totalDuration: TOTAL_DURATION,
     };
 }
+
+export default useHeroTimeline;
