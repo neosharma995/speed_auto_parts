@@ -1,203 +1,568 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import Hero from '@/Components/Hero';
-import VehicleFinder from '@/Components/VehicleFinder';
-import CategoryStrip from '@/Components/CategoryStrip';
-import PartNumberSearch from '@/Components/PartNumberSearch';
 import ProductCard from '@/Components/ProductCard';
-import { ArrowRight, Truck, ShieldCheck, Headphones, RotateCcw, Star, CheckCircle } from 'lucide-react';
+import {
+    ArrowRight,
+    Truck,
+    ShieldCheck,
+    RotateCcw,
+    Headphones,
+    Users,
+    Package,
+    Globe,
+    Star,
+    CheckCircle,
+    ChevronLeft,
+    ChevronRight
+} from 'lucide-react';
 
 export default function Welcome({ 
     categories = [], 
     featuredProducts = [], 
     bestSellers = [], 
-    newArrivals = [],
+    newArrivals = [], 
     brands = [] 
 }) {
+    const [activeTab, setActiveTab] = useState('All');
+    const [topPickTab, setTopPickTab] = useState('Performance');
+    const [newsletterEmail, setNewsletterEmail] = useState('');
+    const [subscribed, setSubscribed] = useState(false);
+
+    // 8 Popular Categories with optimized WebP assets
+    const popularCategories = [
+        { name: 'Tires', slug: 'tires', image: '/assets/images/categories/tires.webp' },
+        { name: 'Brakes', slug: 'brakes', image: '/assets/images/categories/brakes.webp' },
+        { name: 'Exhaust', slug: 'exhaust', image: '/assets/images/categories/exhaust.webp' },
+        { name: 'Intake', slug: 'intake', image: '/assets/images/categories/intake.webp' },
+        { name: 'Suspension', slug: 'suspension', image: '/assets/images/categories/suspension.webp' },
+        { name: 'Engine', slug: 'engine', image: '/assets/images/categories/engine.webp' },
+        { name: 'Cooling', slug: 'cooling', image: '/assets/images/categories/cooling.webp' },
+        { name: 'Lighting', slug: 'lighting', image: '/assets/images/categories/lighting.webp' },
+    ];
+
+    // 4 Featured Products matching reference design exactly
+    const mockupProducts = [
+        {
+            id: 1,
+            name: 'Pilot Sport 5 Performance Tire',
+            slug: 'pilot-sport-5-performance-tire',
+            brand: { name: 'MICHELIN' },
+            short_description: 'High-performance tire for maximum grip and control.',
+            main_image: '/assets/images/products/performance-tire.webp',
+            base_price: 244.99,
+            effective_price: 219.99,
+            discount_percentage: 10,
+            rating: 4.8,
+            rating_count: 124,
+            is_in_stock: true,
+        },
+        {
+            id: 2,
+            name: 'Slotted & Drilled Brake Rotor',
+            slug: 'slotted-drilled-brake-rotor',
+            brand: { name: 'BREMBO' },
+            short_description: 'Enhanced stopping power and heat dissipation.',
+            main_image: '/assets/images/products/brake-rotor.webp',
+            base_price: 189.99,
+            effective_price: 189.99,
+            discount_percentage: 0,
+            rating: 4.9,
+            rating_count: 87,
+            is_in_stock: true,
+        },
+        {
+            id: 3,
+            name: 'Performance Cat-Back Exhaust',
+            slug: 'performance-cat-back-exhaust',
+            brand: { name: 'BORLA' },
+            short_description: 'Stainless steel system with deep, aggressive sound.',
+            main_image: '/assets/images/products/performance-exhaust.webp',
+            base_price: 959.99,
+            effective_price: 849.99,
+            discount_percentage: 12,
+            rating: 4.7,
+            rating_count: 56,
+            is_in_stock: true,
+        },
+        {
+            id: 4,
+            name: 'Cold-Air Intake System',
+            slug: 'cold-air-intake-system',
+            brand: { name: 'K&N' },
+            short_description: 'Increases horsepower and throttle response.',
+            main_image: '/assets/images/products/cold-air-intake.webp',
+            base_price: 329.99,
+            effective_price: 329.99,
+            discount_percentage: 0,
+            rating: 4.8,
+            rating_count: 102,
+            is_in_stock: true,
+        },
+    ];
+
+    const displayProducts = mockupProducts;
+
+    // 5 Vehicle types
+    const vehicleTypes = [
+        { name: 'Cars', slug: 'cars', img: '/assets/images/vehicles/cars.webp' },
+        { name: 'SUVs', slug: 'suvs', img: '/assets/images/vehicles/suvs.webp' },
+        { name: 'Trucks', slug: 'trucks', img: '/assets/images/vehicles/trucks.webp' },
+        { name: 'Vans', slug: 'vans', img: '/assets/images/vehicles/vans.webp' },
+        { name: 'Motorcycles', slug: 'motorcycles', img: '/assets/images/vehicles/motorcycles.webp' },
+    ];
+
+    // 8 Popular Brands with official SVG marks
+    const brandLogos = [
+        { name: 'Brembo', slug: 'brembo', logo: '/assets/images/brands/brembo.svg' },
+        { name: 'Michelin', slug: 'michelin', logo: '/assets/images/brands/michelin.svg' },
+        { name: 'Borla', slug: 'borla', logo: '/assets/images/brands/borla.svg' },
+        { name: 'K&N', slug: 'k-and-n', logo: '/assets/images/brands/kn.svg' },
+        { name: 'Bilstein', slug: 'bilstein', logo: '/assets/images/brands/bilstein.svg' },
+        { name: 'Garrett', slug: 'garrett', logo: '/assets/images/brands/garrett.svg' },
+        { name: 'Akrapovic', slug: 'akrapovic', logo: '/assets/images/brands/akrapovic.svg' },
+        { name: 'BBS', slug: 'bbs', logo: '/assets/images/brands/bbs.svg' },
+    ];
+
+    // Top picks for your build
+    const topPicks = [
+        { title: 'Performance Brakes', slug: 'brakes', img: '/assets/images/build/performance-brakes.webp' },
+        { title: 'Cold Air Intakes', slug: 'intake', img: '/assets/images/build/cold-air-intakes.webp' },
+        { title: 'Coilover Kits', slug: 'suspension', img: '/assets/images/build/coilover-kits.webp' },
+        { title: 'Exhaust Systems', slug: 'exhaust', img: '/assets/images/build/exhaust-systems.webp' },
+    ];
+
+    const handleNewsletterSubmit = (e) => {
+        e.preventDefault();
+        if (newsletterEmail) {
+            setSubscribed(true);
+            setNewsletterEmail('');
+        }
+    };
+
     return (
         <AppLayout title="Performance Automotive Spare Parts">
-            {/* 1. Hero Section */}
+            {/* 1 & 2. Hero Section with Attached Vehicle Finder (Unified Card in 1720px Container) */}
             <Hero />
 
-            {/* 2. Vehicle Parts Finder (Directly below hero) */}
-            <VehicleFinder />
-
-            {/* 3. Featured Categories Horizontal Strip */}
-            <section className="section bg-white" style={{ paddingBottom: '32px' }}>
+            {/* 3. Popular Categories Section */}
+            <section className="section popular-categories-section">
                 <div className="container">
                     <div className="section-header">
-                        <div>
-                            <span style={{ fontSize: '12px', fontWeight: 800, color: '#F36B16', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                                Precision Engineered
-                            </span>
-                            <h2 className="section-header-title">Featured Categories</h2>
+                        <div className="section-header-left">
+                            <h2 className="section-header-title">
+                                <span className="title-slash">//</span> Popular Categories
+                            </h2>
                         </div>
                         <Link href="/categories" className="section-header-link">
-                            All Categories <ArrowRight size={16} />
+                            View All Categories <ArrowRight size={15} />
                         </Link>
                     </div>
 
-                    <CategoryStrip categories={categories} />
+                    <div className="categories-grid-8">
+                        {popularCategories.map((cat, idx) => (
+                            <Link 
+                                key={idx} 
+                                href={`/shop?category=${cat.slug}`}
+                                className="cat-card-item"
+                            >
+                                <div className="cat-thumb-wrap">
+                                    <img 
+                                        src={cat.image} 
+                                        alt={cat.name} 
+                                        loading="lazy" 
+                                    />
+                                </div>
+                                <span className="cat-name">{cat.name}</span>
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* 4. Search by Part Number */}
-            <PartNumberSearch />
-
-            {/* 5. Featured Products */}
-            <section className="section bg-white">
+            {/* 4. Featured Products Section */}
+            <section className="section featured-products-section">
                 <div className="container">
                     <div className="section-header">
-                        <div>
-                            <span style={{ fontSize: '12px', fontWeight: 800, color: '#F36B16', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                                Hand-Picked Performance
-                            </span>
-                            <h2 className="section-header-title">Featured Products</h2>
+                        <div className="section-header-left">
+                            <h2 className="section-header-title">
+                                <span className="title-slash">//</span> Featured Products
+                            </h2>
                         </div>
-                        <Link href="/shop" className="section-header-link">
-                            View All Products <ArrowRight size={16} />
-                        </Link>
+                        <div className="filter-tabs">
+                            {['All', 'Tires', 'Brakes', 'Exhaust', 'Intake', 'Suspension'].map(tab => (
+                                <button
+                                    key={tab}
+                                    type="button"
+                                    className={`tab-pill ${activeTab === tab ? 'active' : ''}`}
+                                    onClick={() => setActiveTab(tab)}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="product-grid">
-                        {featuredProducts.map(product => (
+                        {displayProducts.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* Why Choose Us Features Strip */}
-            <section className="features-strip">
+            {/* 5. 3 Promotional Banners Grid */}
+            <section className="section promo-banners-section">
                 <div className="container">
-                    <div className="features-strip-grid">
-                        <div className="features-strip-item">
-                            <div className="feature-icon">
-                                <Truck size={24} />
+                    <div className="promo-banners-grid">
+                        {/* Promo Card 1: Tires */}
+                        <div className="promo-banner-card">
+                            <div className="promo-content">
+                                <span className="promo-eyebrow">UP TO</span>
+                                <h3 className="promo-highlight">20% OFF</h3>
+                                <p className="promo-sub">On Performance Tires</p>
+                                <Link href="/shop?category=tires" className="btn btn-primary promo-btn">
+                                    Shop Tires <ArrowRight size={14} />
+                                </Link>
                             </div>
-                            <div className="feature-text">
-                                <h4>Express Ground Shipping</h4>
-                                <p>Fast and insured transit across all Indian pin codes.</p>
-                            </div>
-                        </div>
-
-                        <div className="features-strip-item">
-                            <div className="feature-icon">
-                                <ShieldCheck size={24} />
-                            </div>
-                            <div className="feature-text">
-                                <h4>100% Guaranteed Fitment</h4>
-                                <p>Verified vehicle compatibility with direct bolt-on specs.</p>
-                            </div>
-                        </div>
-
-                        <div className="features-strip-item">
-                            <div className="feature-icon">
-                                <Headphones size={24} />
-                            </div>
-                            <div className="feature-text">
-                                <h4>Expert Technical Support</h4>
-                                <p>Dedicated automotive engineers for build guidance.</p>
+                            <div className="promo-thumb-wrap">
+                                <img 
+                                    src="/assets/images/promotions/tire-promotion.webp" 
+                                    alt="Performance Tires Promotion" 
+                                    className="promo-thumb"
+                                    loading="lazy"
+                                />
                             </div>
                         </div>
 
-                        <div className="features-strip-item">
-                            <div className="feature-icon">
-                                <RotateCcw size={24} />
+                        {/* Promo Card 2: Brakes */}
+                        <div className="promo-banner-card">
+                            <div className="promo-content">
+                                <h3 className="promo-heading-white">Brake Upgrade Packages</h3>
+                                <p className="promo-discount-orange">Save up to 15%</p>
+                                <Link href="/shop?category=brakes" className="btn btn-primary promo-btn">
+                                    Shop Brakes <ArrowRight size={14} />
+                                </Link>
                             </div>
-                            <div className="feature-text">
-                                <h4>30-Day Hassle-Free Returns</h4>
-                                <p>Unopened components returned with quick refund processing.</p>
+                            <div className="promo-thumb-wrap">
+                                <img 
+                                    src="/assets/images/promotions/brake-promotion.webp" 
+                                    alt="Brake Upgrade Packages" 
+                                    className="promo-thumb"
+                                    loading="lazy"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Promo Card 3: Engine */}
+                        <div className="promo-banner-card">
+                            <div className="promo-content">
+                                <h3 className="promo-heading-white">Engine Performance Parts</h3>
+                                <p className="promo-desc-grey">More Power. More Performance.</p>
+                                <Link href="/shop?category=intake" className="btn btn-primary promo-btn">
+                                    Shop Engine Parts <ArrowRight size={14} />
+                                </Link>
+                            </div>
+                            <div className="promo-thumb-wrap">
+                                <img 
+                                    src="/assets/images/promotions/engine-promotion.webp" 
+                                    alt="Engine Performance Tuning" 
+                                    className="promo-thumb"
+                                    loading="lazy"
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* 6. Best Sellers */}
-            {bestSellers.length > 0 && (
-                <section className="section bg-light">
-                    <div className="container">
-                        <div className="section-header">
-                            <div>
-                                <span style={{ fontSize: '12px', fontWeight: 800, color: '#F36B16', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                                    Track Proven & Street Tested
-                                </span>
-                                <h2 className="section-header-title">Best Sellers</h2>
-                            </div>
-                            <Link href="/shop?filter=best_seller" className="section-header-link">
-                                Shop Best Sellers <ArrowRight size={16} />
-                            </Link>
+            {/* 6. Shop by Vehicle Type */}
+            <section className="section vehicle-types-section">
+                <div className="container">
+                    <div className="section-header">
+                        <div className="section-header-left">
+                            <h2 className="section-header-title">
+                                <span className="title-slash">//</span> Shop by Vehicle Type
+                            </h2>
                         </div>
-
-                        <div className="product-grid">
-                            {bestSellers.map(product => (
-                                <ProductCard key={product.id} product={product} />
-                            ))}
-                        </div>
+                        <Link href="/vehicle-finder" className="section-header-link">
+                            View All Vehicle Types <ArrowRight size={15} />
+                        </Link>
                     </div>
-                </section>
-            )}
 
-            {/* 7. Popular Brands */}
-            {brands.length > 0 && (
-                <section className="section bg-white">
-                    <div className="container">
-                        <div className="section-header">
-                            <div>
-                                <span style={{ fontSize: '12px', fontWeight: 800, color: '#F36B16', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                                    Certified Manufacturers
-                                </span>
-                                <h2 className="section-header-title">Popular Brands</h2>
-                            </div>
-                            <Link href="/brands" className="section-header-link">
-                                View All Brands <ArrowRight size={16} />
+                    <div className="vehicle-types-grid">
+                        {vehicleTypes.map((vt, idx) => (
+                            <Link 
+                                key={idx} 
+                                href={`/shop?vehicle_type=${vt.slug}`} 
+                                className="vt-card"
+                            >
+                                <div className="vt-img-wrap">
+                                    <img 
+                                        src={vt.img} 
+                                        alt={vt.name} 
+                                        className="vt-img"
+                                        loading="lazy" 
+                                    />
+                                </div>
+                                <div className="vt-footer">
+                                    <span className="vt-name">{vt.name}</span>
+                                    <div className="vt-arrow-btn">
+                                        <ArrowRight size={13} />
+                                    </div>
+                                </div>
                             </Link>
-                        </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
-                        <div className="brand-grid">
-                            {brands.map(brand => (
+            {/* 7. Popular Brands Row */}
+            <section className="section popular-brands-section">
+                <div className="container">
+                    <div className="section-header">
+                        <div className="section-header-left">
+                            <h2 className="section-header-title">
+                                <span className="title-slash">//</span> Popular Brands
+                            </h2>
+                        </div>
+                        <Link href="/brands" className="section-header-link">
+                            View All Brands <ArrowRight size={15} />
+                        </Link>
+                    </div>
+
+                    <div className="brands-container-box">
+                        <div className="brands-row-8">
+                            {brandLogos.map((brand, idx) => (
                                 <Link 
-                                    key={brand.id} 
+                                    key={idx} 
                                     href={`/brands/${brand.slug}`} 
-                                    className="brand-grid-item"
+                                    className="brand-logo-card"
+                                    title={brand.name}
                                 >
-                                    <span>{brand.name}</span>
+                                    <img 
+                                        src={brand.logo} 
+                                        alt={brand.name} 
+                                        className="brand-logo-img"
+                                    />
                                 </Link>
                             ))}
                         </div>
                     </div>
-                </section>
-            )}
+                </div>
+            </section>
 
-            {/* 8. Promotional Build Banner */}
-            <section className="container" style={{ marginBottom: '56px' }}>
-                <div style={{
-                    backgroundColor: '#151515',
-                    borderRadius: '8px',
-                    padding: '40px',
-                    color: '#FFFFFF',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    gap: '16px',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    border: '1px solid #333'
-                }}>
-                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#F36B16', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-                        Special Build Incentive
-                    </span>
-                    <h3 style={{ fontSize: '28px', fontWeight: 900, color: '#FFFFFF', maxWidth: '600px', lineHeight: 1.2 }}>
-                        GET 10% OFF YOUR COMPLETE PERFORMANCE BRAKE & SUSPENSION PACKAGE
+            {/* 8. Why Choose SpeedAutoParts Strip */}
+            <section className="section why-choose-section">
+                <div className="container">
+                    <div className="why-choose-card">
+                        <div className="why-choose-brand-col">
+                            <span className="title-slash">///</span>
+                            <span className="wc-brand-title">Why Choose SpeedAutoParts?</span>
+                        </div>
+
+                        <div className="why-choose-item">
+                            <div className="wc-icon-circle">
+                                <ShieldCheck size={20} />
+                            </div>
+                            <div className="wc-text">
+                                <h4>Genuine Parts</h4>
+                                <p>100% authentic & certified</p>
+                            </div>
+                        </div>
+
+                        <div className="why-choose-item">
+                            <div className="wc-icon-circle">
+                                <Truck size={20} />
+                            </div>
+                            <div className="wc-text">
+                                <h4>International Shipping</h4>
+                                <p>To 100+ countries</p>
+                            </div>
+                        </div>
+
+                        <div className="why-choose-item">
+                            <div className="wc-icon-circle">
+                                <RotateCcw size={20} />
+                            </div>
+                            <div className="wc-text">
+                                <h4>30-Day Returns</h4>
+                                <p>Hassle-free & simple</p>
+                            </div>
+                        </div>
+
+                        <div className="why-choose-item">
+                            <div className="wc-icon-circle">
+                                <Headphones size={20} />
+                            </div>
+                            <div className="wc-text">
+                                <h4>Expert Support</h4>
+                                <p>Automotive specialists</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 9. Top Picks for Your Build */}
+            <section className="section top-picks-section">
+                <div className="container">
+                    <div className="section-header">
+                        <div className="section-header-left">
+                            <h2 className="section-header-title">
+                                <span className="title-slash">//</span> Top Picks for Your Build
+                            </h2>
+                        </div>
+                        <div className="top-picks-header-right">
+                            <div className="filter-tabs">
+                                {['Performance', 'Interior', 'Exterior', 'Engine', 'Wheels'].map(tab => (
+                                    <button
+                                        key={tab}
+                                        type="button"
+                                        className={`tab-pill ${topPickTab === tab ? 'active' : ''}`}
+                                        onClick={() => setTopPickTab(tab)}
+                                    >
+                                        {tab}
+                                    </button>
+                                ))}
+                            </div>
+                            <Link href="/shop" className="section-header-link" style={{ marginLeft: '12px' }}>
+                                View All <ArrowRight size={15} />
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className="top-picks-slider-wrap">
+                        <button type="button" className="slider-arrow-btn prev" aria-label="Previous">
+                            <ChevronLeft size={16} />
+                        </button>
+
+                        <div className="top-picks-grid">
+                            {topPicks.map((pick, idx) => (
+                                <Link 
+                                    key={idx} 
+                                    href={`/shop?category=${pick.slug}`} 
+                                    className="top-pick-card"
+                                >
+                                    <div className="tp-img-wrap">
+                                        <img 
+                                            src={pick.img} 
+                                            alt={pick.title} 
+                                            className="tp-thumb"
+                                            loading="lazy" 
+                                        />
+                                    </div>
+                                    <div className="tp-footer">
+                                        <span className="tp-name">{pick.title}</span>
+                                        <div className="tp-arrow-btn">
+                                            <ArrowRight size={13} />
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+
+                        <button type="button" className="slider-arrow-btn next" aria-label="Next">
+                            <ChevronRight size={16} />
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            {/* 10. Real Results Banner (Built by Enthusiasts Trusted Worldwide) */}
+            <section className="section real-results-section">
+                <div className="container">
+                    <div className="real-results-card">
+                        <div className="rr-left">
+                            <span className="rr-badge">REAL RESULTS</span>
+                            <h2 className="rr-heading">
+                                BUILT BY ENTHUSIASTS<br />TRUSTED WORLDWIDE
+                            </h2>
+                            <p className="rr-desc">
+                                See how our parts perform in real builds from customers around the globe.
+                            </p>
+                            <Link href="/shop" className="btn btn-primary rr-btn">
+                                Explore Customer Builds <ArrowRight size={15} />
+                            </Link>
+                        </div>
+
+                        <div className="rr-center-car">
+                            <img 
+                                src="/assets/images/customer/customer-builds.webp" 
+                                alt="Customer Performance Build" 
+                                loading="lazy" 
+                            />
+                        </div>
+
+                        <div className="rr-stats-grid">
+                            <div className="rr-stat-item">
+                                <Users size={22} className="rr-stat-icon" />
+                                <span className="rr-stat-num">100,000+</span>
+                                <span className="rr-stat-label">Happy Customers</span>
+                            </div>
+
+                            <div className="rr-stat-item">
+                                <Package size={22} className="rr-stat-icon" />
+                                <span className="rr-stat-num">250,000+</span>
+                                <span className="rr-stat-label">Parts In Stock</span>
+                            </div>
+
+                            <div className="rr-stat-item">
+                                <Globe size={22} className="rr-stat-icon" />
+                                <span className="rr-stat-num">100+</span>
+                                <span className="rr-stat-label">Countries Served</span>
+                            </div>
+
+                            <div className="rr-stat-item">
+                                <Star size={22} className="rr-stat-icon" />
+                                <span className="rr-stat-num">4.8/5</span>
+                                <span className="rr-stat-label">Customer Rating</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 11. Newsletter Strip */}
+            <section className="newsletter-strip">
+                <div className="newsletter-bg-wrap">
+                    <img 
+                        src="/assets/images/footer/footer-sports-car.webp" 
+                        alt="Performance car tail lights" 
+                        className="newsletter-bg-img"
+                    />
+                    <div className="newsletter-overlay" />
+                </div>
+
+                <div className="container newsletter-content-wrap">
+                    <span className="nl-eyebrow">STAY IN THE LOOP</span>
+                    <h3 className="nl-heading">
+                        Get Exclusive Deals & Performance Updates
                     </h3>
-                    <p style={{ color: '#AAAAAA', fontSize: '14px', maxWidth: '500px' }}>
-                        Use code <strong style={{ color: '#F36B16' }}>SPEED10</strong> at checkout on eligible orders above ₹5,000. Verified for track day enthusiasts.
+                    <p className="nl-desc">
+                        Subscribe to our newsletter and be the first to know about new products, special offers, and expert automotive insights.
                     </p>
-                    <Link href="/shop" className="btn btn-primary btn-lg">
-                        Shop Eligible Parts <ArrowRight size={16} />
-                    </Link>
+
+                    {subscribed ? (
+                        <div className="nl-success-msg">
+                            <CheckCircle size={18} /> Thank you for subscribing to SpeedAutoParts!
+                        </div>
+                    ) : (
+                        <form onSubmit={handleNewsletterSubmit} className="nl-form">
+                            <input 
+                                type="email" 
+                                required 
+                                placeholder="Enter your email address" 
+                                value={newsletterEmail}
+                                onChange={(e) => setNewsletterEmail(e.target.value)}
+                                aria-label="Email address"
+                            />
+                            <button type="submit" className="btn btn-primary nl-submit-btn">
+                                Subscribe <ArrowRight size={15} />
+                            </button>
+                        </form>
+                    )}
                 </div>
             </section>
         </AppLayout>

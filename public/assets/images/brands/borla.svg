@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="100%" height="100%">
+  <defs>
+    <style>
+      .borla-text { font-family: 'Arial Black', 'Impact', sans-serif; font-style: italic; font-weight: 900; font-size: 34px; fill: #111111; letter-spacing: -0.5px; }
+      .borla-accent { fill: #E31B23; }
+    </style>
+  </defs>
+  <g transform="translate(15, 12)">
+    <text x="0" y="28" class="borla-text">Borla</text>
+    <polygon points="112,6 118,6 104,32 98,32" class="borla-accent"/>
+  </g>
+</svg>

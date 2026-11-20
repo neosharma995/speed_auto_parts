@@ -1,119 +1,109 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { Wrench, Phone, Mail, MapPin, CheckCircle, ArrowRight } from 'lucide-react';
+import { Phone, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export default function Footer() {
-    const { settings = {}, navCategories = [] } = usePage().props;
-    const [newsletterEmail, setNewsletterEmail] = useState('');
-    const [subscribed, setSubscribed] = useState(false);
-
-    const handleSubscribe = (e) => {
-        e.preventDefault();
-        if (newsletterEmail) {
-            setSubscribed(true);
-            setNewsletterEmail('');
-        }
-    };
+    const { settings = {} } = usePage().props;
 
     return (
         <footer className="footer">
             <div className="container">
                 <div className="footer-grid">
-                    {/* Column 1: Brand & Contacts */}
-                    <div className="footer-col footer-about">
-                        <div className="header-logo" style={{ marginBottom: '8px' }}>
-                            <div className="header-logo-icon">
-                                <Wrench size={20} />
+                    {/* Column 1: Brand & Socials */}
+                    <div className="footer-col footer-brand-col">
+                        <Link href="/" className="header-logo" style={{ marginBottom: '12px' }}>
+                            <div className="header-logo-badge">
+                                <span className="badge-slash">///</span>
                             </div>
-                            <span className="brand-title" style={{ color: '#FFFFFF' }}>
-                                AUTO<span style={{ color: '#F36B16' }}>PARTS</span>
-                            </span>
+                            <div className="header-logo-text">
+                                <span className="brand-title" style={{ color: '#FFFFFF' }}>
+                                    SPEEDAUTOPARTS
+                                </span>
+                                <span className="brand-subtitle" style={{ color: '#F36B16' }}>
+                                    PERFORMANCE SPARE PARTS
+                                </span>
+                            </div>
+                        </Link>
+                        <p className="footer-brand-desc">
+                            Your trusted global source for premium automotive spare parts, performance upgrades, and genuine replacement components.
+                        </p>
+                        <div className="footer-social-row">
+                            <a href="#" className="social-icon" aria-label="Facebook">f</a>
+                            <a href="#" className="social-icon" aria-label="Instagram">ig</a>
+                            <a href="#" className="social-icon" aria-label="YouTube">yt</a>
+                            <a href="#" className="social-icon" aria-label="LinkedIn">in</a>
+                            <a href="#" className="social-icon" aria-label="X">X</a>
                         </div>
-                        <p>
-                            India's leading precision automotive spare parts and performance tuning supplier. 
-                            From OEM maintenance replacements to track-ready suspension, brakes, and engine hardware.
-                        </p>
-                        <ul className="footer-contacts">
-                            <li>
-                                <Phone size={14} />
-                                <span>{settings.store_phone || '+91 98765 43210'}</span>
-                            </li>
-                            <li>
-                                <Mail size={14} />
-                                <span>{settings.store_email || 'support@autoparts.com'}</span>
-                            </li>
-                            <li>
-                                <MapPin size={14} />
-                                <span>{settings.store_address || 'Auto Parts HQ, Sector 5, New Delhi 110001'}</span>
-                            </li>
+                    </div>
+
+                    {/* Column 2: Shop */}
+                    <div className="footer-col">
+                        <h4 className="footer-heading">Shop</h4>
+                        <ul className="footer-links">
+                            <li><Link href="/shop">All Products</Link></li>
+                            <li><Link href="/shop?filter=performance">Performance Parts</Link></li>
+                            <li><Link href="/shop?category=tires">Tires</Link></li>
+                            <li><Link href="/shop?category=brakes">Brakes</Link></li>
+                            <li><Link href="/shop?category=exhaust">Exhaust</Link></li>
+                            <li><Link href="/shop?category=suspension">Suspension</Link></li>
                         </ul>
                     </div>
 
-                    {/* Column 2: Categories */}
+                    {/* Column 3: Information */}
                     <div className="footer-col">
-                        <h4 className="footer-heading">Performance Parts</h4>
+                        <h4 className="footer-heading">Information</h4>
                         <ul className="footer-links">
-                            <li><Link href="/shop?category=tires">Performance Tires</Link></li>
-                            <li><Link href="/shop?category=brakes">Brake Rotors & Calipers</Link></li>
-                            <li><Link href="/shop?category=intake">Cold Air Intakes</Link></li>
-                            <li><Link href="/shop?category=exhaust">Cat-Back Exhausts</Link></li>
-                            <li><Link href="/shop?category=suspension">Track Coilovers</Link></li>
-                            <li><Link href="/vehicle-finder">Shop By Vehicle Fitment</Link></li>
-                        </ul>
-                    </div>
-
-                    {/* Column 3: Customer Service & Policies */}
-                    <div className="footer-col">
-                        <h4 className="footer-heading">Support & Info</h4>
-                        <ul className="footer-links">
-                            <li><Link href="/about-us">About Auto Parts</Link></li>
-                            <li><Link href="/contact-us">Customer Support</Link></li>
-                            <li><Link href="/track-order">Track Your Shipment</Link></li>
-                            <li><Link href="/shipping-policy">Shipping & Freight Policy</Link></li>
-                            <li><Link href="/refund-returns">Return & Refund Policy</Link></li>
-                            <li><Link href="/privacy-policy">Privacy & Cookie Policy</Link></li>
+                            <li><Link href="/about-us">About Us</Link></li>
+                            <li><Link href="/contact-us">Contact Us</Link></li>
+                            <li><Link href="/shipping-policy">Shipping & Delivery</Link></li>
+                            <li><Link href="/refund-returns">Returns & Refunds</Link></li>
                             <li><Link href="/terms-and-conditions">Terms & Conditions</Link></li>
+                            <li><Link href="/privacy-policy">Privacy Policy</Link></li>
                         </ul>
                     </div>
 
-                    {/* Column 4: Newsletter */}
-                    <div className="footer-col footer-newsletter">
-                        <h4 className="footer-heading">Garage Insider</h4>
-                        <p>
-                            Join over 50,000+ drivers and build enthusiasts. Receive technical fitment guides, track day updates, and exclusive discount codes.
-                        </p>
-                        {subscribed ? (
-                            <div style={{ color: '#168A35', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', marginTop: '12px' }}>
-                                <CheckCircle size={16} /> Thank you for subscribing to Auto Parts updates!
+                    {/* Column 4: Customer Support */}
+                    <div className="footer-col">
+                        <h4 className="footer-heading">Customer Support</h4>
+                        <ul className="footer-links">
+                            <li><Link href="/track-order">Track Your Order</Link></li>
+                            <li><Link href="/contact-us">Help Center</Link></li>
+                            <li><Link href="/contact-us">FAQs</Link></li>
+                            <li><Link href="/terms-and-conditions">Warranty Information</Link></li>
+                            <li><Link href="/vehicle-finder">Part Compatibility</Link></li>
+                            <li><Link href="/contact-us">Request a Part</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Column 5: Need Help Contact */}
+                    <div className="footer-col footer-contact-col">
+                        <div className="need-help-header">
+                            <div className="help-icon-wrap">
+                                <Phone size={18} />
                             </div>
-                        ) : (
-                            <form onSubmit={handleSubscribe} className="footer-newsletter-form">
-                                <input 
-                                    type="email" 
-                                    required
-                                    placeholder="Enter your email address"
-                                    value={newsletterEmail}
-                                    onChange={(e) => setNewsletterEmail(e.target.value)}
-                                />
-                                <button type="submit" aria-label="Subscribe">
-                                    <ArrowRight size={16} />
-                                </button>
-                            </form>
-                        )}
+                            <div>
+                                <span className="help-label">Need Help?</span>
+                                <strong className="help-phone">{settings.store_phone || '+91 98765 43210'}</strong>
+                            </div>
+                        </div>
+                        <span className="help-hours">Mon – Sat, 9:00 AM – 7:00 PM (IST)</span>
+                        <Link href="/contact-us" className="btn btn-outline footer-contact-btn">
+                            Contact Support
+                        </Link>
                     </div>
                 </div>
 
                 {/* Bottom Bar */}
                 <div className="footer-bottom">
                     <span className="footer-bottom-copyright">
-                        © {new Date().getFullYear()} AUTO PARTS Inc. All Rights Reserved. Designed for Street, Track, and Garage Builds.
+                        © {new Date().getFullYear()} SpeedAutoParts. All Rights Reserved.
                     </span>
-                    <div className="footer-bottom-badges">
-                        <span>GST Registered & Compliant</span>
-                        <span>•</span>
-                        <span>Secure Razorpay 256-Bit SSL</span>
-                        <span>•</span>
-                        <span>Pan-India Logistics</span>
+                    <div className="footer-payment-badges">
+                        <span className="pay-badge">VISA</span>
+                        <span className="pay-badge">Mastercard</span>
+                        <span className="pay-badge">PayPal</span>
+                        <span className="pay-badge">Apple Pay</span>
+                        <span className="pay-badge">G Pay</span>
                     </div>
                 </div>
             </div>

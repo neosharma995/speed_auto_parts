@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="100%" height="100%">
+  <defs>
+    <style>
+      .b-blue { fill: #005A9C; }
+      .b-yellow { fill: #FED100; }
+      .b-txt { font-family: 'Arial Black', sans-serif; font-weight: 900; font-size: 26px; fill: #005A9C; letter-spacing: -0.5px; }
+    </style>
+  </defs>
+  <g transform="translate(10, 8)">
+    <rect x="0" y="4" width="36" height="36" rx="4" class="b-yellow"/>
+    <path d="M 6 10 L 30 10 L 30 18 L 18 18 L 18 22 L 28 22 L 28 34 L 6 34 Z" fill="#005A9C"/>
+    <text x="44" y="32" class="b-txt">BILSTEIN</text>
+  </g>
+</svg>

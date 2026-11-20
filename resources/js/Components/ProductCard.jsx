@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { Star, ShoppingCart, Heart, Check, AlertTriangle } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Check, ChevronDown } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useWishlist } from '@/Context/WishlistContext';
 
@@ -11,9 +11,10 @@ export default function ProductCard({ product }) {
     const [added, setAdded] = useState(false);
 
     const isFav = isInWishlist(product.id);
-    const regularPrice = Number(product.base_price || 0);
-    const sellingPrice = Number(product.effective_price || product.sale_price || product.base_price);
-    const hasDiscount = product.discount_percentage > 0;
+    const regularPrice = Number(product.base_price || product.regular_price || 0);
+    const sellingPrice = Number(product.effective_price || product.sale_price || product.base_price || 0);
+    const hasDiscount = product.discount_percentage > 0 || (regularPrice > sellingPrice && regularPrice > 0);
+    const discountPercent = product.discount_percentage || (regularPrice > sellingPrice ? Math.round(((regularPrice - sellingPrice) / regularPrice) * 100) : 0);
     const inStock = product.is_in_stock !== false;
 
     const handleAddToCart = (e) => {
@@ -21,7 +22,6 @@ export default function ProductCard({ product }) {
         e.stopPropagation();
         if (!inStock) return;
 
-        // If variable, pick default variation or first
         const defaultVar = product.variations?.find(v => v.is_default) || product.variations?.[0] || null;
         addToCart(product, defaultVar, quantity);
         setAdded(true);
@@ -30,10 +30,10 @@ export default function ProductCard({ product }) {
 
     return (
         <div className="product-card">
-            {/* Discount / Status Badges */}
-            {hasDiscount && (
+            {/* Discount Badge */}
+            {hasDiscount && discountPercent > 0 && (
                 <div className="product-card-badge">
-                    <span className="badge badge-primary">-{product.discount_percentage}% OFF</span>
+                    <span className="badge-discount">-{discountPercent}% OFF</span>
                 </div>
             )}
 
@@ -48,13 +48,13 @@ export default function ProductCard({ product }) {
                 }}
                 aria-label="Wishlist"
             >
-                <Heart size={16} fill={isFav ? '#D93025' : 'none'} />
+                <Heart size={16} fill={isFav ? '#D93025' : 'none'} stroke={isFav ? '#D93025' : '#888888'} />
             </button>
 
             {/* Media */}
-            <Link href={`/product/${product.slug}`} className="product-card-media">
+            <Link href={`/product/${product.slug || ''}`} className="product-card-media">
                 <img 
-                    src={product.main_image || '/images/products/placeholder.jpg'} 
+                    src={product.main_image || '/assets/images/products/performance-tire.webp'} 
                     alt={product.name} 
                     loading="lazy" 
                 />
@@ -63,15 +63,15 @@ export default function ProductCard({ product }) {
             {/* Body */}
             <div className="product-card-body">
                 {product.brand && (
-                    <span className="product-card-brand">{product.brand.name}</span>
+                    <span className="product-card-brand">{product.brand.name || product.brand}</span>
                 )}
 
                 <h3 className="product-card-title">
-                    <Link href={`/product/${product.slug}`}>{product.name}</Link>
+                    <Link href={`/product/${product.slug || ''}`}>{product.name}</Link>
                 </h3>
 
-                {product.part_number && (
-                    <span className="product-card-part">Part #: {product.part_number}</span>
+                {product.short_description && (
+                    <p className="product-card-desc">{product.short_description}</p>
                 )}
 
                 {/* Rating */}
@@ -82,65 +82,59 @@ export default function ProductCard({ product }) {
                                 key={s} 
                                 size={12} 
                                 fill={s <= Math.round(Number(product.rating || 5)) ? '#E37400' : 'none'} 
+                                stroke="#E37400"
                             />
                         ))}
                     </div>
-                    <span>{Number(product.rating || 5).toFixed(1)}</span>
-                    <span className="product-card-rating-count">({product.rating_count || 12})</span>
+                    <span className="rating-num">{Number(product.rating || 5).toFixed(1)}</span>
+                    <span className="rating-count">({product.rating_count || 124})</span>
                 </div>
 
-                {/* Short Description */}
-                {product.short_description && (
-                    <p className="product-card-desc">{product.short_description}</p>
-                )}
+                {/* Stock Status */}
+                <div className="product-card-stock">
+                    <span className="stock-dot">●</span>
+                    <span className="stock-text">{inStock ? 'In Stock' : 'Out of Stock'}</span>
+                </div>
 
                 {/* Price */}
                 <div className="product-card-price-wrap">
                     <span className="product-card-price">
-                        ₹{sellingPrice.toLocaleString('en-IN')}
+                        ${sellingPrice.toFixed(2)}
                     </span>
-                    {hasDiscount && (
+                    {hasDiscount && regularPrice > sellingPrice && (
                         <span className="product-card-original">
-                            ₹{regularPrice.toLocaleString('en-IN')}
+                            ${regularPrice.toFixed(2)}
                         </span>
                     )}
                 </div>
-
-                {/* Stock Status */}
-                <div className={`product-card-stock ${inStock ? 'product-card-stock--in' : 'product-card-stock--out'}`}>
-                    <span>{inStock ? 'In Stock — Ready to Ship' : 'Out of Stock'}</span>
-                </div>
             </div>
 
-            {/* Actions: Quantity Picker & Add to Cart */}
+            {/* Actions: Quantity Selector & Add to Cart */}
             <div className="product-card-actions">
-                <div className="qty-picker">
-                    <button 
-                        type="button" 
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                <div className="qty-select-wrap">
+                    <select 
+                        value={quantity} 
+                        onChange={(e) => setQuantity(Number(e.target.value))}
+                        className="qty-dropdown"
                         disabled={!inStock}
+                        aria-label="Quantity"
                     >
-                        -
-                    </button>
-                    <span>{quantity}</span>
-                    <button 
-                        type="button" 
-                        onClick={() => setQuantity(quantity + 1)}
-                        disabled={!inStock}
-                    >
-                        +
-                    </button>
+                        {[1, 2, 3, 4, 5].map(q => (
+                            <option key={q} value={q}>{q}</option>
+                        ))}
+                    </select>
+                    <ChevronDown size={12} className="qty-arrow" />
                 </div>
 
                 <button 
                     type="button" 
-                    className={`btn btn-add ${inStock ? 'btn-primary' : 'btn-dark'}`}
+                    className="btn-add-cart"
                     onClick={handleAddToCart}
                     disabled={!inStock}
                 >
                     {added ? (
                         <>
-                            <Check size={16} /> Added
+                            <Check size={15} /> Added
                         </>
                     ) : (
                         <>

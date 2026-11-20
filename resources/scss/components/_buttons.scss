@@ -12,10 +12,10 @@
   gap: 8px;
   font-family: $font-primary;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1;
   padding: 12px 24px;
-  border-radius: $border-radius-sm;
+  border-radius: 8px;
   transition: background-color $transition-default, color $transition-default, border-color $transition-default, box-shadow $transition-default;
   text-align: center;
   white-space: nowrap;
@@ -72,6 +72,19 @@
         border-color: $color-primary-hover;
         color: $color-primary-hover;
       }
+    }
+  }
+
+  &-dark-outline {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: $color-white;
+    border-color: rgba(255, 255, 255, 0.24);
+    backdrop-filter: blur(8px);
+
+    &:hover {
+      background-color: rgba(243, 107, 22, 0.15);
+      border-color: $color-primary;
+      color: $color-white;
     }
   }
 

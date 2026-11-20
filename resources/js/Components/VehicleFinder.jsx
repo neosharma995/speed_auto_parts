@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import axios from 'axios';
-import { Car, Search, RotateCcw, Check, AlertCircle } from 'lucide-react';
+import { Car, Search, RotateCcw, Check, AlertCircle, ArrowRight } from 'lucide-react';
 
 export default function VehicleFinder() {
     const { activeVehicle } = usePage().props;
@@ -92,7 +92,6 @@ export default function VehicleFinder() {
             return;
         }
 
-        // Call backend route to set active vehicle in session and redirect to compatible shop
         router.post('/vehicles/select', {
             vehicle_id: selectedEngineId,
         }, {
@@ -114,111 +113,131 @@ export default function VehicleFinder() {
     };
 
     return (
-        <section className="vehicle-finder-bar">
+        <div className="hero-vehicle-finder" aria-label="Vehicle Fitment Filter">
             <div className="container">
-                <div className="vehicle-finder-bar-inner">
-                    <div className="vehicle-finder-bar-title">
-                        <Car size={20} />
-                        <span>Select Your Vehicle</span>
+                <div className="hero-vehicle-finder-inner">
+                    {/* Left Title: Car outline icon + Stacked Text */}
+                    <div className="hvf-title">
+                        <div className="hvf-icon-wrap">
+                            <Car size={26} strokeWidth={2} />
+                        </div>
+                        <div className="hvf-text">
+                            <span className="hvf-sub">Find Parts For</span>
+                            <strong className="hvf-main">Your Vehicle</strong>
+                        </div>
                     </div>
 
-                    <form onSubmit={handleSearch} className="vehicle-finder-bar-form">
+                    {/* Form: 4 Dropdowns + Submit CTA */}
+                    <form onSubmit={handleSearch} className="hvf-form">
                         {/* 1. Year */}
-                        <select 
-                            className="form-select"
-                            value={selectedYear}
-                            onChange={(e) => handleYearChange(e.target.value)}
-                            disabled={loadingYears}
-                            aria-label="Select Year"
-                        >
-                            <option value="">1. Select Year</option>
-                            {years.map(y => (
-                                <option key={y} value={y}>{y}</option>
-                            ))}
-                        </select>
+                        <div className="hvf-field">
+                            <label className="hvf-label">Year</label>
+                            <select 
+                                className="hvf-select"
+                                value={selectedYear}
+                                onChange={(e) => handleYearChange(e.target.value)}
+                                disabled={loadingYears}
+                                aria-label="Select Year"
+                            >
+                                <option value="">Select Year</option>
+                                {years.map(y => (
+                                    <option key={y} value={y}>{y}</option>
+                                ))}
+                            </select>
+                        </div>
 
                         {/* 2. Make */}
-                        <select 
-                            className="form-select"
-                            value={selectedMake}
-                            onChange={(e) => handleMakeChange(e.target.value)}
-                            disabled={!selectedYear || loadingMakes}
-                            aria-label="Select Make"
-                        >
-                            <option value="">2. Select Make</option>
-                            {makes.map(m => (
-                                <option key={m} value={m}>{m}</option>
-                            ))}
-                        </select>
+                        <div className="hvf-field">
+                            <label className="hvf-label">Make</label>
+                            <select 
+                                className="hvf-select"
+                                value={selectedMake}
+                                onChange={(e) => handleMakeChange(e.target.value)}
+                                disabled={!selectedYear || loadingMakes}
+                                aria-label="Select Make"
+                            >
+                                <option value="">Select Make</option>
+                                {makes.map(m => (
+                                    <option key={m} value={m}>{m}</option>
+                                ))}
+                            </select>
+                        </div>
 
                         {/* 3. Model */}
-                        <select 
-                            className="form-select"
-                            value={selectedModel}
-                            onChange={(e) => handleModelChange(e.target.value)}
-                            disabled={!selectedMake || loadingModels}
-                            aria-label="Select Model"
-                        >
-                            <option value="">3. Select Model</option>
-                            {models.map(m => (
-                                <option key={m} value={m}>{m}</option>
-                            ))}
-                        </select>
+                        <div className="hvf-field">
+                            <label className="hvf-label">Model</label>
+                            <select 
+                                className="hvf-select"
+                                value={selectedModel}
+                                onChange={(e) => handleModelChange(e.target.value)}
+                                disabled={!selectedMake || loadingModels}
+                                aria-label="Select Model"
+                            >
+                                <option value="">Select Model</option>
+                                {models.map(m => (
+                                    <option key={m} value={m}>{m}</option>
+                                ))}
+                            </select>
+                        </div>
 
                         {/* 4. Engine */}
-                        <select 
-                            className="form-select"
-                            value={selectedEngineId}
-                            onChange={(e) => {
-                                setSelectedEngineId(e.target.value);
-                                setErrorMessage('');
-                            }}
-                            disabled={!selectedModel || loadingEngines}
-                            aria-label="Select Engine"
-                        >
-                            <option value="">4. Select Engine</option>
-                            {engines.map(eng => (
-                                <option key={eng.id} value={eng.id}>
-                                    {eng.engine} {eng.submodel ? `(${eng.submodel})` : ''}
-                                </option>
-                            ))}
-                        </select>
-
-                        {/* Submit CTA */}
-                        <button 
-                            type="submit" 
-                            className="btn btn-primary"
-                            disabled={!selectedEngineId}
-                        >
-                            <Search size={16} /> FIND PARTS
-                        </button>
-
-                        {/* Reset button */}
-                        {(selectedYear || selectedMake || selectedModel || selectedEngineId) && (
-                            <button 
-                                type="button" 
-                                className="btn btn-outline"
-                                onClick={() => handleYearChange('')}
-                                title="Reset Selections"
+                        <div className="hvf-field">
+                            <label className="hvf-label">Engine</label>
+                            <select 
+                                className="hvf-select"
+                                value={selectedEngineId}
+                                onChange={(e) => {
+                                    setSelectedEngineId(e.target.value);
+                                    setErrorMessage('');
+                                }}
+                                disabled={!selectedModel || loadingEngines}
+                                aria-label="Select Engine"
                             >
-                                <RotateCcw size={16} />
+                                <option value="">Select Engine</option>
+                                {engines.map(eng => (
+                                    <option key={eng.id} value={eng.id}>
+                                        {eng.engine} {eng.submodel ? `(${eng.submodel})` : ''}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="hvf-actions">
+                            <button 
+                                type="submit" 
+                                className="btn btn-primary hvf-submit-btn"
+                            >
+                                <Search size={15} />
+                                <span>Find Parts</span>
+                                <ArrowRight size={15} />
                             </button>
-                        )}
+
+                            {(selectedYear || selectedMake || selectedModel || selectedEngineId) && (
+                                <button 
+                                    type="button" 
+                                    className="btn hvf-reset-btn"
+                                    onClick={() => handleYearChange('')}
+                                    title="Reset Selections"
+                                >
+                                    <RotateCcw size={15} />
+                                </button>
+                            )}
+                        </div>
                     </form>
                 </div>
 
                 {errorMessage && (
-                    <div style={{ color: '#D93025', fontSize: '12px', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ color: '#F87171', fontSize: '12px', marginTop: '8px', padding: '0 28px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <AlertCircle size={14} /> {errorMessage}
                     </div>
                 )}
 
-                {/* Display active selected vehicle if in session */}
                 {activeVehicle && (
-                    <div className="vehicle-finder-bar-active-vehicle">
+                    <div className="hvf-active-vehicle">
                         <div className="vehicle-info">
                             <Check size={18} />
-                            <span>Currently Filtering For: <strong>{activeVehicle.year} {activeVehicle.make} {activeVehicle.model} ({activeVehicle.engine})</strong></span>
+                            <span>Filtering: <strong>{activeVehicle.year} {activeVehicle.make} {activeVehicle.model} ({activeVehicle.engine})</strong></span>
                         </div>
                         <button 
                             type="button" 
@@ -230,6 +249,6 @@ export default function VehicleFinder() {
                     </div>
                 )}
             </div>
-        </section>
+        </div>
     );
 }

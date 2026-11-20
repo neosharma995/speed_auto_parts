@@ -11,8 +11,10 @@ import {
     ShieldCheck,
     Play,
     Pause,
+    Car,
 } from 'lucide-react';
 import * as THREE from 'three';
+import VehicleFinder from './VehicleFinder';
 import '../../scss/Hero.scss';
 
 // ============================================================================
@@ -170,16 +172,17 @@ export function HeroVideo({ sceneIndex, isVisible, isReducedMotion, isPlaying = 
 // ============================================================================
 export function HeroContent({ banner = null, sceneIndex = 0 }) {
     const eyebrow = banner?.eyebrow || 'PERFORMANCE PARTS FOR DRIVERS';
-    const description = banner?.subtitle || 'PREMIUM AUTOMOTIVE SPARE PARTS FOR STREET, TRACK, AND GARAGE BUILDS.';
-    const ctaText = banner?.button_text || 'SHOP PERFORMANCE';
+    const description = banner?.subtitle || 'Premium automotive spare parts for street, track, and garage builds.';
+    const ctaText = banner?.button_text || 'Shop Performance';
     const ctaLink = banner?.button_link || '/shop';
 
     return (
         <div className="home-hero-content">
             {/* Eyebrow */}
-            <span className="home-hero-eyebrow">
-                {eyebrow}
-            </span>
+            <div className="home-hero-eyebrow">
+                <span className="eyebrow-slash">//</span>
+                <span>{eyebrow}</span>
+            </div>
 
             {/* Main Brand Heading */}
             <h1 className="home-hero-heading">
@@ -207,26 +210,16 @@ export function HeroContent({ banner = null, sceneIndex = 0 }) {
                     href="/vehicle-finder"
                     className="btn btn-outline hero-secondary-btn"
                 >
-                    Find By Vehicle
+                    <Car size={18} />
+                    <span>Find By Vehicle</span>
                 </Link>
-            </div>
-
-            {/* Fitment Guarantee Badge */}
-            <div className="home-hero-guarantee-badge">
-                <div className="badge-icon">
-                    <ShieldCheck size={22} />
-                </div>
-                <div className="badge-text">
-                    <strong>100% Guaranteed Fitment</strong>
-                    <span>Engineered for track & street builds</span>
-                </div>
             </div>
         </div>
     );
 }
 
 // ============================================================================
-// Component: HeroSceneControls (Scene Navigation & Controls HUD)
+// Component: HeroSceneControls (Scene Navigation & Carousel Dots)
 // ============================================================================
 export function HeroSceneControls({
     sceneIndex,
@@ -238,36 +231,25 @@ export function HeroSceneControls({
     if (isReducedMotion) return null;
 
     const scenes = [
-        { index: 0, label: '01 DRIFT' },
-        { index: 1, label: '02 EXPLODED 3D' },
-        { index: 2, label: '03 CALLOUTS' },
+        { index: 0, label: 'Drift Showcase' },
+        { index: 1, label: 'Exploded 3D View' },
+        { index: 2, label: 'Performance HUD' },
     ];
 
     return (
-        <div className="hero-scene-controls">
-            {/* Play/Pause Button */}
-            <button
-                type="button"
-                className="hero-control-btn play-pause-btn"
-                onClick={togglePlayPause}
-                title={isPlaying ? 'Pause Timeline' : 'Play Timeline'}
-                aria-label={isPlaying ? 'Pause Timeline' : 'Play Timeline'}
-            >
-                {isPlaying ? <Pause size={14} /> : <Play size={14} />}
-            </button>
-
-            {/* Scene Selectors */}
-            <div className="hero-scene-tabs">
+        <div className="hero-scene-controls" aria-label="Hero Scene Controls">
+            <div className="hero-carousel-dots" role="tablist">
                 {scenes.map(s => (
                     <button
                         key={s.index}
                         type="button"
-                        className={`hero-scene-tab ${sceneIndex === s.index ? 'tab-active' : ''}`}
+                        className={`hero-dot-btn ${sceneIndex === s.index ? 'active' : ''}`}
                         onClick={() => jumpToScene(s.index)}
-                    >
-                        <span className="scene-tab-dot" />
-                        <span className="scene-tab-label">{s.label}</span>
-                    </button>
+                        title={s.label}
+                        aria-label={s.label}
+                        aria-selected={sceneIndex === s.index}
+                        role="tab"
+                    />
                 ))}
             </div>
         </div>
@@ -345,7 +327,7 @@ export function HeroExplodedView({
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.2;
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
         container.appendChild(renderer.domElement);
         rendererRef.current = renderer;
 
@@ -1067,54 +1049,61 @@ export default function Hero({ banner = null }) {
     }, [setIsVisible]);
 
     return (
-        <section
-            ref={heroSectionRef}
-            className={`home-hero scene-mode-${sceneIndex}`}
-            aria-label="Cinematic Performance Automotive Hero"
-        >
-            {/* Scene 1: Cinematic Automotive Drift Video Layer */}
-            <HeroVideo
-                sceneIndex={sceneIndex}
-                isVisible={isVisible}
-                isPlaying={isPlaying}
-                isReducedMotion={isReducedMotion}
-            />
-
-            {/* Content & 3D Interactive Stage */}
-            <div className="container">
-                <div className="home-hero-inner">
-                    {/* Left Column: Brand Content, Headings & CTAs */}
-                    <HeroContent
-                        banner={banner}
+        <div className="home-hero-wrapper">
+            <div className="hero-unified-card">
+                <section
+                    ref={heroSectionRef}
+                    className={`home-hero scene-mode-${sceneIndex}`}
+                    aria-label="Cinematic Performance Automotive Hero"
+                >
+                    {/* Scene 1: Cinematic Automotive Drift Video Layer */}
+                    <HeroVideo
                         sceneIndex={sceneIndex}
+                        isVisible={isVisible}
+                        isPlaying={isPlaying}
+                        isReducedMotion={isReducedMotion}
                     />
 
-                    {/* Right Column: 3D Exploded View & Interactive Parts HUD */}
-                    <div className="home-hero-visual-stage">
-                        <Suspense fallback={<div className="hero-scene-loading-placeholder" aria-hidden="true" />}>
-                            <HeroScene
+                    {/* Content & 3D Interactive Stage inside inner container */}
+                    <div className="container">
+                        <div className="home-hero-inner">
+                            {/* Left Column: Brand Content, Headings & CTAs */}
+                            <HeroContent
+                                banner={banner}
                                 sceneIndex={sceneIndex}
-                                explosionProgress={explosionProgress}
-                                revealedCallouts={revealedCallouts}
-                                hoveredCallout={hoveredCallout}
-                                setHoveredCallout={setHoveredCallout}
-                                isVisible={isVisible}
-                                isPlaying={isPlaying}
-                                isReducedMotion={isReducedMotion}
                             />
-                        </Suspense>
-                    </div>
-                </div>
-            </div>
 
-            {/* Scene Controls & Timeline Navigation */}
-            <HeroSceneControls
-                sceneIndex={sceneIndex}
-                isPlaying={isPlaying}
-                togglePlayPause={togglePlayPause}
-                jumpToScene={jumpToScene}
-                isReducedMotion={isReducedMotion}
-            />
-        </section>
+                            {/* Right Column: 3D Exploded View & Interactive Parts HUD */}
+                            <div className="home-hero-visual-stage">
+                                <Suspense fallback={<div className="hero-scene-loading-placeholder" aria-hidden="true" />}>
+                                    <HeroScene
+                                        sceneIndex={sceneIndex}
+                                        explosionProgress={explosionProgress}
+                                        revealedCallouts={revealedCallouts}
+                                        hoveredCallout={hoveredCallout}
+                                        setHoveredCallout={setHoveredCallout}
+                                        isVisible={isVisible}
+                                        isPlaying={isPlaying}
+                                        isReducedMotion={isReducedMotion}
+                                    />
+                                </Suspense>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Slider dots: Position directly below hero content, horizontally centered */}
+                    <HeroSceneControls
+                        sceneIndex={sceneIndex}
+                        isPlaying={isPlaying}
+                        togglePlayPause={togglePlayPause}
+                        jumpToScene={jumpToScene}
+                        isReducedMotion={isReducedMotion}
+                    />
+                </section>
+
+                {/* Attached Vehicle Finder: One thin subtle top separator spanning full width */}
+                <VehicleFinder />
+            </div>
+        </div>
     );
 }

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <radialGradient id="tireGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2C2D30"/>
+      <stop offset="65%" stop-color="#151618"/>
+      <stop offset="100%" stop-color="#0A0A0C"/>
+    </radialGradient>
+    <radialGradient id="rimGrad" cx="45%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#E5E7EB"/>
+      <stop offset="70%" stop-color="#9CA3AF"/>
+      <stop offset="100%" stop-color="#374151"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- Outer Tire with tread grooves -->
+    <ellipse cx="100" cy="100" rx="86" ry="86" fill="url(#tireGrad)" stroke="#3F4145" stroke-width="3"/>
+    <!-- Tread blocks -->
+    <path d="M 30 70 L 40 73 M 24 85 L 35 87 M 22 100 L 34 100 M 24 115 L 35 113 M 30 130 L 40 127
+             M 170 70 L 160 73 M 176 85 L 165 87 M 178 100 L 166 100 M 176 115 L 165 113 M 170 130 L 160 127
+             M 70 28 L 73 39 M 85 23 L 87 34 M 100 21 L 100 33 M 115 23 L 113 34 M 130 28 L 127 39
+             M 70 172 L 73 161 M 85 177 L 87 166 M 100 179 L 100 167 M 115 177 L 113 166 M 130 172 L 127 161"
+          stroke="#000000" stroke-width="4" stroke-linecap="round"/>
+    <!-- Inner Rim Bead -->
+    <circle cx="100" cy="100" r="54" fill="#0D0E10" stroke="#4B5563" stroke-width="2"/>
+    <!-- Alloy Rim -->
+    <circle cx="100" cy="100" r="46" fill="url(#rimGrad)"/>
+    <!-- 5-Spoke Wheel -->
+    <circle cx="100" cy="100" r="16" fill="#1F2937" stroke="#F36B16" stroke-width="2"/>
+    <line x1="100" y1="100" x2="100" y2="58" stroke="#111827" stroke-width="9" stroke-linecap="round"/>
+    <line x1="100" y1="100" x2="140" y2="87" stroke="#111827" stroke-width="9" stroke-linecap="round"/>
+    <line x1="100" y1="100" x2="125" y2="138" stroke="#111827" stroke-width="9" stroke-linecap="round"/>
+    <line x1="100" y1="100" x2="75" y2="138" stroke="#111827" stroke-width="9" stroke-linecap="round"/>
+    <line x1="100" y1="100" x2="60" y2="87" stroke="#111827" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="100" cy="100" r="7" fill="#F36B16"/>
+  </g>
+</svg>

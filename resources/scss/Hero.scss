@@ -5,25 +5,48 @@
 @use './abstracts/variables' as *;
 @use './abstracts/mixins' as *;
 
-.home-hero {
+.home-hero-wrapper {
+  padding-top: 12px;
+  padding-bottom: 24px;
+  padding-left: clamp(12px, 1.8vw, 24px);
+  padding-right: clamp(12px, 1.8vw, 24px);
+  width: 100%;
+}
+
+.hero-unified-card {
   position: relative;
   background-color: #0d0d0f;
-  color: $color-white;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
   overflow: hidden;
-  min-height: 640px;
-  display: flex;
-  align-items: center;
-  padding: 48px 0 64px;
+  box-shadow: none; // Box shadow removed as requested
 
-  @include respond-to('md') {
-    min-height: 720px;
-    padding: 60px 0 80px;
-  }
+  .home-hero {
+    position: relative;
+    background-color: transparent;
+    color: $color-white;
+    overflow: hidden;
+    height: 450px;
+    min-height: 350px;
+    max-height: 450px;
+    display: flex;
+    align-items: center;
+    padding: 24px 0 44px;
+    border-radius: 0;
 
-  @include respond-to('xl') {
-    min-height: 780px;
-    padding: 72px 0 96px;
-  }
+    @include respond-to('md') {
+      height: 450px;
+      min-height: 350px;
+      max-height: 450px;
+      padding: 28px 0 46px;
+    }
+
+    @include respond-to('xl') {
+      height: 450px;
+      min-height: 350px;
+      max-height: 450px;
+      padding: 30px 0 48px;
+    }
 
   // Container layer
   .container {
@@ -57,9 +80,9 @@
     z-index: 10;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    max-width: 580px;
-    padding: 16px 0;
+    gap: 12px;
+    max-width: 540px;
+    padding: 8px 0;
   }
 
   &-eyebrow {
@@ -82,24 +105,24 @@
   }
 
   &-heading {
-    font-size: 42px;
+    font-size: 36px;
     font-weight: 900;
-    line-height: 1.02;
+    line-height: 1.05;
     letter-spacing: -0.03em;
     text-transform: uppercase;
     color: $color-white;
-    margin: 4px 0;
+    margin: 2px 0;
 
     @include respond-to('sm') {
-      font-size: 56px;
+      font-size: 44px;
     }
 
     @include respond-to('lg') {
-      font-size: 64px;
+      font-size: 50px;
     }
 
     @include respond-to('xl') {
-      font-size: 76px;
+      font-size: 56px;
     }
 
     .heading-white {
@@ -210,20 +233,219 @@
   &-visual-stage {
     position: relative;
     width: 100%;
-    height: 440px;
+    height: 340px;
     display: flex;
     align-items: center;
     justify-content: center;
 
     @include respond-to('md') {
-      height: 520px;
+      height: 370px;
     }
 
     @include respond-to('xl') {
-      height: 600px;
+      height: 390px;
     }
   }
-}
+} // closes .home-hero
+
+  // --------------------------------------------------------------------------
+  // Attached Vehicle Finder (Single unified card, subtle full-width separator)
+  // --------------------------------------------------------------------------
+  .hero-vehicle-finder {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: #111114;
+    padding: 16px 0;
+    position: relative;
+    z-index: 10;
+
+    &-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      @include respond-to('lg') {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+    }
+
+    .hvf-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 175px;
+      flex-shrink: 0;
+
+      .hvf-icon-wrap {
+        color: $color-primary;
+        display: flex;
+        align-items: center;
+      }
+
+      .hvf-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+
+        .hvf-sub {
+          font-size: 11px;
+          color: #9CA3AF;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          font-weight: 700;
+        }
+
+        .hvf-main {
+          font-size: 15px;
+          font-weight: 900;
+          color: #FFFFFF;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+        }
+      }
+    }
+
+    .hvf-form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      flex: 1;
+
+      @include respond-to('sm') {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @include respond-to('lg') {
+        grid-template-columns: repeat(4, 1fr) auto;
+        align-items: flex-end;
+      }
+
+      .hvf-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .hvf-label {
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          color: #9CA3AF;
+          letter-spacing: 0.05em;
+        }
+
+        .hvf-select {
+          background-color: #1A1A1E;
+          border: 1px solid #2B2B32;
+          color: #FFFFFF;
+          border-radius: 6px;
+          height: 38px;
+          padding: 0 12px;
+          font-size: 13px;
+          font-weight: 500;
+          outline: none;
+          width: 100%;
+          transition: border-color $transition-default;
+
+          &:focus {
+            border-color: $color-primary;
+          }
+
+          option {
+            background-color: #1A1A1E;
+            color: #FFFFFF;
+          }
+        }
+      }
+
+      .hvf-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .hvf-submit-btn {
+        height: 38px;
+        padding: 0 20px;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        border-radius: 6px;
+        background-color: $color-primary;
+        color: #FFFFFF;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        box-shadow: 0 4px 14px rgba(243, 107, 22, 0.35);
+        cursor: pointer;
+        white-space: nowrap;
+
+        &:hover {
+          background-color: $color-primary-hover;
+        }
+      }
+
+      .hvf-reset-btn {
+        height: 38px;
+        width: 38px;
+        padding: 0;
+        border-radius: 6px;
+        border: 1px solid #333338;
+        background-color: transparent;
+        color: #9CA3AF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          background-color: #222226;
+          color: #FFFFFF;
+          border-color: #555555;
+        }
+      }
+    }
+
+    .hvf-active-vehicle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(243, 107, 22, 0.12);
+      border: 1px solid rgba(243, 107, 22, 0.3);
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-top: 14px;
+
+      .vehicle-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #FFFFFF;
+
+        strong {
+          color: $color-primary;
+        }
+      }
+
+      .vehicle-clear {
+        background: none;
+        border: none;
+        color: $color-primary;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        text-decoration: underline;
+
+        &:hover {
+          color: #FFFFFF;
+        }
+      }
+    }
+  }
+} // closes .hero-unified-card
 
 // ----------------------------------------------------------------------------
 // Scene 1: Background Drift Video Layer
@@ -499,81 +721,38 @@
 // ----------------------------------------------------------------------------
 .hero-scene-controls {
   position: absolute;
-  bottom: 20px;
-  right: 24px;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 12;
   display: flex;
   align-items: center;
-  gap: 10px;
-  background-color: rgba(18, 18, 20, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  padding: 4px 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  justify-content: center;
 
-  .play-pause-btn {
-    background: none;
-    border: none;
-    color: #CCCCCC;
-    width: 28px;
-    height: 28px;
+  .hero-carousel-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-dot-btn {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    padding: 0;
     cursor: pointer;
-    transition: color 0.2s ease, background-color 0.2s ease;
+    transition: width 0.25s ease, background-color 0.25s ease, border-radius 0.25s ease;
 
-    &:hover {
-      color: $color-primary;
-      background-color: rgba(243, 107, 22, 0.15);
-    }
-  }
-
-  .hero-scene-tabs {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .hero-scene-tab {
-    background: none;
-    border: 1px solid transparent;
-    border-radius: 14px;
-    padding: 4px 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: #888888;
-    cursor: pointer;
-    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-
-    .scene-tab-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background-color: #555555;
-      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    &.active {
+      width: 22px;
+      border-radius: 10px;
+      background-color: $color-primary;
     }
 
-    &.tab-active {
-      color: #FFFFFF;
-      background-color: rgba(243, 107, 22, 0.15);
-      border-color: rgba(243, 107, 22, 0.4);
-
-      .scene-tab-dot {
-        background-color: $color-primary;
-        box-shadow: 0 0 6px $color-primary;
-      }
-    }
-
-    &:hover:not(.tab-active) {
-      color: #CCCCCC;
-      background-color: rgba(255, 255, 255, 0.05);
+    &:hover:not(.active) {
+      background-color: #FFFFFF;
     }
   }
 }
@@ -601,11 +780,13 @@
 // ----------------------------------------------------------------------------
 @media (max-width: 1023px) {
   .home-hero {
-    min-height: auto;
-    padding: 40px 0 60px;
+    height: auto;
+    min-height: 350px;
+    max-height: 450px;
+    padding: 24px 0 44px;
 
     &-visual-stage {
-      height: 400px;
+      height: 320px;
     }
 
     .hero-callout-card {
@@ -618,15 +799,17 @@
 
 @media (max-width: 767px) {
   .home-hero {
-    min-height: auto;
-    padding: 32px 0 48px;
+    height: auto;
+    min-height: 350px;
+    max-height: 450px;
+    padding: 20px 0 40px;
 
     &-content {
       max-width: 100%;
     }
 
     &-heading {
-      font-size: 36px;
+      font-size: 32px;
     }
 
     &-desc {

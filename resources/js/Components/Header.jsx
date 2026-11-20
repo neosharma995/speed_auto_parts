@@ -1,263 +1,382 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { 
-    Wrench, 
-    ShoppingCart, 
-    User as UserIcon, 
-    Search, 
-    Menu, 
-    X, 
-    ChevronDown, 
-    Phone, 
-    Mail, 
-    ShieldCheck, 
-    Car,
-    SlidersHorizontal,
-    LogOut,
-    Package
+import {
+    ShoppingCart,
+    User as UserIcon,
+    Search,
+    List,
+    X,
+    ChevronDown,
+    CarFront,
+    Heart,
+    Phone
 } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
+import { useWishlist } from '@/Context/WishlistContext';
 
 export default function Header() {
-    const { auth, navCategories = [], navBrands = [], settings = {} } = usePage().props;
+    const { auth, navBrands = [], settings = {} } = usePage().props;
     const { itemCount, setIsCartOpen } = useCart();
+    const { wishlist = [] } = useWishlist();
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
     const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    // Passive scroll listener for subtle shadow only - pure CSS handles sticky positioning
+    useEffect(() => {
+        let ticking = false;
+        const handleScroll = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const scrolled = window.scrollY > 32;
+                    setIsScrolled(prev => prev !== scrolled ? scrolled : prev);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll();
+
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            window.location.href = `/shop?search=${encodeURIComponent(searchQuery.trim())}`;
+        }
+    };
 
     return (
-        <header className="header">
-            {/* Top Announcement & Quick Contact Bar */}
-            <div className="header-top">
-                <div className="container header-top-inner">
-                    <div className="header-top-contacts">
-                        <a href={`tel:${settings.store_phone || '+919876543210'}`}>
-                            <Phone size={12} />
-                            <span>{settings.store_phone || '+91 98765 43210'}</span>
-                        </a>
-                        <a href={`mailto:${settings.store_email || 'support@autoparts.com'}`}>
-                            <Mail size={12} />
-                            <span>{settings.store_email || 'support@autoparts.com'}</span>
-                        </a>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#168A35' }}>
-                            <ShieldCheck size={12} />
-                            <span>100% Genuine Certified Spare Parts</span>
-                        </span>
+        <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`}>
+            {/* ============================================================ */}
+            {/* ROW 1: TOP UTILITY BAR (Dark #0B0B0E)                         */}
+            {/* ============================================================ */}
+            <div className="site-header-utility">
+                <div className="container site-header-utility-inner">
+                    <div className="site-header-utility-left">
+                        <CarFront size={14} strokeWidth={2} className="utility-car-icon" />
+                        <span>Free International Shipping on Orders Over $500</span>
                     </div>
-                    <div className="header-top-links">
-                        <Link href="/track-order">Track Your Order</Link>
-                        <span>|</span>
-                        <Link href="/shipping-policy">Express Dispatch</Link>
+
+                    <div className="site-header-utility-right">
+                        <div className="utility-select">
+                            <span>EN</span>
+                            <ChevronDown size={11} strokeWidth={2.2} />
+                        </div>
+                        <div className="utility-select">
+                            <span>USD</span>
+                            <ChevronDown size={11} strokeWidth={2.2} />
+                        </div>
+                        <Link href="/track-order" className="utility-link">Track Order</Link>
+                        <Link href="/contact-us" className="utility-link">Help & Support</Link>
+
                         {auth?.user?.roles?.includes('admin') && (
-                            <>
-                                <span>|</span>
-                                <Link href="/admin/dashboard" style={{ color: '#F36B16', fontWeight: 'bold' }}>
-                                    Admin Dashboard
-                                </Link>
-                            </>
+                            <Link href="/admin/dashboard" className="utility-link-accent">
+                                Admin
+                            </Link>
                         )}
                         {auth?.user?.roles?.includes('supplier') && (
-                            <>
-                                <span>|</span>
-                                <Link href="/supplier/dashboard" style={{ color: '#F36B16', fontWeight: 'bold' }}>
-                                    Supplier Dashboard
-                                </Link>
-                            </>
+                            <Link href="/supplier/dashboard" className="utility-link-accent">
+                                Supplier
+                            </Link>
                         )}
                     </div>
                 </div>
             </div>
 
-            {/* Main Navbar */}
-            <div className="header-main">
-                <div className="container header-main-inner">
-                    {/* Brand Logo */}
-                    <Link href="/" className="header-logo">
-                        <div className="header-logo-icon">
-                            <Wrench size={20} />
-                        </div>
-                        <div className="header-logo-text">
-                            <span className="brand-title">AUTO<span>PARTS</span></span>
-                            <span className="brand-subtitle">Performance Spares</span>
-                        </div>
-                    </Link>
-
-                    {/* Desktop Navigation Links */}
-                    <nav className="header-nav">
-                        <div className="header-nav-item">
-                            <Link href="/shop" className="header-nav-link">
-                                Performance <ChevronDown size={14} />
-                            </Link>
-                            <div className="header-dropdown">
-                                <Link href="/shop?category=tires" className="header-dropdown-item">Tires & Track Rubber</Link>
-                                <Link href="/shop?category=brakes" className="header-dropdown-item">Rotors & Big Brake Kits</Link>
-                                <Link href="/shop?category=intake" className="header-dropdown-item">Cold Air Intake Systems</Link>
-                                <Link href="/shop?category=exhaust" className="header-dropdown-item">Stainless Cat-Back Exhausts</Link>
-                                <Link href="/shop?category=suspension" className="header-dropdown-item">Adjustable Coilovers</Link>
-                                <Link href="/shop" className="header-dropdown-item" style={{ color: '#F36B16', fontWeight: 'bold' }}>
-                                    View All Performance Parts →
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="header-nav-item">
-                            <Link href="/vehicle-finder" className="header-nav-link">
-                                <Car size={15} /> Shop By Vehicle
-                            </Link>
-                        </div>
-
-                        <div className="header-nav-item">
-                            <Link href="/brands" className="header-nav-link">
-                                Brands <ChevronDown size={14} />
-                            </Link>
-                            <div className="header-dropdown">
-                                {navBrands.map(brand => (
-                                    <Link key={brand.id} href={`/brands/${brand.slug}`} className="header-dropdown-item">
-                                        {brand.name}
-                                    </Link>
-                                ))}
-                                <Link href="/brands" className="header-dropdown-item" style={{ color: '#F36B16', fontWeight: 'bold' }}>
-                                    All Certified Brands →
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="header-nav-item">
-                            <Link href="/contact-us" className="header-nav-link">Support</Link>
-                        </div>
-                    </nav>
-
-                    {/* Right-Side Actions */}
-                    <div className="header-actions">
-                        <Link href="/shop" className="header-actions-btn" title="Search Parts">
-                            <Search size={20} />
-                            <span className="action-label">Search</span>
+            {/* ============================================================ */}
+            {/* STICKY GROUP: ROW 2 (Main Header) & ROW 3 (Nav) STAY TOGETHER */}
+            {/* ============================================================ */}
+            <div className="site-header-sticky-group">
+                {/* ------------------------------------------------------------ */}
+                {/* ROW 2: MAIN HEADER (Dark #0B0B0E)                            */}
+                {/* ------------------------------------------------------------ */}
+                <div className="site-header-main">
+                    <div className="container site-header-main-inner">
+                        {/* Official SpeedAutoParts Logo Image */}
+                        <Link href="/" className="site-header-logo">
+                            <img
+                                src="/assets/images/logo/speedautoparts-official.png"
+                                alt="SpeedAutoParts - Performance Spare Parts"
+                                className="site-header-logo-img"
+                            />
                         </Link>
 
-                        {/* Customer Account Button */}
-                        <div style={{ position: 'relative' }}>
-                            {auth?.user ? (
-                                <button 
-                                    type="button"
-                                    onClick={() => setAccountDropdownOpen(!accountDropdownOpen)}
-                                    className="header-actions-btn"
-                                >
-                                    <UserIcon size={20} />
-                                    <span className="action-label">{auth.user.name.split(' ')[0]}</span>
-                                    <ChevronDown size={14} />
-                                </button>
-                            ) : (
-                                <Link href="/login" className="header-actions-btn">
-                                    <UserIcon size={20} />
-                                    <span className="action-label">Account</span>
-                                </Link>
-                            )}
+                        {/* Centered White Pill Search Bar */}
+                        <form onSubmit={handleSearchSubmit} className="site-header-search">
+                            <input
+                                type="text"
+                                placeholder="Search by part number, product, brand..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                aria-label="Search by part number, product, brand"
+                            />
+                            <button type="submit" aria-label="Search" className="search-submit-btn">
+                                <Search size={15} strokeWidth={2.4} />
+                            </button>
+                        </form>
 
-                            {accountDropdownOpen && auth?.user && (
-                                <div className="header-dropdown" style={{ display: 'block', right: 0, left: 'auto' }}>
-                                    {auth.user.roles?.includes('admin') && (
-                                        <Link href="/admin/dashboard" className="header-dropdown-item">
-                                            Admin Dashboard
+                        {/* Right: Actions (Account, Wishlist, Cart) */}
+                        <div className="site-header-actions">
+                            {/* Account Button */}
+                            <div className="site-header-account-wrap">
+                                {auth?.user ? (
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setAccountDropdownOpen(!accountDropdownOpen)}
+                                        className="site-header-action-user"
+                                    >
+                                        <UserIcon size={24} strokeWidth={1.8} className="action-user-icon" />
+                                        <div className="action-user-text">
+                                            <span className="user-sub">Account</span>
+                                            <strong className="user-name">{auth.user.name.split(' ')[0]}</strong>
+                                        </div>
+                                        <ChevronDown size={11} strokeWidth={2.2} className="user-chevron" />
+                                    </button>
+                                ) : (
+                                    <Link href="/login" className="site-header-action-user">
+                                        <UserIcon size={24} strokeWidth={1.8} className="action-user-icon" />
+                                        <div className="action-user-text">
+                                            <span className="user-sub">Account</span>
+                                            <strong className="user-name">Sign In / Register</strong>
+                                        </div>
+                                    </Link>
+                                )}
+
+                                {accountDropdownOpen && auth?.user && (
+                                    <div className="site-header-dropdown user-menu-dropdown">
+                                        {auth.user.roles?.includes('admin') && (
+                                            <Link href="/admin/dashboard" className="site-header-dropdown-item">Admin Dashboard</Link>
+                                        )}
+                                        {auth.user.roles?.includes('supplier') && (
+                                            <Link href="/supplier/dashboard" className="site-header-dropdown-item">Supplier Dashboard</Link>
+                                        )}
+                                        <Link href="/customer/dashboard" className="site-header-dropdown-item">My Dashboard</Link>
+                                        <Link href="/customer/orders" className="site-header-dropdown-item">Order History</Link>
+                                        <Link href="/customer/addresses" className="site-header-dropdown-item">Saved Addresses</Link>
+                                        <Link href="/customer/wishlist" className="site-header-dropdown-item">My Wishlist</Link>
+                                        <Link href="/logout" method="post" as="button" className="site-header-dropdown-item logout-link">
+                                            Sign Out
                                         </Link>
-                                    )}
-                                    {auth.user.roles?.includes('supplier') && (
-                                        <Link href="/supplier/dashboard" className="header-dropdown-item">
-                                            Supplier Dashboard
-                                        </Link>
-                                    )}
-                                    <Link href="/customer/dashboard" className="header-dropdown-item">
-                                        My Dashboard
-                                    </Link>
-                                    <Link href="/customer/orders" className="header-dropdown-item">
-                                        Order History
-                                    </Link>
-                                    <Link href="/customer/addresses" className="header-dropdown-item">
-                                        Saved Addresses
-                                    </Link>
-                                    <Link href="/customer/wishlist" className="header-dropdown-item">
-                                        My Wishlist
-                                    </Link>
-                                    <Link href="/logout" method="post" as="button" className="header-dropdown-item" style={{ width: '100%', textAlign: 'left', color: '#D93025' }}>
-                                        Sign Out
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Wishlist Icon */}
+                            <Link href="/customer/wishlist" className="site-header-action-icon" title="Wishlist">
+                                <Heart size={24} strokeWidth={1.8} />
+                                {wishlist.length > 0 && <span className="action-badge">{wishlist.length}</span>}
+                            </Link>
+
+                            {/* Shopping Cart Icon with Orange Badge */}
+                            <button 
+                                type="button" 
+                                className="site-header-action-icon cart-action-btn"
+                                onClick={() => setIsCartOpen(true)}
+                                aria-label="Open Cart"
+                            >
+                                <ShoppingCart size={24} strokeWidth={1.8} />
+                                <span className="action-badge">{itemCount}</span>
+                            </button>
+
+                            {/* Mobile Drawer Trigger */}
+                            <button 
+                                type="button" 
+                                className="site-header-mobile-toggle"
+                                onClick={() => setMobileDrawerOpen(true)}
+                                aria-label="Open Menu"
+                            >
+                                <List size={22} strokeWidth={2} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ------------------------------------------------------------ */}
+                {/* ROW 3: SECONDARY NAVIGATION (LEFT NAV + RIGHT CONTACT INFO)   */}
+                {/* ------------------------------------------------------------ */}
+                <div className="site-header-navigation">
+                    <div className="container site-header-navigation-inner">
+                        {/* Left Group: Categories + Navigation Links */}
+                        <div className="site-header-nav-left-group">
+                            <div className="site-header-nav-categories">
+                                <Link href="/categories" className="categories-trigger-link">
+                                    <List size={17} strokeWidth={2.4} className="categories-list-icon" />
+                                    <span>All Categories</span>
+                                </Link>
+                            </div>
+
+                            {/* Center / Left-aligned Navigation Links */}
+                            <nav className="site-header-nav-list">
+                                <div className="site-header-nav-item">
+                                    <Link href="/" className="site-header-nav-link active">
+                                        <span>Home</span>
+                                        <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
                                 </div>
-                            )}
+
+                                <div className="site-header-nav-item">
+                                    <Link href="/shop" className="site-header-nav-link">
+                                        <span>Performance</span>
+                                        <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
+                                    </Link>
+                                    <div className="site-header-dropdown">
+                                        <Link href="/shop?category=tires" className="site-header-dropdown-item">Tires & Track Rubber</Link>
+                                        <Link href="/shop?category=brakes" className="site-header-dropdown-item">Rotors & Big Brake Kits</Link>
+                                        <Link href="/shop?category=intake" className="site-header-dropdown-item">Cold Air Intake Systems</Link>
+                                        <Link href="/shop?category=exhaust" className="site-header-dropdown-item">Stainless Cat-Back Exhausts</Link>
+                                        <Link href="/shop?category=suspension" className="site-header-dropdown-item">Adjustable Coilovers</Link>
+                                    </div>
+                                </div>
+
+                                <div className="site-header-nav-item">
+                                    <Link href="/vehicle-finder" className="site-header-nav-link">
+                                        <span>Shop By Vehicle</span>
+                                        <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
+                                    </Link>
+                                </div>
+
+                                <div className="site-header-nav-item">
+                                    <Link href="/brands" className="site-header-nav-link">
+                                        <span>Brands</span>
+                                        <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
+                                    </Link>
+                                    <div className="site-header-dropdown">
+                                        {navBrands.map(b => (
+                                            <Link key={b.id} href={`/brands/${b.slug}`} className="site-header-dropdown-item">{b.name}</Link>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="site-header-nav-item">
+                                    <Link href="/shop?filter=deals" className="site-header-nav-link deals-link">
+                                        <span className="site-header-deals-icon">%</span>
+                                        <span>Deals</span>
+                                    </Link>
+                                </div>
+
+                                <div className="site-header-nav-item">
+                                    <Link href="/contact-us" className="site-header-nav-link">
+                                        <span>Support</span>
+                                        <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
+                                    </Link>
+                                </div>
+                            </nav>
                         </div>
 
-                        {/* Shopping Cart Button */}
-                        <button 
-                            type="button" 
-                            className="header-actions-cart"
-                            onClick={() => setIsCartOpen(true)}
-                            aria-label="Open Cart"
-                        >
-                            <ShoppingCart size={20} />
-                            {itemCount > 0 && <span className="cart-badge">{itemCount}</span>}
-                        </button>
-
-                        {/* Mobile Drawer Trigger */}
-                        <button 
-                            type="button" 
-                            className="header-actions-mobile-toggle"
-                            onClick={() => setMobileDrawerOpen(true)}
-                            aria-label="Open Menu"
-                        >
-                            <Menu size={24} />
-                        </button>
+                        {/* Right Side: Info / Contact */}
+                        <div className="site-header-nav-right-info">
+                            <a href={`tel:${settings.store_phone || '+919876543210'}`} className="nav-contact-link">
+                                <Phone size={14} strokeWidth={2.2} className="nav-contact-icon" />
+                                <span className="nav-contact-text">
+                                    <span className="nav-contact-label">Hotline:</span>
+                                    <strong className="nav-contact-val">{settings.store_phone || '+91 98765 43210'}</strong>
+                                </span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Mobile Navigation Drawer */}
+            {/* ============================================================ */}
+            {/* MOBILE NAVIGATION DRAWER                                     */}
+            {/* ============================================================ */}
             {mobileDrawerOpen && (
                 <>
-                    <div className="header-backdrop" onClick={() => setMobileDrawerOpen(false)} />
-                    <div className="header-drawer">
-                        <div className="header-drawer-header">
-                            <div className="header-logo">
-                                <div className="header-logo-icon">
-                                    <Wrench size={18} />
-                                </div>
-                                <span className="brand-title" style={{ fontSize: '16px', fontWeight: 900 }}>
-                                    AUTO<span style={{ color: '#F36B16' }}>PARTS</span>
-                                </span>
-                            </div>
-                            <button type="button" onClick={() => setMobileDrawerOpen(false)}>
+                    <div
+                        className="mobile-drawer-overlay"
+                        onClick={() => setMobileDrawerOpen(false)}
+                        aria-hidden="true"
+                    />
+                    <div className="mobile-drawer">
+                        <div className="mobile-drawer-header">
+                            <img
+                                src="/assets/images/logo/speedautoparts-official.png"
+                                alt="SpeedAutoParts"
+                                style={{ height: '30px', width: 'auto' }}
+                            />
+                            <button
+                                type="button"
+                                className="mobile-drawer-close"
+                                onClick={() => setMobileDrawerOpen(false)}
+                                aria-label="Close menu"
+                            >
                                 <X size={20} />
                             </button>
                         </div>
 
-                        <div className="header-drawer-menu">
-                            <Link href="/" onClick={() => setMobileDrawerOpen(false)}>Home</Link>
-                            <Link href="/shop" onClick={() => setMobileDrawerOpen(false)}>Shop All Parts</Link>
-                            <Link href="/vehicle-finder" onClick={() => setMobileDrawerOpen(false)}>Shop By Vehicle</Link>
-                            <Link href="/categories" onClick={() => setMobileDrawerOpen(false)}>Categories</Link>
-                            <Link href="/brands" onClick={() => setMobileDrawerOpen(false)}>Brands</Link>
-                            <Link href="/contact-us" onClick={() => setMobileDrawerOpen(false)}>Support</Link>
-                            {auth?.user?.roles?.includes('admin') && (
-                                <Link href="/admin/dashboard" onClick={() => setMobileDrawerOpen(false)} style={{ color: '#F36B16', fontWeight: 'bold' }}>
-                                    Admin Dashboard
-                                </Link>
-                            )}
-                            {auth?.user?.roles?.includes('supplier') && (
-                                <Link href="/supplier/dashboard" onClick={() => setMobileDrawerOpen(false)} style={{ color: '#F36B16', fontWeight: 'bold' }}>
-                                    Supplier Dashboard
-                                </Link>
-                            )}
+                        <div className="mobile-drawer-body">
+                            <Link
+                                href="/categories"
+                                className="mobile-drawer-link highlight"
+                                onClick={() => setMobileDrawerOpen(false)}
+                            >
+                                <List size={16} /> All Categories
+                            </Link>
+                            <Link
+                                href="/"
+                                className="mobile-drawer-link"
+                                onClick={() => setMobileDrawerOpen(false)}
+                            >
+                                Home
+                            </Link>
+                            <Link
+                                href="/shop"
+                                className="mobile-drawer-link"
+                                onClick={() => setMobileDrawerOpen(false)}
+                            >
+                                Performance Parts
+                            </Link>
+                            <Link
+                                href="/vehicle-finder"
+                                className="mobile-drawer-link"
+                                onClick={() => setMobileDrawerOpen(false)}
+                            >
+                                Shop By Vehicle
+                            </Link>
+                            <Link
+                                href="/brands"
+                                className="mobile-drawer-link"
+                                onClick={() => setMobileDrawerOpen(false)}
+                            >
+                                Brands
+                            </Link>
+                            <Link
+                                href="/shop?filter=deals"
+                                className="mobile-drawer-link deals-highlight"
+                                onClick={() => setMobileDrawerOpen(false)}
+                            >
+                                <span className="site-header-deals-icon">%</span> Deals
+                            </Link>
+                            <Link
+                                href="/contact-us"
+                                className="mobile-drawer-link"
+                                onClick={() => setMobileDrawerOpen(false)}
+                            >
+                                Support
+                            </Link>
                         </div>
 
-                        <div className="header-drawer-footer">
+                        <div className="mobile-drawer-footer">
                             {auth?.user ? (
-                                <>
-                                    <Link href="/customer/dashboard" className="btn btn-outline btn-full" onClick={() => setMobileDrawerOpen(false)}>
-                                        My Account ({auth.user.name})
-                                    </Link>
-                                    <Link href="/logout" method="post" as="button" className="btn btn-dark btn-full">
-                                        Sign Out
-                                    </Link>
-                                </>
+                                <Link
+                                    href="/customer/dashboard"
+                                    className="mobile-account-btn"
+                                    onClick={() => setMobileDrawerOpen(false)}
+                                >
+                                    <UserIcon size={16} /> My Account
+                                </Link>
                             ) : (
-                                <Link href="/login" className="btn btn-primary btn-full" onClick={() => setMobileDrawerOpen(false)}>
-                                    Sign In / Register
+                                <Link
+                                    href="/login"
+                                    className="mobile-account-btn"
+                                    onClick={() => setMobileDrawerOpen(false)}
+                                >
+                                    <UserIcon size={16} /> Sign In / Register
                                 </Link>
                             )}
                         </div>
