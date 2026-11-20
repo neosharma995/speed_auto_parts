@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
-  <rect width="400" height="300" fill="#181818"/>
-  <path d="M 120 180 L 160 120 L 260 120 L 280 180 Z" fill="#252525" stroke="#F36B16" stroke-width="3"/>
-  <text x="200" y="156" font-family="Inter, sans-serif" font-size="16" font-weight="900" fill="#FFFFFF" text-anchor="middle">INTAKE</text>
-</svg>

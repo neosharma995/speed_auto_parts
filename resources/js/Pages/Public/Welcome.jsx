@@ -115,22 +115,22 @@ export default function Welcome({
 
     // 8 Popular Brands with official SVG marks
     const brandLogos = [
-        { name: 'Brembo', slug: 'brembo', logo: '/assets/images/brands/brembo.svg' },
-        { name: 'Michelin', slug: 'michelin', logo: '/assets/images/brands/michelin.svg' },
-        { name: 'Borla', slug: 'borla', logo: '/assets/images/brands/borla.svg' },
-        { name: 'K&N', slug: 'k-and-n', logo: '/assets/images/brands/kn.svg' },
-        { name: 'Bilstein', slug: 'bilstein', logo: '/assets/images/brands/bilstein.svg' },
-        { name: 'Garrett', slug: 'garrett', logo: '/assets/images/brands/garrett.svg' },
-        { name: 'Akrapovic', slug: 'akrapovic', logo: '/assets/images/brands/akrapovic.svg' },
-        { name: 'BBS', slug: 'bbs', logo: '/assets/images/brands/bbs.svg' },
+        { name: 'Brembo', slug: 'brembo', logo: '/assets/icons/brembo.svg' },
+        { name: 'Michelin', slug: 'michelin', logo: '/assets/icons/michelin.svg' },
+        { name: 'Borla', slug: 'borla', logo: '/assets/icons/borla.svg' },
+        { name: 'K&N', slug: 'k-and-n', logo: '/assets/icons/kn.svg' },
+        { name: 'Bilstein', slug: 'bilstein', logo: '/assets/icons/bilstein.svg' },
+        { name: 'Garrett', slug: 'garrett', logo: '/assets/icons/garrett.svg' },
+        { name: 'Akrapovic', slug: 'akrapovic', logo: '/assets/icons/akrapovic.svg' },
+        { name: 'BBS', slug: 'bbs', logo: '/assets/icons/bbs.svg' },
     ];
 
     // Top picks for your build
     const topPicks = [
-        { title: 'Performance Brakes', slug: 'brakes', img: '/assets/images/build/performance-brakes.webp' },
-        { title: 'Cold Air Intakes', slug: 'intake', img: '/assets/images/build/cold-air-intakes.webp' },
-        { title: 'Coilover Kits', slug: 'suspension', img: '/assets/images/build/coilover-kits.webp' },
-        { title: 'Exhaust Systems', slug: 'exhaust', img: '/assets/images/build/exhaust-systems.webp' },
+        { title: 'Performance Brakes', slug: 'brakes', img: '/assets/images/categories/brakes.webp' },
+        { title: 'Cold Air Intakes', slug: 'intake', img: '/assets/images/categories/intake.webp' },
+        { title: 'Coilover Kits', slug: 'suspension', img: '/assets/images/categories/suspension.webp' },
+        { title: 'Exhaust Systems', slug: 'exhaust', img: '/assets/images/categories/exhaust.webp' },
     ];
 
     const handleNewsletterSubmit = (e) => {
@@ -358,7 +358,7 @@ export default function Welcome({
                 <div className="container">
                     <div className="why-choose-card">
                         <div className="why-choose-brand-col">
-                            <span className="title-slash">///</span>
+                            <span className="title-slash">//</span>
                             <span className="wc-brand-title">Why Choose SpeedAutoParts?</span>
                         </div>
 

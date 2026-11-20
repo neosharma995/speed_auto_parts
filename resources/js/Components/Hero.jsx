@@ -129,31 +129,31 @@ export function HeroVideo({ sceneIndex, isVisible, isReducedMotion, isPlaying = 
                 loop
                 playsInline
                 preload="metadata"
-                poster="/assets/hero/images/automotive-poster.webp"
+                poster="/assets/images/hero/automotive-poster.webp"
                 onLoadedData={handleLoadedData}
                 onError={handleError}
             >
                 {/* Desktop and High-Res Viewport */}
                 <source
-                    src="/assets/hero/videos/automotive-drift.webm"
+                    src="/assets/videos/automotive-drift.webm"
                     type="video/webm"
                     media="(min-width: 768px)"
                 />
                 <source
-                    src="/assets/hero/videos/automotive-drift.mp4"
+                    src="/assets/videos/automotive-drift.mp4"
                     type="video/mp4"
                     media="(min-width: 768px)"
                 />
 
                 {/* Mobile Optimized Viewport */}
                 <source
-                    src="/assets/hero/videos/automotive-drift-mobile.mp4"
+                    src="/assets/videos/automotive-drift-mobile.mp4"
                     type="video/mp4"
                 />
 
                 {/* Fallback Image */}
                 <img
-                    src="/assets/hero/images/automotive-poster.webp"
+                    src="/assets/images/hero/automotive-poster.webp"
                     alt="AUTO PARTS High Performance Drift Showcase"
                     className="hero-video-fallback"
                 />

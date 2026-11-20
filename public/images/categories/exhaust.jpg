@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
-  <rect width="400" height="300" fill="#181818"/>
-  <rect x="130" y="130" width="140" height="40" rx="20" fill="#252525" stroke="#F36B16" stroke-width="4"/>
-  <circle cx="260" cy="150" r="16" fill="#D9560D"/>
-  <text x="200" y="156" font-family="Inter, sans-serif" font-size="16" font-weight="900" fill="#FFFFFF" text-anchor="middle">EXHAUST</text>
-</svg>
