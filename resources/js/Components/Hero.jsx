@@ -200,17 +200,17 @@ export function HeroContent({ banner = null, sceneIndex = 0 }) {
             <div className="home-hero-cta-group">
                 <Link
                     href={ctaLink}
-                    className="btn btn-primary btn-lg hero-primary-btn"
+                    className="hero-btn hero-primary-btn"
                 >
                     <span>{ctaText}</span>
-                    <ArrowRight size={18} />
+                    <ArrowRight size={17} />
                 </Link>
 
                 <Link
                     href="/vehicle-finder"
-                    className="btn btn-outline hero-secondary-btn"
+                    className="hero-btn hero-secondary-btn"
                 >
-                    <Car size={18} />
+                    <Car size={17} />
                     <span>Find By Vehicle</span>
                 </Link>
             </div>
@@ -1099,6 +1099,17 @@ export default function Hero({ banner = null }) {
                         jumpToScene={jumpToScene}
                         isReducedMotion={isReducedMotion}
                     />
+
+                    {/* Bottom Right: Play / Pause Button for Video & 3D Animation */}
+                    <button
+                        type="button"
+                        className="hero-play-pause-btn"
+                        onClick={togglePlayPause}
+                        aria-label={isPlaying ? 'Pause animation and video' : 'Play animation and video'}
+                        title={isPlaying ? 'Pause animation' : 'Play animation'}
+                    >
+                        {isPlaying ? <Pause size={15} /> : <Play size={15} style={{ marginLeft: '2px' }} />}
+                    </button>
                 </section>
 
                 {/* Attached Vehicle Finder: One thin subtle top separator spanning full width */}

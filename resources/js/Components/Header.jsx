@@ -58,7 +58,7 @@ export default function Header() {
             <div className="site-header-utility">
                 <div className="container site-header-utility-inner">
                     <div className="site-header-utility-left">
-                        <CarFront size={14} strokeWidth={2} className="utility-car-icon" />
+                        <CarFront size={17} strokeWidth={2.2} className="utility-car-icon" />
                         <span>Free International Shipping on Orders Over $500</span>
                     </div>
 
@@ -72,7 +72,7 @@ export default function Header() {
                             <ChevronDown size={11} strokeWidth={2.2} />
                         </div>
                         <Link href="/track-order" className="utility-link">Track Order</Link>
-                        <Link href="/contact-us" className="utility-link">Help & Support</Link>
+                        <Link href="/contact" className="utility-link">Help & Support</Link>
 
                         {auth?.user?.roles?.includes('admin') && (
                             <Link href="/admin/dashboard" className="utility-link-accent">
@@ -217,6 +217,14 @@ export default function Header() {
                                         <span>Home</span>
                                         <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
+                                    <div className="site-header-dropdown">
+                                        <Link href="/shop?sort=latest" className="site-header-dropdown-item">New Arrivals</Link>
+                                        <Link href="/shop?sort=rating" className="site-header-dropdown-item">Featured Parts</Link>
+                                        <Link href="/shop" className="site-header-dropdown-item">Shop All Parts</Link>
+                                        <Link href="/vehicle-finder" className="site-header-dropdown-item">Vehicle Fitment Finder</Link>
+                                        <Link href="/categories" className="site-header-dropdown-item">Browse Categories</Link>
+                                        <Link href="/brands" className="site-header-dropdown-item">Top Brands</Link>
+                                    </div>
                                 </div>
 
                                 <div className="site-header-nav-item">
@@ -260,10 +268,18 @@ export default function Header() {
                                 </div>
 
                                 <div className="site-header-nav-item">
-                                    <Link href="/contact-us" className="site-header-nav-link">
+                                    <Link href="/contact" className="site-header-nav-link">
                                         <span>Support</span>
                                         <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
+                                    <div className="site-header-dropdown">
+                                        <Link href="/contact" className="site-header-dropdown-item">Contact Us</Link>
+                                        <Link href="/about" className="site-header-dropdown-item">About Us</Link>
+                                        <Link href="/track-order" className="site-header-dropdown-item">Track Order</Link>
+                                        <Link href="/shipping-policy" className="site-header-dropdown-item">Shipping Policy</Link>
+                                        <Link href="/return-policy" className="site-header-dropdown-item">Return & Refund</Link>
+                                        <Link href="/terms" className="site-header-dropdown-item">Terms & Conditions</Link>
+                                    </div>
                                 </div>
                             </nav>
                         </div>
@@ -353,7 +369,7 @@ export default function Header() {
                                 <span className="site-header-deals-icon">%</span> Deals
                             </Link>
                             <Link
-                                href="/contact-us"
+                                href="/contact"
                                 className="mobile-drawer-link"
                                 onClick={() => setMobileDrawerOpen(false)}
                             >

@@ -17,7 +17,8 @@
 
   &.is-scrolled {
     .site-header-navigation {
-      background-color: #FFFFFF;
+      height: 44px;
+      background-color: $color-white;
       border-bottom: 1px solid #E5E7EB;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
     }
@@ -27,13 +28,13 @@
   // ROW 1: Top Utility Bar (32px high, scrolls away naturally)
   // --------------------------------------------------------------------------
   &-utility {
-    background-color: #0B0B0E;
-    color: #FFFFFF;
+    background-color: $color-header-bg;
+    color: $color-white;
     font-size: 12px;
     height: 32px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba($color-white, 0.08);
 
     @include respond-below('md') {
       display: none;
@@ -51,10 +52,10 @@
       align-items: center;
       gap: 8px;
       font-weight: 500;
-      color: #FFFFFF;
+      color: $color-white;
 
       .utility-car-icon {
-        color: #FFFFFF;
+        color: $color-white;
       }
     }
 
@@ -69,7 +70,7 @@
         gap: 4px;
         cursor: pointer;
         font-weight: 500;
-        color: #FFFFFF;
+        color: $color-white;
         transition: color $transition-default;
 
         &:hover {
@@ -78,7 +79,7 @@
       }
 
       .utility-link {
-        color: #FFFFFF;
+        color: $color-white;
         font-weight: 500;
         text-decoration: none;
         transition: color $transition-default;
@@ -111,8 +112,8 @@
     height: 70px;
     display: flex;
     align-items: center;
-    background-color: #0B0B0E;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: $color-header-bg;
+    border-bottom: 1px solid rgba($color-white, 0.05);
 
     &-inner {
       display: flex;
@@ -165,7 +166,7 @@
         font-size: 20px;
         font-weight: 900;
         letter-spacing: -0.01em;
-        color: #FFFFFF;
+        color: $color-white;
       }
 
       .brand-subtitle {
@@ -178,18 +179,27 @@
     }
   }
 
-  // Centered White Pill Search Bar
+  // Centered Sleek Translucent Search Bar (matches shared image)
   &-search {
     display: none;
     align-items: center;
     flex: 1;
     max-width: 580px;
     height: 44px;
-    background-color: #FFFFFF;
-    border: none;
+    background-color: rgba($color-white, 0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba($color-white, 0.22);
     border-radius: 9999px;
     padding: 0 5px 0 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: none;
+    transition: background-color $transition-default, border-color $transition-default;
+
+    &:hover,
+    &:focus-within {
+      background-color: rgba($color-white, 0.18);
+      border-color: rgba($color-white, 0.38);
+    }
 
     @include respond-to('md') {
       display: flex;
@@ -197,33 +207,36 @@
 
     input {
       flex: 1;
-      border: none;
+      height: 100%;
       background: transparent;
+      border: none;
       outline: none;
       font-size: 13px;
       font-weight: 500;
-      color: #111114;
+      color: $color-white;
 
       &::placeholder {
-        color: #8E8E93;
+        color: rgba($color-white, 0.55);
       }
     }
 
     .search-submit-btn {
-      width: 35px;
-      height: 35px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       background-color: $color-primary;
-      color: #FFFFFF;
+      color: $color-white;
       border: none;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: background-color $transition-default;
+      flex-shrink: 0;
+      transition: background-color $transition-default, transform $transition-default;
 
       &:hover {
         background-color: $color-primary-hover;
+        transform: scale(1.04);
       }
     }
   }
@@ -249,7 +262,7 @@
       cursor: pointer;
 
       .action-user-icon {
-        color: #FFFFFF;
+        color: $color-white;
       }
 
       .action-user-text {
@@ -270,7 +283,7 @@
 
         .user-name {
           font-size: 13px;
-          color: #FFFFFF;
+          color: $color-white;
           font-weight: 700;
         }
       }
@@ -287,7 +300,7 @@
       justify-content: center;
       width: 40px;
       height: 40px;
-      color: #FFFFFF;
+      color: $color-white;
       text-decoration: none;
       background: transparent;
       border: none;
@@ -303,7 +316,7 @@
         top: 2px;
         right: 0px;
         background-color: $color-primary;
-        color: #FFFFFF;
+        color: $color-white;
         font-size: 10px;
         font-weight: 800;
         min-width: 17px;
@@ -323,7 +336,7 @@
       justify-content: center;
       background: none;
       border: none;
-      color: #FFFFFF;
+      color: $color-white;
       cursor: pointer;
       padding: 4px;
 
@@ -337,13 +350,13 @@
   // ROW 3: Secondary Navigation (Centered Nav, Transparent Initially, White When Sticky)
   // --------------------------------------------------------------------------
   &-navigation {
-    height: 44px;
+    height: 50px;
     display: flex;
     align-items: center;
     background-color: transparent; // NO BG INITIALLY
     border-bottom: 1px solid transparent; // NO BORDER BOTTOM INITIALLY
     box-shadow: none;
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: height 0.25s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 
     @include respond-below('lg') {
       display: none;
@@ -510,7 +523,7 @@
     height: 17px;
     border-radius: 50%;
     background-color: $color-primary;
-    color: #FFFFFF;
+    color: $color-white;
     font-size: 10px;
     font-weight: 900;
     line-height: 1;
@@ -523,7 +536,7 @@
     top: 100%;
     left: 0;
     min-width: 210px;
-    background-color: #FFFFFF;
+    background-color: $color-white;
     border: 1px solid #E5E7EB;
     border-radius: 8px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -621,7 +634,7 @@
     .brand-title {
       font-size: 18px;
       font-weight: 900;
-      color: #FFFFFF;
+      color: $color-white;
     }
   }
 
@@ -636,7 +649,7 @@
     justify-content: center;
 
     &:hover {
-      color: #FFFFFF;
+      color: $color-white;
     }
   }
 
@@ -688,7 +701,7 @@
       width: 100%;
       height: 42px;
       background-color: #1F1F24;
-      color: #FFFFFF;
+      color: $color-white;
       font-size: 13px;
       font-weight: 800;
       border-radius: 6px;
