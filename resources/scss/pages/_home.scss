@@ -31,16 +31,19 @@
       color: #111114;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
       margin: 0;
 
-      .title-slash {
-        color: $color-primary;
-        font-style: italic;
-        font-weight: 900;
-        font-size: 19px;
-        letter-spacing: -0.04em;
+      .title-stripe-icon {
+        height: 18px;
+        width: auto;
+        object-fit: contain;
         display: inline-block;
+        flex-shrink: 0;
+      }
+
+      .title-slash {
+        display: none;
       }
     }
 
@@ -416,13 +419,14 @@
   .why-choose-brand-col {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 
-    .title-slash {
-      color: $color-primary;
-      font-size: 22px;
-      font-weight: 900;
-      font-style: italic;
+    .title-stripe-icon {
+      height: 20px;
+      width: auto;
+      object-fit: contain;
+      display: inline-block;
+      flex-shrink: 0;
     }
 
     .wc-brand-title {

@@ -93,14 +93,18 @@
     text-transform: uppercase;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+
+    .hero-eyebrow-stripe {
+      height: 14px;
+      width: auto;
+      object-fit: contain;
+      display: inline-block;
+      flex-shrink: 0;
+    }
 
     &::before {
-      content: '';
-      width: 28px;
-      height: 2px;
-      background-color: $color-primary;
-      box-shadow: none; // Glow removed for neat and clean look
+      display: none;
     }
   }
 

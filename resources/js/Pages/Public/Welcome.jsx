@@ -152,7 +152,7 @@ export default function Welcome({
                     <div className="section-header">
                         <div className="section-header-left">
                             <h2 className="section-header-title">
-                                <span className="title-slash">//</span> Popular Categories
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> Popular Categories
                             </h2>
                         </div>
                         <Link href="/categories" className="section-header-link">
@@ -187,7 +187,7 @@ export default function Welcome({
                     <div className="section-header">
                         <div className="section-header-left">
                             <h2 className="section-header-title">
-                                <span className="title-slash">//</span> Featured Products
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> Featured Products
                             </h2>
                         </div>
                         <div className="filter-tabs">
@@ -283,7 +283,7 @@ export default function Welcome({
                     <div className="section-header">
                         <div className="section-header-left">
                             <h2 className="section-header-title">
-                                <span className="title-slash">//</span> Shop by Vehicle Type
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> Shop by Vehicle Type
                             </h2>
                         </div>
                         <Link href="/vehicle-finder" className="section-header-link">
@@ -324,7 +324,7 @@ export default function Welcome({
                     <div className="section-header">
                         <div className="section-header-left">
                             <h2 className="section-header-title">
-                                <span className="title-slash">//</span> Popular Brands
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> Popular Brands
                             </h2>
                         </div>
                         <Link href="/brands" className="section-header-link">
@@ -358,7 +358,7 @@ export default function Welcome({
                 <div className="container">
                     <div className="why-choose-card">
                         <div className="why-choose-brand-col">
-                            <span className="title-slash">//</span>
+                            <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
                             <span className="wc-brand-title">Why Choose SpeedAutoParts?</span>
                         </div>
 
@@ -411,7 +411,7 @@ export default function Welcome({
                     <div className="section-header">
                         <div className="section-header-left">
                             <h2 className="section-header-title">
-                                <span className="title-slash">//</span> Top Picks for Your Build
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> Top Picks for Your Build
                             </h2>
                         </div>
                         <div className="top-picks-header-right">

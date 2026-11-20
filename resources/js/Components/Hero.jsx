@@ -180,7 +180,7 @@ export function HeroContent({ banner = null, sceneIndex = 0 }) {
         <div className="home-hero-content">
             {/* Eyebrow */}
             <div className="home-hero-eyebrow">
-                <span className="eyebrow-slash">//</span>
+                <img src="/assets/icons/heading-stripe.webp" alt="" className="hero-eyebrow-stripe" />
                 <span>{eyebrow}</span>
             </div>
 
