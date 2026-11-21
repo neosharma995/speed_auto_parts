@@ -1,9 +1,10 @@
 // ==========================================================================
 // SPEEDAUTOPARTS - Unified Footer (Exact Design Matching Reference)
 // Features:
-// 1. Top Newsletter Section with Sports Car on Left & Glowing Red Taillights
+// 1. Top Newsletter Section with Sports Car within Container & Glowing Red Taillights
 // 2. 5-Column Grid with Official Logo & Need Help Card
 // 3. Bottom Bar with Payment Icons & Anamorphic Corner Flares
+// 4. Section Stripe Icons for Eyebrow and Column Titles
 // STRICT RULE: No translate hover animations!
 // ==========================================================================
 @use '../abstracts/variables' as *;
@@ -23,48 +24,22 @@
     padding-bottom: #{$bottom-bar-height}; // Mobile bottom navigation offset
   }
 
+  // Common Section Title Stripe Icon
+  .title-stripe-icon {
+    height: 12px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+
   // ------------------------------------------------------------------------
-  // 1. Top Section: Newsletter Strip with Sports Car on Left
+  // 1. Top Section: Newsletter Strip with Sports Car on Left (Inside Container)
   // ------------------------------------------------------------------------
   .footer-newsletter-section {
     position: relative;
     overflow: hidden;
-    min-height: 180px;
-
-    @include respond-to('lg') {
-      min-height: 200px;
-    }
-
-    // Car on Left bleeding off the left screen edge
-    .footer-nl-car-wrap {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 52%;
-      max-width: 720px;
-      pointer-events: none;
-      z-index: 1;
-      display: flex;
-      align-items: flex-end;
-      justify-content: flex-start;
-
-      @include respond-below('lg') {
-        position: relative;
-        width: 100%;
-        max-width: 520px;
-        height: 180px;
-        margin: 0 auto;
-      }
-
-      .footer-nl-car-img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        object-position: left bottom;
-        display: block;
-      }
-    }
 
     .footer-nl-container {
       position: relative;
@@ -72,21 +47,33 @@
       display: grid;
       grid-template-columns: 1fr;
       align-items: center;
+      gap: 24px;
       padding-top: 24px;
       padding-bottom: 24px;
 
       @include respond-to('lg') {
-        grid-template-columns: 0.9fr 1.1fr;
-        gap: 32px;
-        min-height: 200px;
+        grid-template-columns: 1.15fr 1fr;
+        gap: 36px;
+        min-height: 220px;
       }
     }
 
-    .footer-nl-spacer-col {
-      display: none;
-      @include respond-to('lg') {
+    // Car on Left inside Container - Left edge aligns with Brand Logo below!
+    .footer-nl-car-col {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+
+      .footer-nl-car-img {
+        width: 100%;
+        max-width: 580px;
+        height: auto;
+        max-height: 230px;
+        object-fit: contain;
+        object-position: left center;
         display: block;
-        min-height: 1px;
+        filter: drop-shadow(0 0 35px rgba(255, 30, 10, 0.3));
       }
     }
 
@@ -97,17 +84,20 @@
       text-align: left;
       padding-left: 0;
 
-      @include respond-to('lg') {
-        padding-left: 10px;
-      }
-
       .footer-nl-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         font-size: 11px;
         font-weight: 800;
         color: #F97316;
         letter-spacing: 0.08em;
         text-transform: uppercase;
         margin-bottom: 5px;
+
+        .title-stripe-icon {
+          height: 11px;
+        }
       }
 
       .footer-nl-heading {
@@ -148,19 +138,23 @@
         font-weight: 600;
       }
 
-      .footer-nl-form {
+      // Unified Single White Capsule (Input + Button together)
+      .footer-nl-form-capsule {
         display: flex;
+        align-items: center;
         width: 100%;
-        max-width: 460px;
-        gap: 8px;
+        max-width: 480px;
+        background: #FFFFFF;
+        border-radius: 6px;
+        padding: 3px 3px 3px 14px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 
         .footer-nl-input {
           flex: 1;
-          height: 38px;
-          background: #FFFFFF;
+          height: 36px;
+          background: transparent;
           border: none;
-          border-radius: 6px;
-          padding: 0 14px;
+          padding: 0;
           font-size: 12.5px;
           font-weight: 500;
           color: #111827;
@@ -172,12 +166,12 @@
         }
 
         .footer-nl-btn {
-          height: 38px;
+          height: 36px;
           padding: 0 18px;
           background: #F97316;
           color: #FFFFFF;
           border: none;
-          border-radius: 6px;
+          border-radius: 5px;
           font-size: 12.5px;
           font-weight: 800;
           display: inline-flex;
@@ -186,6 +180,7 @@
           cursor: pointer;
           transition: background-color $transition-default;
           white-space: nowrap;
+          flex-shrink: 0;
 
           &:hover {
             background-color: #EA580C;
@@ -232,11 +227,18 @@
       gap: 12px;
 
       .footer-heading {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         font-size: 13.5px;
         font-weight: 800;
         color: #FFFFFF;
         letter-spacing: 0.02em;
         margin: 0 0 2px;
+
+        .title-stripe-icon {
+          height: 12px;
+        }
       }
     }
 

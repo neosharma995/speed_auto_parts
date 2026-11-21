@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { Headphones, ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle } from 'lucide-react';
 
 export default function Footer() {
     const { settings = {} } = usePage().props;
@@ -17,25 +17,25 @@ export default function Footer() {
 
     return (
         <footer className="footer-unified">
-            {/* 1. Top Section: Newsletter Strip with Sports Car on Left */}
+            {/* 1. Top Section: Newsletter Strip with Sports Car within Container */}
             <div className="footer-newsletter-section">
-                {/* Background sports car with glowing taillights and smoke */}
-                <div className="footer-nl-car-wrap">
-                    <img 
-                        src="/assets/images/footer/footer-sports-car.webp" 
-                        alt="SpeedAutoParts Performance Sports Car" 
-                        className="footer-nl-car-img" 
-                        loading="lazy"
-                    />
-                </div>
-
                 <div className="container footer-nl-container">
-                    {/* Left space reserved for car */}
-                    <div className="footer-nl-spacer-col" />
+                    {/* Left: Sports Car aligned within container */}
+                    <div className="footer-nl-car-col">
+                        <img 
+                            src="/assets/images/footer/footer-sports-car.webp" 
+                            alt="SpeedAutoParts Performance Sports Car" 
+                            className="footer-nl-car-img" 
+                            loading="lazy"
+                        />
+                    </div>
 
                     {/* Right: Stay in the loop & form */}
                     <div className="footer-nl-content-col">
-                        <span className="footer-nl-eyebrow">STAY IN THE LOOP</span>
+                        <div className="footer-nl-eyebrow">
+                            <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                            <span>STAY IN THE LOOP</span>
+                        </div>
                         <h2 className="footer-nl-heading">
                             Get Exclusive Deals &amp; Performance Updates
                         </h2>
@@ -49,7 +49,7 @@ export default function Footer() {
                                 <span>Thank you for subscribing to SpeedAutoParts!</span>
                             </div>
                         ) : (
-                            <form onSubmit={handleNewsletterSubmit} className="footer-nl-form">
+                            <form onSubmit={handleNewsletterSubmit} className="footer-nl-form-capsule">
                                 <input 
                                     type="email" 
                                     required 
@@ -69,7 +69,7 @@ export default function Footer() {
                 </div>
             </div>
 
-            {/* Crisp Divider Line */}
+            {/* Crisp Section Divider Line */}
             <div className="footer-section-divider" />
 
             {/* 2. Middle Section: Main Footer 5-Column Grid */}
@@ -109,7 +109,10 @@ export default function Footer() {
 
                         {/* Column 2: Shop */}
                         <div className="footer-col">
-                            <h3 className="footer-heading">Shop</h3>
+                            <h3 className="footer-heading">
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                                <span>Shop</span>
+                            </h3>
                             <ul className="footer-links">
                                 <li><Link href="/products">All Products</Link></li>
                                 <li><Link href="/category/performance-parts">Performance Parts</Link></li>
@@ -122,7 +125,10 @@ export default function Footer() {
 
                         {/* Column 3: Information */}
                         <div className="footer-col">
-                            <h3 className="footer-heading">Information</h3>
+                            <h3 className="footer-heading">
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                                <span>Information</span>
+                            </h3>
                             <ul className="footer-links">
                                 <li><Link href="/about-us">About Us</Link></li>
                                 <li><Link href="/contact-us">Contact Us</Link></li>
@@ -135,7 +141,10 @@ export default function Footer() {
 
                         {/* Column 4: Customer Support */}
                         <div className="footer-col">
-                            <h3 className="footer-heading">Customer Support</h3>
+                            <h3 className="footer-heading">
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                                <span>Customer Support</span>
+                            </h3>
                             <ul className="footer-links">
                                 <li><Link href="/track-order">Track Your Order</Link></li>
                                 <li><Link href="/help-center">Help Center</Link></li>
