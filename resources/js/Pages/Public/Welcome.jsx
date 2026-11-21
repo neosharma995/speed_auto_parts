@@ -66,8 +66,6 @@ export default function Welcome({
 }) {
     const [activeTab, setActiveTab] = useState('All');
     const [topPickTab, setTopPickTab] = useState('Performance');
-    const [newsletterEmail, setNewsletterEmail] = useState('');
-    const [subscribed, setSubscribed] = useState(false);
     const [countersVisible, setCountersVisible] = useState(false);
     const resultsSectionRef = useRef(null);
 
@@ -209,14 +207,6 @@ export default function Welcome({
         { title: 'Coilover Kits', slug: 'suspension', img: '/assets/images/categories/suspension.webp' },
         { title: 'Exhaust Systems', slug: 'exhaust', img: '/assets/images/categories/exhaust.webp' },
     ];
-
-    const handleNewsletterSubmit = (e) => {
-        e.preventDefault();
-        if (newsletterEmail) {
-            setSubscribed(true);
-            setNewsletterEmail('');
-        }
-    };
 
     return (
         <AppLayout title="Performance Automotive Spare Parts">
@@ -617,48 +607,6 @@ export default function Welcome({
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            {/* 11. Newsletter Strip */}
-            <section className="newsletter-strip">
-                <div className="newsletter-bg-wrap">
-                    <img 
-                        src="/assets/images/footer/footer-sports-car.webp" 
-                        alt="Performance car tail lights" 
-                        className="newsletter-bg-img"
-                    />
-                    <div className="newsletter-overlay" />
-                </div>
-
-                <div className="container newsletter-content-wrap">
-                    <span className="nl-eyebrow">STAY IN THE LOOP</span>
-                    <h3 className="nl-heading">
-                        Get Exclusive Deals & Performance Updates
-                    </h3>
-                    <p className="nl-desc">
-                        Subscribe to our newsletter and be the first to know about new products, special offers, and expert automotive insights.
-                    </p>
-
-                    {subscribed ? (
-                        <div className="nl-success-msg">
-                            <CheckCircle size={18} /> Thank you for subscribing to SpeedAutoParts!
-                        </div>
-                    ) : (
-                        <form onSubmit={handleNewsletterSubmit} className="nl-form">
-                            <input 
-                                type="email" 
-                                required 
-                                placeholder="Enter your email address" 
-                                value={newsletterEmail}
-                                onChange={(e) => setNewsletterEmail(e.target.value)}
-                                aria-label="Email address"
-                            />
-                            <button type="submit" className="btn btn-primary nl-submit-btn">
-                                Subscribe <ArrowRight size={15} />
-                            </button>
-                        </form>
-                    )}
                 </div>
             </section>
         </AppLayout>
