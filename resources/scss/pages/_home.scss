@@ -98,7 +98,7 @@
       align-items: center;
       justify-content: center;
       padding: 12px;
-      transition: background-color $transition-default, border-color $transition-default, transform $transition-default, box-shadow $transition-default;
+      transition: background-color $transition-default, border-color $transition-default, box-shadow $transition-default;
 
       img {
         width: 100%;
@@ -121,7 +121,6 @@
       .cat-thumb-wrap {
         background-color: #FFFFFF;
         border-color: #D1D5DB;
-        transform: translateY(-3px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 
         img {
@@ -208,6 +207,15 @@
     align-items: center;
     min-height: 160px;
     overflow: hidden;
+    transition: border-color $transition-default;
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+
+      .promo-thumb {
+        transform: scale(1.06);
+      }
+    }
 
     .promo-content {
       display: flex;
@@ -318,6 +326,10 @@
       .vt-name {
         color: $color-primary;
       }
+
+      .vt-img {
+        transform: scale(1.06);
+      }
     }
 
     .vt-img-wrap {
@@ -365,45 +377,44 @@
 }
 
 // ----------------------------------------------------------------------------
-// 6. Popular Brands (8 Logos)
+// 6. Popular Brands (8 Logos - Separate Cards)
 // ----------------------------------------------------------------------------
-.brands-container-box {
-  background-color: #F8F9FA;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 18px 24px;
-}
-
 .brands-row-8 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: 14px;
   align-items: center;
 
   @include respond-to('sm') {
     grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
   }
 
   @include respond-to('lg') {
     grid-template-columns: repeat(8, 1fr);
+    gap: 16px;
   }
 
   .brand-logo-card {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 44px;
-    padding: 4px;
+    height: 64px;
+    padding: 12px 18px;
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     text-decoration: none;
-    opacity: 0.85;
-    transition: opacity $transition-default;
+    transition: all $transition-default;
 
     &:hover {
-      opacity: 1;
+      border-color: #D1D5DB;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
 
     .brand-logo-img {
-      max-height: 36px;
+      max-height: 32px;
       max-width: 100%;
       object-fit: contain;
     }
@@ -413,38 +424,56 @@
 // ----------------------------------------------------------------------------
 // 7. Why Choose SpeedAutoParts Strip (4 Value Pillars)
 // ----------------------------------------------------------------------------
+// 7. Why Choose SpeedAutoParts Strip (5 Equal Columns with Separators)
+// ----------------------------------------------------------------------------
 .why-choose-card {
   background-color: #FFFFFF;
   border: 1px solid #E5E7EB;
   border-radius: 12px;
-  padding: 20px 28px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 
-  @include respond-to('md') {
-    grid-template-columns: 1.4fr repeat(4, 1fr);
+  @include respond-to('lg') {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr 1fr 1fr 1fr;
     align-items: center;
+    gap: 0;
+    padding: 18px 24px;
   }
 
   .why-choose-brand-col {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
+    height: 100%;
 
-    .title-stripe-icon {
-      height: 20px;
+    @include respond-to('lg') {
+      padding-right: 20px;
+      border-right: 1px solid #E5E7EB;
+    }
+
+    .wc-brand-stripe {
+      height: 34px;
       width: auto;
       object-fit: contain;
-      display: inline-block;
       flex-shrink: 0;
     }
 
     .wc-brand-title {
-      font-size: 15px;
+      font-size: 16.5px;
       font-weight: 900;
       color: #111114;
+      line-height: 1.2;
+      display: flex;
+      flex-direction: column;
+      letter-spacing: -0.01em;
+
+      span {
+        display: block;
+      }
     }
   }
 
@@ -452,31 +481,44 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    height: 100%;
 
-    .wc-icon-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: rgba(243, 107, 22, 0.1);
+    @include respond-to('lg') {
+      padding: 0 16px;
+      border-right: 1px solid #E5E7EB;
+      justify-content: center;
+
+      &:last-child {
+        border-right: none;
+        padding-right: 0;
+      }
+    }
+
+    .wc-icon-wrap {
       color: $color-primary;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      background: none;
+      width: auto;
+      height: auto;
     }
 
     .wc-text {
       h4 {
-        font-size: 13px;
+        font-size: 13.5px;
         font-weight: 800;
         color: #111114;
         margin: 0 0 2px;
+        white-space: nowrap;
       }
 
       p {
-        font-size: 11px;
+        font-size: 11.5px;
         color: #6B7280;
         margin: 0;
+        white-space: nowrap;
       }
     }
   }
@@ -548,6 +590,10 @@
 
     &:hover {
       border-color: rgba(243, 107, 22, 0.5);
+
+      .tp-thumb {
+        transform: scale(1.06);
+      }
     }
 
     .tp-img-wrap {
@@ -562,6 +608,7 @@
         max-height: 100%;
         max-width: 100%;
         object-fit: contain;
+        transition: transform $transition-default;
       }
     }
 
@@ -593,99 +640,180 @@
 // ----------------------------------------------------------------------------
 // 9. Real Results Banner (Built by Enthusiasts Trusted Worldwide)
 // ----------------------------------------------------------------------------
+.real-results-section {
+  padding-bottom: 20px;
+}
+
 .real-results-card {
+  position: relative;
   background-color: #0E0E11;
+  background-image: 
+    linear-gradient(90deg, #0E0E11 0%, rgba(14, 14, 17, 0.9) 16%, rgba(14, 14, 17, 0.25) 34%, rgba(14, 14, 17, 0.25) 66%, rgba(14, 14, 17, 0.9) 84%, #0E0E11 100%),
+    linear-gradient(180deg, rgba(14, 14, 17, 0.85) 0%, transparent 22%, transparent 78%, rgba(14, 14, 17, 0.85) 100%),
+    url('/assets/images/customer/clean-road-bg.webp');
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 36px 44px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 32px;
-  align-items: center;
+  box-shadow: none;
+  padding: 30px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: hidden;
 
   @include respond-to('lg') {
-    grid-template-columns: 1.2fr 1fr 1.2fr;
+    display: grid;
+    grid-template-columns: 1.1fr 1.15fr 1.35fr;
+    align-items: center;
+    gap: 20px;
+    padding: 24px 36px;
   }
 
   .rr-left {
-    .rr-badge {
-      display: inline-block;
-      background-color: $color-primary;
-      color: #FFFFFF;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      padding: 3px 8px;
-      border-radius: 4px;
-      margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    z-index: 2;
+
+    .rr-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+
+      .title-stripe-icon {
+        height: 13px;
+        width: auto;
+        object-fit: contain;
+      }
+
+      span {
+        color: $color-primary;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
     }
 
     .rr-heading {
-      font-size: 24px;
+      font-size: 21px;
       font-weight: 900;
+      font-style: italic;
       color: #FFFFFF;
-      line-height: 1.2;
+      line-height: 1.18;
       margin: 0 0 10px;
       letter-spacing: 0.02em;
+      text-transform: uppercase;
+
+      @include respond-to('xl') {
+        font-size: 23px;
+      }
     }
 
     .rr-desc {
-      font-size: 12px;
+      font-size: 11.5px;
       color: #9CA3AF;
       line-height: 1.5;
-      margin: 0 0 20px;
+      margin: 0 0 16px;
+      max-width: 320px;
     }
 
     .rr-btn {
-      height: 38px;
-      padding: 0 20px;
+      height: 36px;
+      padding: 0 18px;
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 700;
       border-radius: 6px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      background-color: $color-primary;
+      color: #FFFFFF;
+      border: 1px solid transparent;
+      box-shadow: none;
+      transition: background-color $transition-default;
+
+      &:hover {
+        background-color: $color-primary-hover;
+      }
     }
   }
 
   .rr-center-car {
-    border-radius: 10px;
-    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    height: 100%;
 
-    img {
+    .rr-car-img {
       width: 100%;
-      height: 180px;
-      object-fit: cover;
-      display: block;
+      max-width: 500px;
+      height: auto;
+      max-height: 205px;
+      object-fit: contain;
+      filter: none;
+      transform: scale(1.08);
+      transform-origin: center bottom;
     }
   }
 
-  .rr-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+  .rr-stats-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 2;
+    width: 100%;
 
-    .rr-stat-item {
+    .rr-stat-col {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      align-items: center;
+      text-align: center;
+      gap: 3px;
+      padding: 0 6px;
 
       .rr-stat-icon {
         color: $color-primary;
         margin-bottom: 2px;
+        stroke-width: 1.75px;
       }
 
       .rr-stat-num {
-        font-size: 20px;
+        font-size: 17px;
         font-weight: 900;
         color: #FFFFFF;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+
+        @include respond-to('xl') {
+          font-size: 19px;
+        }
       }
 
       .rr-stat-label {
-        font-size: 11px;
+        font-size: 10.5px;
+        font-weight: 500;
         color: #9CA3AF;
-        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+
+        @include respond-to('xl') {
+          font-size: 11px;
+        }
       }
+    }
+
+    .rr-stat-divider {
+      width: 1px;
+      height: 44px;
+      background-color: rgba(255, 255, 255, 0.12);
+      flex-shrink: 0;
     }
   }
 }

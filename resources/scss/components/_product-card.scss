@@ -20,6 +20,10 @@
   &:hover {
     border-color: #D1D5DB;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+
+    .product-card-media img {
+      transform: scale(1.06);
+    }
   }
 
   &-badge {
@@ -81,6 +85,7 @@
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
+      transition: transform $transition-default;
     }
   }
 
