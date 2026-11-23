@@ -214,7 +214,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'sale_price' => 12999.00,
                 'stock_quantity' => 25,
                 'stock_status' => 'in_stock',
-                'image' => 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80',
+                'image' => null,
                 'weight' => 11.20,
                 'is_default' => true,
             ]
@@ -231,7 +231,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'sale_price' => 16499.00,
                 'stock_quantity' => 20,
                 'stock_status' => 'in_stock',
-                'image' => 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80',
+                'image' => null,
                 'weight' => 12.80,
                 'is_default' => false,
             ]
@@ -290,7 +290,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'sale_price' => 10999.00,
                 'stock_quantity' => 20,
                 'stock_status' => 'in_stock',
-                'image' => 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80',
+                'image' => null,
                 'weight' => 10.20,
                 'is_default' => true,
             ]
@@ -307,7 +307,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'sale_price' => 8999.00,
                 'stock_quantity' => 18,
                 'stock_status' => 'in_stock',
-                'image' => 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80',
+                'image' => null,
                 'weight' => 8.60,
                 'is_default' => false,
             ]
