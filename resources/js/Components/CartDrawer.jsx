@@ -4,14 +4,14 @@ import { X, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 
 export default function CartDrawer() {
-    const { 
-        cartItems, 
-        itemCount, 
-        subtotal, 
-        isCartOpen, 
-        setIsCartOpen, 
-        updateQuantity, 
-        removeFromCart 
+    const {
+        cartItems,
+        itemCount,
+        subtotal,
+        isCartOpen,
+        setIsCartOpen,
+        updateQuantity,
+        removeFromCart
     } = useCart();
 
     if (!isCartOpen) return null;
@@ -25,8 +25,8 @@ export default function CartDrawer() {
                         <ShoppingBag size={20} color="#F36B16" />
                         <span>Shopping Cart ({itemCount})</span>
                     </h3>
-                    <button 
-                        type="button" 
+                    <button
+                        type="button"
                         onClick={() => setIsCartOpen(false)}
                         className="close-btn"
                         aria-label="Close Cart"
@@ -40,8 +40,8 @@ export default function CartDrawer() {
                         <div className="cart-drawer-empty">
                             <ShoppingBag size={48} />
                             <p>Your shopping cart is currently empty.</p>
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 className="btn btn-primary"
                                 onClick={() => setIsCartOpen(false)}
                             >
@@ -71,22 +71,22 @@ export default function CartDrawer() {
                                     </span>
                                     <div className="cart-drawer-item-controls">
                                         <div className="cart-drawer-item-qty">
-                                            <button 
+                                            <button
                                                 type="button"
                                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                             >
                                                 -
                                             </button>
                                             <span>{item.quantity}</span>
-                                            <button 
+                                            <button
                                                 type="button"
                                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                             >
                                                 +
                                             </button>
                                         </div>
-                                        <button 
-                                            type="button" 
+                                        <button
+                                            type="button"
                                             className="cart-drawer-item-remove"
                                             onClick={() => removeFromCart(item.id)}
                                         >
@@ -105,8 +105,8 @@ export default function CartDrawer() {
                             <span>Estimated Subtotal</span>
                             <strong>₹{subtotal.toLocaleString('en-IN')}</strong>
                         </div>
-                        <Link 
-                            href="/cart" 
+                        <Link
+                            href="/cart"
                             className="btn btn-primary btn-full btn-lg"
                             onClick={() => setIsCartOpen(false)}
                         >

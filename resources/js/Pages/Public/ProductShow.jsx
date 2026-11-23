@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import ProductCard from '@/Components/ProductCard';
-import { 
-    Star, 
-    ShoppingCart, 
-    Heart, 
-    Check, 
-    ShieldCheck, 
-    AlertTriangle, 
-    ChevronRight, 
-    Truck, 
+import {
+    Star,
+    ShoppingCart,
+    Heart,
+    Check,
+    ShieldCheck,
+    AlertTriangle,
+    ChevronRight,
+    Truck,
     Wrench,
     Car,
     FileText,
@@ -19,13 +19,13 @@ import {
 import { useCart } from '@/Context/CartContext';
 import { useWishlist } from '@/Context/WishlistContext';
 
-export default function ProductShow({ 
-    product, 
-    variations = [], 
-    compatibleVehicles = [], 
-    relatedProducts = [], 
+export default function ProductShow({
+    product,
+    variations = [],
+    compatibleVehicles = [],
+    relatedProducts = [],
     activeVehicle = null,
-    fitmentStatus = null 
+    fitmentStatus = null
 }) {
     const { addToCart } = useCart();
     const { toggleWishlist, isInWishlist } = useWishlist();
@@ -88,8 +88,8 @@ export default function ProductShow({
                         {/* Left: Gallery */}
                         <div className="product-single-gallery">
                             <div className="product-single-gallery-main">
-                                <img 
-                                    src={activeImage || product.main_image || '/assets/images/products/performance-tire.webp'} 
+                                <img
+                                    src={activeImage || product.main_image || '/assets/images/products/performance-tire.webp'}
                                     alt={product.name}
                                     onError={(e) => {
                                         e.target.onerror = null;
@@ -101,7 +101,7 @@ export default function ProductShow({
                             {galleryImages.length > 1 && (
                                 <div className="product-single-gallery-thumbs">
                                     {galleryImages.map((img, idx) => (
-                                        <div 
+                                        <div
                                             key={idx}
                                             className={`thumb-item ${activeImage === img ? 'thumb-item--active' : ''}`}
                                             onClick={() => setActiveImage(img)}
@@ -217,16 +217,16 @@ export default function ProductShow({
                             {/* Purchase Action Row */}
                             <div className="purchase-row">
                                 <div className="qty-selector">
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                         disabled={!isInStock}
                                     >
                                         -
                                     </button>
                                     <span>{quantity}</span>
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onClick={() => setQuantity(quantity + 1)}
                                         disabled={!isInStock}
                                     >
@@ -234,8 +234,8 @@ export default function ProductShow({
                                     </button>
                                 </div>
 
-                                <button 
-                                    type="button" 
+                                <button
+                                    type="button"
                                     className="btn btn-primary btn-add-cart"
                                     onClick={handleAddToCart}
                                     disabled={!isInStock}
@@ -251,8 +251,8 @@ export default function ProductShow({
                                     )}
                                 </button>
 
-                                <button 
-                                    type="button" 
+                                <button
+                                    type="button"
                                     className={`btn-wishlist ${isFav ? 'btn-wishlist--active' : ''}`}
                                     onClick={() => toggleWishlist(product.id)}
                                     title="Add to Wishlist"
@@ -278,15 +278,15 @@ export default function ProductShow({
                     {/* Detailed Specifications & Compatible Vehicles Tabs */}
                     <div className="product-single-tabs">
                         <div className="tabs-nav">
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 className={activeTab === 'specs' ? 'active' : ''}
                                 onClick={() => setActiveTab('specs')}
                             >
                                 Technical Specifications
                             </button>
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 className={activeTab === 'vehicles' ? 'active' : ''}
                                 onClick={() => setActiveTab('vehicles')}
                             >
@@ -392,8 +392,8 @@ export default function ProductShow({
                     <span>Total</span>
                     <strong>₹{effectivePrice.toLocaleString('en-IN')}</strong>
                 </div>
-                <button 
-                    type="button" 
+                <button
+                    type="button"
                     className="btn btn-primary"
                     onClick={handleAddToCart}
                     disabled={!isInStock}
