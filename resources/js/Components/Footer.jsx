@@ -160,11 +160,9 @@ export default function Footer() {
                             <div className="need-help-card">
                                 <div className="need-help-header">
                                     <div className="help-icon-wrap">
-                                        <svg width="38" height="38" viewBox="0 0 38 38" fill="none" className="help-hex-svg">
-                                            <path d="M19 2L34 10.5V27.5L19 36L4 27.5V10.5L19 2Z" stroke="#F97316" strokeWidth="2" strokeLinejoin="round" fill="rgba(249, 115, 22, 0.08)"/>
-                                            <g transform="translate(10, 10)">
-                                                <path d="M3 10V8a6 6 0 0 1 12 0v2M3 10a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-5zm12 0a2 2 0 0 0-2-2h-1a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v-5z" stroke="#F97316" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                                            </g>
+                                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="help-icon">
+                                            <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                                            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
                                         </svg>
                                     </div>
                                     <div className="help-text-group">
