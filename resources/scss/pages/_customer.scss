@@ -6,6 +6,8 @@
 @use '../abstracts/mixins' as *;
 
 .customer-portal {
+  background-color: $color-background;
+  min-height: 75vh;
   padding: 32px 0 64px;
 
   &-layout {

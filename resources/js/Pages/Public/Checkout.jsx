@@ -261,7 +261,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
     if (cartItems.length === 0) {
         return (
             <AppLayout title="Checkout">
-                <div className="section bg-white" style={{ minHeight: '60vh', textAlign: 'center', padding: '64px 20px' }}>
+                <div className="section bg-light" style={{ minHeight: '60vh', textAlign: 'center', padding: '64px 20px' }}>
                     <h2>No items to checkout</h2>
                     <p style={{ color: '#666', marginTop: '8px' }}>Your shopping cart is currently empty.</p>
                     <Link href="/shop" className="btn btn-primary" style={{ marginTop: '16px' }}>

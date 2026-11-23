@@ -88,9 +88,9 @@ export default function Shop({
                     {/* Active Vehicle Notice if set */}
                     {activeVehicle && (
                         <div style={{
-                            backgroundColor: '#F5F5F5',
+                            backgroundColor: '#FFFFFF',
                             border: '1px solid #DCDCDC',
-                            borderRadius: '4px',
+                            borderRadius: '6px',
                             padding: '12px 16px',
                             marginBottom: '24px',
                             display: 'flex',
