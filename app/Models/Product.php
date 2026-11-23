@@ -104,11 +104,6 @@ class Product extends Model
         return $this->hasMany(ProductVehicle::class);
     }
 
-    public function reviews(): HasMany
-    {
-        return $this->hasMany(ProductReview::class)->where('is_approved', true);
-    }
-
     public function scopePublished($query)
     {
         return $query->where('status', 'published');

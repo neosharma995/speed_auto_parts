@@ -24,7 +24,6 @@ export default function ProductShow({
     variations = [], 
     compatibleVehicles = [], 
     relatedProducts = [], 
-    reviews = [],
     activeVehicle = null,
     fitmentStatus = null 
 }) {
@@ -128,12 +127,6 @@ export default function ProductShow({
                                 <span>SKU: <strong className="sku-tag">{currentSku}</strong></span>
                                 <span>•</span>
                                 <span>Part #: <strong className="sku-tag">{currentPartNumber}</strong></span>
-                                <span>•</span>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#E37400' }}>
-                                    <Star size={14} fill="#E37400" />
-                                    <strong style={{ color: '#252525' }}>{Number(product.rating || 5).toFixed(1)}</strong>
-                                    <span style={{ color: '#888' }}>({product.rating_count || 12} reviews)</span>
-                                </div>
                             </div>
 
                             {/* Pricing */}
@@ -148,9 +141,6 @@ export default function ProductShow({
                                     </>
                                 )}
                             </div>
-                            <span className="tax-notice">
-                                Applicable GST calculated at checkout (18% / 28% based on state and HSN).
-                            </span>
 
                             {/* Vehicle Fitment Verification Widget */}
                             <div className="fitment-box">
@@ -285,7 +275,7 @@ export default function ProductShow({
                         </div>
                     </div>
 
-                    {/* Detailed Specifications & Reviews Tabs */}
+                    {/* Detailed Specifications & Compatible Vehicles Tabs */}
                     <div className="product-single-tabs">
                         <div className="tabs-nav">
                             <button 
@@ -301,13 +291,6 @@ export default function ProductShow({
                                 onClick={() => setActiveTab('vehicles')}
                             >
                                 Compatible Vehicles ({compatibleVehicles.length})
-                            </button>
-                            <button 
-                                type="button" 
-                                className={activeTab === 'reviews' ? 'active' : ''}
-                                onClick={() => setActiveTab('reviews')}
-                            >
-                                Customer Reviews ({reviews.length})
                             </button>
                         </div>
 
@@ -383,37 +366,6 @@ export default function ProductShow({
                                         )}
                                     </tbody>
                                 </table>
-                            </div>
-                        )}
-
-                        {/* Tab 3: Reviews */}
-                        {activeTab === 'reviews' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                {reviews.length === 0 ? (
-                                    <p style={{ color: '#666' }}>No reviews yet. Be the first driver to review this product!</p>
-                                ) : (
-                                    reviews.map((rev) => (
-                                        <div key={rev.id} style={{ borderBottom: '1px solid #EEE', paddingBottom: '16px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                                                <div style={{ display: 'flex', color: '#E37400' }}>
-                                                    {[...Array(rev.rating)].map((_, i) => (
-                                                        <Star key={i} size={14} fill="#E37400" />
-                                                    ))}
-                                                </div>
-                                                <strong style={{ fontSize: '14px', color: '#151515' }}>{rev.title || 'Verified Performance'}</strong>
-                                                {rev.is_verified_purchase && (
-                                                    <span className="badge badge-success" style={{ fontSize: '10px' }}>Verified Buyer</span>
-                                                )}
-                                            </div>
-                                            <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.5 }}>
-                                                {rev.comment}
-                                            </p>
-                                            <span style={{ fontSize: '11px', color: '#888', marginTop: '4px', display: 'block' }}>
-                                                By {rev.reviewer_name} on {new Date(rev.created_at).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    ))
-                                )}
                             </div>
                         )}
                     </div>

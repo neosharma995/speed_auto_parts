@@ -7,15 +7,8 @@ import {
     Tag, 
     Sliders, 
     Car, 
-    Boxes, 
-    ShoppingCart, 
-    Users, 
-    Receipt, 
-    Percent, 
-    Star, 
     Settings, 
     LogOut, 
-    Shield, 
     X,
     Wrench
 } from 'lucide-react';
@@ -55,14 +48,6 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                         <LayoutDashboard size={18} />
                         <span>Dashboard</span>
                     </Link>
-                    <Link href="/admin/orders" className={isCurrent('/admin/orders') ? 'active' : ''}>
-                        <ShoppingCart size={18} />
-                        <span>Orders</span>
-                    </Link>
-                    <Link href="/admin/inventory" className={isCurrent('/admin/inventory') ? 'active' : ''}>
-                        <Boxes size={18} />
-                        <span>Inventory</span>
-                    </Link>
 
                     <span className="nav-group-title">Automotive Catalog</span>
                     <Link href="/admin/products" className={isCurrent('/admin/products') ? 'active' : ''}>
@@ -84,16 +69,6 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                     <Link href="/admin/vehicles" className={isCurrent('/admin/vehicles') ? 'active' : ''}>
                         <Car size={18} />
                         <span>Vehicles & Fitment</span>
-                    </Link>
-
-                    <span className="nav-group-title">Marketing</span>
-                    <Link href="/admin/coupons" className={isCurrent('/admin/coupons') ? 'active' : ''}>
-                        <Percent size={18} />
-                        <span>Coupons</span>
-                    </Link>
-                    <Link href="/admin/reviews" className={isCurrent('/admin/reviews') ? 'active' : ''}>
-                        <Star size={18} />
-                        <span>Reviews</span>
                     </Link>
 
                     <span className="nav-group-title">Store</span>

@@ -28,7 +28,6 @@ class ProductController extends Controller
                 'variations',
                 'attributes.values',
                 'productVehicles.vehicle',
-                'reviews' => fn ($q) => $q->orderByDesc('created_at'),
             ])
             ->firstOrFail();
 
@@ -53,7 +52,6 @@ class ProductController extends Controller
             'product' => $product,
             'variations' => $product->variations,
             'compatibleVehicles' => $product->productVehicles,
-            'reviews' => $product->reviews,
             'relatedProducts' => $relatedProducts,
             'activeVehicle' => $activeVehicle,
             'fitmentStatus' => $fitmentStatus,

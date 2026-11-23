@@ -105,22 +105,12 @@ export default function CartDrawer() {
                             <span>Estimated Subtotal</span>
                             <strong>₹{subtotal.toLocaleString('en-IN')}</strong>
                         </div>
-                        <p style={{ fontSize: '11px', color: '#888', marginTop: '-4px' }}>
-                            Taxes and shipping calculated at checkout.
-                        </p>
                         <Link 
-                            href="/checkout" 
+                            href="/cart" 
                             className="btn btn-primary btn-full btn-lg"
                             onClick={() => setIsCartOpen(false)}
                         >
-                            Proceed to Checkout <ArrowRight size={18} />
-                        </Link>
-                        <Link 
-                            href="/cart" 
-                            className="btn btn-outline btn-full"
-                            onClick={() => setIsCartOpen(false)}
-                        >
-                            View Cart Details
+                            View Cart Details <ArrowRight size={18} />
                         </Link>
                     </div>
                 )}

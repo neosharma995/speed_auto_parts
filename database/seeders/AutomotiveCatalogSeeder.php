@@ -6,13 +6,9 @@ namespace Database\Seeders;
 
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\Coupon;
-use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductAttributeValue;
-use App\Models\ProductReview;
 use App\Models\ProductVariation;
 use App\Models\ProductVehicle;
 use App\Models\Vehicle;
@@ -443,113 +439,5 @@ class AutomotiveCatalogSeeder extends Seeder
                 ]);
             }
         }
-
-        // 8. Coupons
-        Coupon::updateOrCreate(
-            ['code' => 'SPEED10'],
-            [
-                'type' => 'percentage',
-                'value' => 10.00,
-                'min_spend' => 5000.00,
-                'max_discount' => 3000.00,
-                'usage_limit' => 1000,
-                'usage_per_user' => 3,
-                'is_active' => true,
-            ]
-        );
-
-        Coupon::updateOrCreate(
-            ['code' => 'TRACKDAY'],
-            [
-                'type' => 'fixed',
-                'value' => 2000.00,
-                'min_spend' => 15000.00,
-                'max_discount' => 2000.00,
-                'usage_limit' => 500,
-                'usage_per_user' => 1,
-                'is_active' => true,
-            ]
-        );
-
-        // 9. Sample Guest Order (no customer account or tax)
-        $sampleOrder = Order::firstOrCreate(
-            ['order_number' => 'AP-20261119-DEMO1'],
-            [
-                'user_id' => null,
-                'customer_name' => 'Arjun Kapoor',
-                'customer_email' => 'driver@circuit.in',
-                'customer_phone' => '+91 98765 12345',
-                'shipping_address' => 'Flat 402, Speedline Towers, Outer Ring Road',
-                'apartment' => 'Tower B, 4th Floor',
-                'city' => 'Greater Noida',
-                'state' => 'Uttar Pradesh',
-                'pincode' => '201310',
-                'country' => 'India',
-                'shipping_method_title' => 'Express Ground Freight',
-                'shipping_cost' => 500.00,
-                'subtotal' => 25998.00,
-                'discount_amount' => 2000.00,
-                'coupon_code' => 'TRACKDAY',
-                'tax_amount' => 0.00,
-                'cgst_amount' => 0.00,
-                'sgst_amount' => 0.00,
-                'igst_amount' => 0.00,
-                'total_amount' => 24498.00,
-                'currency' => 'INR',
-                'payment_method' => 'razorpay',
-                'payment_status' => 'paid',
-                'delivery_status' => 'processing',
-                'razorpay_order_id' => 'order_sim_demo_01',
-                'razorpay_payment_id' => 'pay_sim_demo_01',
-                'razorpay_signature' => 'simulated_signature',
-                'order_notes' => 'Please deliver during afternoon hours.',
-                'tracking_number' => 'BLUEDART-88291039',
-                'tracking_carrier' => 'Blue Dart Express',
-                'tracking_url' => 'https://www.bluedart.com',
-                'paid_at' => now()->subDay(),
-            ]
-        );
-
-        OrderItem::firstOrCreate(
-            ['order_id' => $sampleOrder->id, 'product_id' => $pTire->id],
-            [
-                'product_name' => 'Performance Summer Tire',
-                'variation_name' => '245/40R18 97Y XL',
-                'sku' => 'AP-TIRE-992-245-18',
-                'part_number' => 'AP-12345-A',
-                'unit_price' => 12999.00,
-                'quantity' => 2,
-                'tax_rate_percent' => 0.00,
-                'tax_amount' => 0.00,
-                'subtotal' => 25998.00,
-                'total' => 25998.00,
-                'product_image' => 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80',
-            ]
-        );
-
-        // 10. Product Reviews
-        ProductReview::firstOrCreate(
-            ['product_id' => $pTire->id, 'reviewer_email' => 'driver@circuit.in'],
-            [
-                'reviewer_name' => 'Arjun Kapoor',
-                'rating' => 5,
-                'title' => 'Unbelievable dry grip on Buddh International Circuit',
-                'comment' => 'Installed a staggered set on my Mustang GT. Cornering speeds are noticeably higher and braking stability is rock solid.',
-                'is_verified_purchase' => true,
-                'is_approved' => true,
-            ]
-        );
-
-        ProductReview::firstOrCreate(
-            ['product_id' => $pBrake->id, 'reviewer_email' => 'trackdayfan@gmail.com'],
-            [
-                'reviewer_name' => 'Rohan Mehta',
-                'rating' => 5,
-                'title' => 'Zero brake fade during hard track sessions',
-                'comment' => 'Rotors run much cooler than the stock blanks. The zinc coating keeps the hub bells looking brand new even after washings.',
-                'is_verified_purchase' => true,
-                'is_approved' => true,
-            ]
-        );
     }
 }

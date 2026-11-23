@@ -7,9 +7,6 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\Order;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -38,53 +35,6 @@ class StaticPageController extends Controller
 
         return Inertia::render('Public/Brands', [
             'brands' => $brands,
-        ]);
-    }
-
-    public function trackOrder(): Response
-    {
-        return Inertia::render('Public/TrackOrder');
-    }
-
-    public function trackOrderApi(Request $request): JsonResponse
-    {
-        $orderNumber = trim((string) $request->query('order_number'));
-
-        if (empty($orderNumber)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Please provide a valid order number.',
-            ], 422);
-        }
-
-        $order = Order::query()
-            ->where('order_number', $orderNumber)
-            ->with(['items'])
-            ->first();
-
-        if (!$order) {
-            return response()->json([
-                'success' => false,
-                'message' => "Order #{$orderNumber} was not found. Please verify the order number on your invoice.",
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'order' => [
-                'order_number' => $order->order_number,
-                'status' => $order->status,
-                'payment_status' => $order->payment_status,
-                'delivery_status' => $order->delivery_status,
-                'tracking_number' => $order->tracking_number,
-                'tracking_url' => $order->tracking_url,
-                'carrier' => $order->carrier,
-                'total_amount' => $order->total_amount,
-                'shipping_city' => $order->shipping_city,
-                'shipping_state' => $order->shipping_state,
-                'created_at' => $order->created_at->format('M d, Y h:i A'),
-                'items_count' => $order->items->count(),
-            ],
         ]);
     }
 

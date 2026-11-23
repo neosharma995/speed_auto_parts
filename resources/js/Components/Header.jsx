@@ -91,7 +91,6 @@ export default function Header() {
                             <span>USD</span>
                             <ChevronDown size={11} strokeWidth={2.2} />
                         </div>
-                        <Link href="/track-order" className="utility-link">Track Order</Link>
                         <Link href="/contact" className="utility-link">Help & Support</Link>
 
                         {auth?.user?.roles?.includes('admin') && (
@@ -302,7 +301,6 @@ export default function Header() {
                                     <div className="site-header-dropdown">
                                         <Link href="/contact" className="site-header-dropdown-item">Contact Us</Link>
                                         <Link href="/about" className="site-header-dropdown-item">About Us</Link>
-                                        <Link href="/track-order" className="site-header-dropdown-item">Track Order</Link>
                                         <Link href="/shipping-policy" className="site-header-dropdown-item">Shipping Policy</Link>
                                         <Link href="/return-policy" className="site-header-dropdown-item">Return & Refund</Link>
                                         <Link href="/terms" className="site-header-dropdown-item">Terms & Conditions</Link>

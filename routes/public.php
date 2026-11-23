@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Public\CartController;
-use App\Http\Controllers\Public\CheckoutController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\ProductController;
 use App\Http\Controllers\Public\ShopController;
@@ -20,8 +19,6 @@ Route::get('/brands', [StaticPageController::class, 'brands'])->name('brands.ind
 Route::get('/vehicle-finder', [VehicleFinderController::class, 'page'])->name('vehicle-finder');
 Route::post('/vehicles/select', [VehicleFinderController::class, 'selectVehicle'])->name('vehicles.select');
 Route::post('/vehicles/clear', [VehicleFinderController::class, 'clearVehicle'])->name('vehicles.clear');
-Route::get('/track-order', [StaticPageController::class, 'trackOrder'])->name('track-order');
-Route::get('/order-success/{orderNumber}', [CheckoutController::class, 'success'])->name('order.success');
 
 // Static Pages
 Route::get('/about', [StaticPageController::class, 'about'])->name('about');
@@ -44,16 +41,6 @@ Route::post('/api/cart/update', [CartController::class, 'update'])->name('cart.u
 Route::post('/api/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/api/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
-// Checkout Routes
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/api/coupons/validate', [CheckoutController::class, 'validateCoupon'])->name('coupons.validate');
-Route::post('/api/checkout/apply-coupon', [CheckoutController::class, 'validateCoupon'])->name('checkout.apply-coupon');
-Route::post('/checkout/cod', [CheckoutController::class, 'placeCodOrder'])->name('checkout.cod');
-Route::post('/checkout/razorpay-init', [CheckoutController::class, 'createRazorpayOrder'])->name('checkout.razorpay-init');
-Route::post('/checkout/verify-payment', [CheckoutController::class, 'verifyPayment'])->name('checkout.verify-payment');
-Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
-Route::post('/checkout/razorpay/verify', [CheckoutController::class, 'verifyPayment'])->name('checkout.razorpay.verify');
-
 // Vehicle Cascading APIs
 Route::prefix('api/vehicles')->group(function () {
     Route::get('/years', [VehicleFinderController::class, 'getYears']);
@@ -61,6 +48,3 @@ Route::prefix('api/vehicles')->group(function () {
     Route::get('/models', [VehicleFinderController::class, 'getModels']);
     Route::get('/engines', [VehicleFinderController::class, 'getEngines']);
 });
-
-// Order Tracking API
-Route::get('/api/orders/track', [StaticPageController::class, 'trackOrderApi']);

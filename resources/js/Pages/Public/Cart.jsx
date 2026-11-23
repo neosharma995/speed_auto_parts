@@ -1,44 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { useCart } from '@/Context/CartContext';
-import { Trash2, ShoppingBag, ArrowRight, ArrowLeft, ShieldCheck, Tag } from 'lucide-react';
-import axios from 'axios';
+import { Trash2, ShoppingBag, ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function Cart() {
     const { cartItems, itemCount, subtotal, updateQuantity, removeFromCart, clearCart } = useCart();
-    const [couponCode, setCouponCode] = useState('');
-    const [couponDiscount, setCouponDiscount] = useState(0);
-    const [appliedCoupon, setAppliedCoupon] = useState(null);
-    const [couponError, setCouponError] = useState('');
-    const [couponLoading, setCouponLoading] = useState(false);
-
-    const handleApplyCoupon = async (e) => {
-        e.preventDefault();
-        setCouponError('');
-        if (!couponCode.trim()) return;
-
-        setCouponLoading(true);
-        try {
-            const res = await axios.post('/api/coupons/validate', {
-                code: couponCode.trim(),
-                subtotal: subtotal,
-            });
-
-            if (res.data.success) {
-                setCouponDiscount(res.data.discount_amount);
-                setAppliedCoupon(res.data.code);
-            } else {
-                setCouponError(res.data.message || 'Invalid coupon code');
-            }
-        } catch (err) {
-            setCouponError(err.response?.data?.message || 'Failed to apply coupon');
-        } finally {
-            setCouponLoading(false);
-        }
-    };
-
-    const finalTotal = Math.max(0, subtotal - couponDiscount);
 
     if (cartItems.length === 0) {
         return (
@@ -185,7 +152,7 @@ export default function Cart() {
                                 </div>
                             </div>
 
-                            {/* Summary & Coupon */}
+                            {/* Cart Summary */}
                             <div style={{
                                 backgroundColor: '#FFFFFF',
                                 border: '1px solid #DCDCDC',
@@ -196,56 +163,18 @@ export default function Cart() {
                                 gap: '16px'
                             }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 800, textTransform: 'uppercase' }}>
-                                    Order Summary & Promo Codes
+                                    Cart Summary
                                 </h3>
 
-                                <form onSubmit={handleApplyCoupon} style={{ display: 'flex', gap: '8px' }}>
-                                    <input 
-                                        type="text" 
-                                        className="form-input"
-                                        placeholder="Promo code (e.g. SPEED10, TRACKDAY)"
-                                        value={couponCode}
-                                        onChange={(e) => setCouponCode(e.target.value)}
-                                        style={{ textTransform: 'uppercase' }}
-                                    />
-                                    <button 
-                                        type="submit" 
-                                        className="btn btn-dark"
-                                        disabled={couponLoading}
-                                    >
-                                        Apply
-                                    </button>
-                                </form>
-
-                                {couponError && (
-                                    <span style={{ fontSize: '12px', color: '#D93025' }}>{couponError}</span>
-                                )}
-
-                                {appliedCoupon && (
-                                    <span style={{ fontSize: '12px', color: '#168A35', fontWeight: 700 }}>
-                                        ✓ Coupon {appliedCoupon} applied: -₹{couponDiscount.toLocaleString('en-IN')}
-                                    </span>
-                                )}
-
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '16px', borderTop: '1px solid #EEE' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#666' }}>
-                                        <span>Estimated Item Subtotal</span>
-                                        <strong>₹{subtotal.toLocaleString('en-IN')}</strong>
-                                    </div>
-                                    {couponDiscount > 0 && (
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#168A35', fontWeight: 600 }}>
-                                            <span>Coupon Discount</span>
-                                            <span>-₹{couponDiscount.toLocaleString('en-IN')}</span>
-                                        </div>
-                                    )}
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: 900, color: '#151515', paddingTop: '12px', borderTop: '1px solid #DCDCDC' }}>
-                                        <span>Order Total (Excl. Tax & Shipping)</span>
-                                        <span>₹{finalTotal.toLocaleString('en-IN')}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '8px', borderTop: '1px solid #EEE' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: 900, color: '#151515', paddingTop: '12px' }}>
+                                        <span>Total</span>
+                                        <span>₹{subtotal.toLocaleString('en-IN')}</span>
                                     </div>
                                 </div>
 
-                                <Link href="/checkout" className="btn btn-primary btn-lg btn-full" style={{ marginTop: '8px' }}>
-                                    Proceed to Checkout <ArrowRight size={18} />
+                                <Link href="/contact-us" className="btn btn-primary btn-lg btn-full" style={{ marginTop: '8px' }}>
+                                    Inquire / Contact Support <ArrowRight size={18} />
                                 </Link>
                             </div>
                         </div>

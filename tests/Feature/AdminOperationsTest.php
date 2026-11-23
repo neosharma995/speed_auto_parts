@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use Tests\TestCase;
@@ -91,45 +90,5 @@ class AdminOperationsTest extends TestCase
         $deleteResponse = $this->delete("/admin/products/{$created->id}");
         $deleteResponse->assertRedirect('/admin/products');
         $this->assertNull(Product::find($created->id));
-    }
-
-    public function test_admin_can_update_order_tracking_and_status(): void
-    {
-        $admin = User::where('email', 'admin@autoparts.com')->first();
-        $this->actingAs($admin);
-
-        $order = Order::first();
-        if (!$order) {
-            $order = Order::create([
-                'order_number' => 'ORD-TEST-' . rand(1000, 9999),
-                'customer_name' => 'Test Customer',
-                'customer_email' => 'guest@autoparts.com',
-                'customer_phone' => '+91 98765 43210',
-                'shipping_address' => 'Test St',
-                'city' => 'Delhi',
-                'state' => 'Delhi',
-                'pincode' => '110001',
-                'subtotal' => 5000.00,
-                'total_amount' => 5000.00,
-                'payment_method' => 'cod',
-                'payment_status' => 'pending',
-                'delivery_status' => 'pending',
-            ]);
-        }
-
-        $response = $this->put("/admin/orders/{$order->id}", [
-            'delivery_status' => 'shipped',
-            'payment_status' => 'paid',
-            'tracking_number' => 'BLUEDART-987654321',
-            'tracking_carrier' => 'Blue Dart Aviation',
-            'tracking_url' => 'https://bluedart.com/track/BLUEDART-987654321',
-        ]);
-
-        $response->assertStatus(302);
-
-        $order->refresh();
-        $this->assertEquals('shipped', $order->delivery_status);
-        $this->assertEquals('paid', $order->payment_status);
-        $this->assertEquals('BLUEDART-987654321', $order->tracking_number);
     }
 }

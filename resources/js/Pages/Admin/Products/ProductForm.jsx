@@ -174,12 +174,11 @@ export default function ProductForm({
         { id: 'general', label: '1. General Info', icon: Info },
         { id: 'images', label: '2. Images & Media', icon: Image },
         { id: 'pricing', label: '3. Pricing', icon: DollarSign },
-        { id: 'inventory', label: '4. Inventory', icon: Boxes },
-        { id: 'categories', label: '5. Category & Brand', icon: Layers },
-        { id: 'attributes', label: '6. Attributes', icon: Sliders },
-        { id: 'variations', label: '7. Variations', icon: GitMerge },
-        { id: 'fitment', label: '8. Vehicle Fitment', icon: Car },
-        { id: 'seo', label: '9. SEO Metadata', icon: Search },
+        { id: 'categories', label: '4. Category & Brand', icon: Layers },
+        { id: 'attributes', label: '5. Attributes', icon: Sliders },
+        { id: 'variations', label: '6. Variations', icon: GitMerge },
+        { id: 'fitment', label: '7. Vehicle Fitment', icon: Car },
+        { id: 'seo', label: '8. SEO Metadata', icon: Search },
     ];
 
     return (

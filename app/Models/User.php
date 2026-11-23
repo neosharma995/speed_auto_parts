@@ -66,16 +66,6 @@ class User extends Authenticatable
         return UserRole::Admin->accountRoute();
     }
 
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class, 'user_id');
-    }
-
-    public function reviews(): HasMany
-    {
-        return $this->hasMany(ProductReview::class, 'user_id');
-    }
-
     public function wishlist(): HasMany
     {
         return $this->hasMany(Wishlist::class, 'user_id');
