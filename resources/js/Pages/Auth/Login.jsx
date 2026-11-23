@@ -38,7 +38,7 @@ export default function Login({ status, canResetPassword }) {
                     Admin Sign In
                 </h1>
                 <p style={{ color: '#666', fontSize: '13px', marginTop: '4px' }}>
-                    Sign in to manage products, orders, and store operations.
+                    Sign in to manage products, categories, brands, and store settings.
                 </p>
             </div>
 
