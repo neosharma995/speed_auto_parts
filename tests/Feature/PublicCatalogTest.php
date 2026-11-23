@@ -44,7 +44,7 @@ class PublicCatalogTest extends TestCase
 
     public function test_static_information_pages_load(): void
     {
-        $pages = ['/about', '/contact', '/shipping-policy', '/return-policy', '/privacy-policy', '/terms'];
+        $pages = ['/about-us', '/contact-us', '/shipping-policy', '/return-policy', '/privacy-policy', '/terms'];
 
         foreach ($pages as $url) {
             $response = $this->get($url);

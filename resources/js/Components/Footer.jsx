@@ -24,7 +24,7 @@ export default function Footer() {
                     <div className="footer-nl-car-col">
                         <img 
                             src="/assets/images/footer/footer-sports-car.webp" 
-                            alt="SpeedAutoParts Performance Sports Car" 
+                            alt="Speed Autos Parts Performance Sports Car" 
                             className="footer-nl-car-img" 
                             loading="lazy"
                         />
@@ -46,7 +46,7 @@ export default function Footer() {
                         {subscribed ? (
                             <div className="footer-nl-success">
                                 <CheckCircle size={18} className="text-primary" /> 
-                                <span>Thank you for subscribing to SpeedAutoParts!</span>
+                                <span>Thank you for subscribing to Speed Autos Parts!</span>
                             </div>
                         ) : (
                             <form onSubmit={handleNewsletterSubmit} className="footer-nl-form-capsule">
@@ -81,7 +81,7 @@ export default function Footer() {
                             <Link href="/" className="footer-brand-logo-wrap">
                                 <img 
                                     src="/assets/images/logo/speedautoparts-official.png" 
-                                    alt="SpeedAutoParts - Performance Spare Parts" 
+                                    alt="Speed Autos Parts - Performance Spare Parts" 
                                     className="footer-brand-logo-img"
                                 />
                             </Link>
@@ -184,7 +184,7 @@ export default function Footer() {
                         <div className="footer-corner-flare flare-right" />
                         
                         <span className="footer-bottom-copyright">
-                            © 2025 SpeedAutoParts. All Rights Reserved.
+                            © {new Date().getFullYear()} Speed Autos Parts. All Rights Reserved.
                         </span>
 
                         <div className="footer-payment-badges">

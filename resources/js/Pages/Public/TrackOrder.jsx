@@ -43,7 +43,7 @@ export default function TrackOrder() {
                             TRACK YOUR SHIPMENT
                         </h1>
                         <p style={{ color: '#666', fontSize: '14px', maxWidth: '500px', margin: '8px auto 0' }}>
-                            Enter your AUTO PARTS order reference number to view live courier status, freight tracking, and delivery timeline.
+                            Enter your SPEED AUTOS PARTS order reference number to view live courier status, freight tracking, and delivery timeline.
                         </p>
                     </div>
 

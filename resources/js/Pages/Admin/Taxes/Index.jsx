@@ -41,7 +41,7 @@ export default function AdminTaxesIndex({ taxClasses = [] }) {
                         <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             <div className="form-group">
                                 <label className="form-label">Tax Class Name</label>
-                                <input type="text" className="form-input" required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Standard Auto Parts GST 18%" />
+                                <input type="text" className="form-input" required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Standard Autos Parts GST 18%" />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Slug</label>

@@ -618,7 +618,7 @@ export default function ProductForm({
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div className="form-group">
                                 <label className="form-label">SEO Meta Title</label>
-                                <input type="text" className="form-input" placeholder="e.g. Brembo Slotted Brake Rotors | Auto Parts" value={seoTitle} onChange={e => setSeoTitle(e.target.value)} />
+                                <input type="text" className="form-input" placeholder="e.g. Brembo Slotted Brake Rotors | Autos Parts" value={seoTitle} onChange={e => setSeoTitle(e.target.value)} />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">SEO Meta Description</label>

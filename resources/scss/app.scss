@@ -1,5 +1,5 @@
 // ==========================================================================
-// AUTO PARTS - Main SCSS Application Entry Point
+// SPEED AUTOS PARTS - Main SCSS Application Entry Point
 // Pure SCSS Architecture - Zero Tailwind, Zero Inline Styles, BEM-inspired
 // STRICT RULE: No translate hover animations!
 // ==========================================================================
@@ -21,6 +21,8 @@
 @use './components/cart-drawer' as *;
 @use './pages/home' as *;
 @use './pages/shop' as *;
+@use './pages/categories' as *;
+@use './pages/brands' as *;
 @use './pages/product-details' as *;
 @use './pages/checkout' as *;
 @use './pages/customer' as *;

@@ -83,7 +83,15 @@ export default function AdminCategoriesIndex({ categories = [] }) {
                             {categories.map(cat => (
                                 <tr key={cat.id}>
                                     <td style={{ width: '60px' }}>
-                                        <img src={cat.image || '/images/categories/tires.jpg'} alt={cat.name} style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '4px' }} />
+                                        <img 
+                                            src={cat.image?.startsWith('/assets/') ? cat.image : `/assets/images/categories/${cat.slug}.webp`} 
+                                            alt={cat.name} 
+                                            onError={(e) => {
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = `/assets/images/categories/${cat.slug}.webp`;
+                                            }}
+                                            style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '4px' }} 
+                                        />
                                     </td>
                                     <td>
                                         <strong>{cat.name}</strong>

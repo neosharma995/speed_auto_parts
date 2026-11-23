@@ -33,22 +33,23 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'pincode/*',
             'cart/*',
+            'logout',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
             if ($e->getStatusCode() === 419) {
                 if ($request->header('X-Inertia')) {
-                    return back()->with('error', 'Your session timed out. Please try again.');
+                    return \Inertia\Inertia::location($request->headers->get('referer') ?: url()->previous() ?: '/');
                 }
-                return redirect()->guest(route('login'))->with('error', 'Your page session expired. Please try again.');
+                return redirect()->back();
             }
         });
 
         $exceptions->render(function (TokenMismatchException $e, $request) {
             if ($request->header('X-Inertia')) {
-                return back()->with('error', 'Your session timed out. Please try again.');
+                return \Inertia\Inertia::location($request->headers->get('referer') ?: url()->previous() ?: '/');
             }
-            return redirect()->guest(route('login'))->with('error', 'Your page session expired. Please try again.');
+            return redirect()->back();
         });
     })->create();

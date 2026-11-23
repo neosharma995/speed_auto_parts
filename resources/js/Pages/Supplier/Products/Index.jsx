@@ -152,7 +152,7 @@ export default function SupplierProductsIndex({ products, categories = [], brand
 
             <div className="admin-card">
                 <div className="admin-card-header">
-                    <h3>Supplied Auto Parts ({products.total || items.length})</h3>
+                    <h3>Supplied Autos Parts ({products.total || items.length})</h3>
                     <button type="button" className="btn btn-primary btn-sm" onClick={openCreateModal}>
                         <Plus size={16} /> Create New Product
                     </button>

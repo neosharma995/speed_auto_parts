@@ -24,19 +24,19 @@ export default function Login({ status, canResetPassword }) {
     const fillDemo = (role) => {
         if (role === 'admin') {
             setData({
-                email: 'admin@autoparts.com',
+                email: 'admin@autosparts.com',
                 password: 'password',
                 remember: true,
             });
         } else if (role === 'supplier') {
             setData({
-                email: 'supplier@autoparts.com',
+                email: 'supplier@autosparts.com',
                 password: 'password',
                 remember: true,
             });
         } else {
             setData({
-                email: 'customer@autoparts.com',
+                email: 'customer@autosparts.com',
                 password: 'password',
                 remember: true,
             });
@@ -45,7 +45,7 @@ export default function Login({ status, canResetPassword }) {
 
     return (
         <GuestLayout>
-            <Head title="Sign In | AUTO PARTS" />
+            <Head title="Sign In | SPEED AUTOS PARTS" />
 
             <div style={{ marginBottom: '24px', textAlign: 'center' }}>
                 <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#151515', textTransform: 'uppercase' }}>

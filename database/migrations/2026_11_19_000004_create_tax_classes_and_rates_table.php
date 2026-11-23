@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('tax_classes', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // e.g. Standard Auto Parts GST 18%, Performance Spares GST 28%
+            $table->string('name'); // e.g. Standard Autos Parts GST 18%, Performance Spares GST 28%
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->boolean('is_default')->default(false);
