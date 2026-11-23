@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, ShoppingBag, Info, Headphones } from 'lucide-react';
 
 export default function Footer() {
     const { settings = {} } = usePage().props;
@@ -110,7 +110,7 @@ export default function Footer() {
                         {/* Column 2: Shop */}
                         <div className="footer-col">
                             <h3 className="footer-heading">
-                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                                <ShoppingBag size={16} color="#F97316" strokeWidth={2.2} className="footer-heading-icon" />
                                 <span>Shop</span>
                             </h3>
                             <ul className="footer-links">
@@ -126,7 +126,7 @@ export default function Footer() {
                         {/* Column 3: Information */}
                         <div className="footer-col">
                             <h3 className="footer-heading">
-                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                                <Info size={16} color="#F97316" strokeWidth={2.2} className="footer-heading-icon" />
                                 <span>Information</span>
                             </h3>
                             <ul className="footer-links">
@@ -142,7 +142,7 @@ export default function Footer() {
                         {/* Column 4: Customer Support */}
                         <div className="footer-col">
                             <h3 className="footer-heading">
-                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                                <Headphones size={16} color="#F97316" strokeWidth={2.2} className="footer-heading-icon" />
                                 <span>Customer Support</span>
                             </h3>
                             <ul className="footer-links">

@@ -26,18 +26,19 @@
     background-color: transparent;
     color: $color-white;
     overflow: hidden;
-    height: 550px;
-    min-height: 450px;
-    max-height: 550px;
-    display: flex;
-    align-items: center;
-    padding: 30px 0 50px;
+    height: auto;
+    min-height: unset;
+    max-height: none;
+    display: block;
+    padding: 24px 0 16px;
     border-radius: 0;
 
     @include respond-to('md') {
       height: 550px;
       min-height: 450px;
       max-height: 550px;
+      display: flex;
+      align-items: center;
       padding: 32px 0 52px;
     }
 
@@ -45,6 +46,8 @@
       height: 550px;
       min-height: 450px;
       max-height: 550px;
+      display: flex;
+      align-items: center;
       padding: 36px 0 56px;
     }
 
@@ -109,20 +112,23 @@
   }
 
   &-heading {
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 900;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
     text-transform: uppercase;
     color: $color-white;
-    margin: 2px 0;
+    margin: 4px 0 8px;
 
     @include respond-to('sm') {
-      font-size: 44px;
+      font-size: 38px;
     }
 
-    @include respond-to('lg') {
-      font-size: 50px;
+    @include respond-to('md') {
+      font-size: 46px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin: 2px 0;
     }
 
     @include respond-to('xl') {
@@ -131,14 +137,26 @@
 
     .heading-white {
       color: #FFFFFF;
-      display: block;
+      display: inline-block;
+      margin-right: 6px;
       text-shadow: none; // Removed text shadow
+
+      @include respond-to('md') {
+        display: block;
+        margin-right: 0;
+      }
     }
 
     .heading-orange {
       color: $color-primary;
-      display: block;
+      display: inline-block;
+      margin-right: 6px;
       text-shadow: none; // Removed neon glow for neat and clean look
+
+      @include respond-to('md') {
+        display: block;
+        margin-right: 0;
+      }
     }
   }
 
@@ -158,6 +176,20 @@
     gap: 14px;
     margin-top: 10px;
     align-items: center;
+
+    @include respond-below('md') {
+      gap: 8px;
+      margin-top: 4px;
+
+      .hero-btn {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 130px;
+        height: 42px;
+        padding: 0 12px;
+        font-size: 13px;
+        justify-content: center;
+      }
+    }
 
     .hero-btn {
       height: 44px;
@@ -251,7 +283,7 @@
   &-visual-stage {
     position: relative;
     width: 100%;
-    height: 420px;
+    height: 230px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -836,7 +868,7 @@
   .home-hero {
     height: auto;
     min-height: 400px;
-    max-height: 550px;
+    max-height: none;
     padding: 24px 0 44px;
 
     &-visual-stage {
@@ -852,26 +884,76 @@
 }
 
 @media (max-width: 767px) {
+  .hero-unified-card .home-hero,
   .home-hero {
     height: auto;
-    min-height: 400px;
-    max-height: 550px;
-    padding: 20px 0 40px;
+    min-height: unset;
+    max-height: none;
+    display: block;
+    padding: 20px 0 16px;
+    overflow: hidden;
+
+    &-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
     &-content {
       max-width: 100%;
+      gap: 8px;
+      padding: 0;
+    }
+
+    &-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      gap: 6px;
+
+      .hero-eyebrow-stripe {
+        height: 12px;
+      }
     }
 
     &-heading {
-      font-size: 32px;
+      font-size: 28px;
+      line-height: 1.1;
+      margin: 2px 0 6px;
+
+      .heading-white,
+      .heading-orange {
+        display: inline-block;
+        margin-right: 6px;
+      }
     }
 
     &-desc {
       font-size: 13px;
+      line-height: 1.5;
+      margin: 0 0 10px;
+      max-width: 100%;
+    }
+
+    .home-hero-cta-group {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      .hero-btn {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 130px;
+        height: 42px;
+        padding: 0 12px;
+        font-size: 13px;
+        justify-content: center;
+      }
     }
 
     &-visual-stage {
-      height: 320px;
+      height: 230px;
+      width: 100%;
+      margin: 6px 0 0;
     }
 
     .hero-callouts-overlay {
@@ -879,10 +961,18 @@
     }
 
     .hero-scene-controls {
-      bottom: 10px;
+      position: relative;
+      bottom: auto;
+      right: auto;
+      margin: 12px auto 4px;
+      display: flex;
+      justify-content: center;
+      transform: none;
+    }
+
+    .hero-play-pause-btn {
+      bottom: 12px;
       right: 12px;
-      transform: scale(0.85);
-      transform-origin: bottom right;
     }
   }
 }

@@ -19,6 +19,9 @@ Route::get('/products/{slug}', [ProductController::class, 'show'])->name('produc
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/categories', [StaticPageController::class, 'categories'])->name('categories.index');
 Route::get('/brands', [StaticPageController::class, 'brands'])->name('brands.index');
+Route::get('/brands/{slug}', function (string $slug) {
+    return redirect()->route('shop', ['brand' => $slug]);
+});
 Route::get('/vehicle-finder', [VehicleFinderController::class, 'page'])->name('vehicle-finder');
 Route::post('/vehicles/select', [VehicleFinderController::class, 'selectVehicle'])->name('vehicles.select');
 Route::post('/vehicles/clear', [VehicleFinderController::class, 'clearVehicle'])->name('vehicles.clear');

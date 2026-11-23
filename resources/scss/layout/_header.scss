@@ -22,6 +22,11 @@
       border-bottom: 1px solid #E5E7EB;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
     }
+
+    .site-header-mobile-subbar {
+      border-bottom: 1px solid #E5E7EB;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -37,7 +42,8 @@
     border-bottom: 1px solid rgba($color-white, 0.08);
 
     @include respond-below('md') {
-      display: none;
+      height: 28px;
+      font-size: 11px;
     }
 
     &-inner {
@@ -45,6 +51,10 @@
       align-items: center;
       justify-content: space-between;
       width: 100%;
+
+      @include respond-below('md') {
+        justify-content: center;
+      }
     }
 
     &-left {
@@ -53,6 +63,10 @@
       gap: 8px;
       font-weight: 500;
       color: $color-white;
+
+      @include respond-below('md') {
+        display: none;
+      }
 
       .utility-car-icon {
         color: $color-white;
@@ -63,6 +77,12 @@
       display: flex;
       align-items: center;
       gap: 24px;
+
+      @include respond-below('md') {
+        gap: 12px;
+        width: 100%;
+        justify-content: center;
+      }
 
       .utility-select {
         display: flex;
@@ -115,12 +135,21 @@
     background-color: $color-header-bg;
     border-bottom: 1px solid rgba($color-white, 0.05);
 
+    @include respond-below('lg') {
+      height: 56px;
+      border-bottom: none;
+    }
+
     &-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
       gap: 28px;
+
+      @include respond-below('md') {
+        gap: 12px;
+      }
     }
   }
 
@@ -138,6 +167,11 @@
       max-width: 230px;
       object-fit: contain;
       display: block;
+
+      @include respond-below('md') {
+        height: 34px;
+        max-width: 210px;
+      }
     }
 
     // Fallback badge styling if HTML text is used
@@ -243,9 +277,13 @@
 
   // Right Header Actions (Account, Wishlist, Cart)
   &-actions {
-    display: flex;
+    display: none;
     align-items: center;
     gap: 24px;
+
+    @include respond-to('lg') {
+      display: flex;
+    }
 
     .site-header-account-wrap {
       position: relative;
@@ -267,14 +305,10 @@
       }
 
       .action-user-text {
-        display: none;
+        display: flex;
         flex-direction: column;
         text-align: left;
         line-height: 1.2;
-
-        @include respond-to('lg') {
-          display: flex;
-        }
 
         .user-sub {
           font-size: 11px;
@@ -330,19 +364,175 @@
         line-height: 1;
       }
     }
+  }
 
-    .site-header-mobile-toggle {
+  // Mobile Toggle Button
+  .site-header-mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: $color-white;
+    cursor: pointer;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    transition: color $transition-default;
+
+    svg {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
+
+    &:hover {
+      color: $color-primary;
+    }
+
+    @include respond-to('lg') {
+      display: none;
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // ROW 2.5: MOBILE SUBBAR (SEARCH, ACCOUNT, CART & ORDER NOW)
+  // --------------------------------------------------------------------------
+  &-mobile-subbar {
+    display: none;
+    width: 100%;
+    background-color: $color-white;
+    border-top: none;
+    border-bottom: 1px solid transparent; // Initially no border bottom
+    box-shadow: none; // Initially no shadow
+    padding: 8px 0;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    @include respond-below('lg') {
+      display: flex;
+      flex-direction: column;
+    }
+
+    &-inner {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+    }
+
+    .mobile-subbar-right-group {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 16px;
+      margin-left: auto;
+    }
+
+    .mobile-subbar-icon-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: none;
+      width: 32px;
+      height: 32px;
+      color: #111111;
+      background: transparent;
       border: none;
-      color: $color-white;
       cursor: pointer;
-      padding: 4px;
+      text-decoration: none;
+      position: relative;
+      padding: 0;
+      transition: color $transition-default;
 
-      @include respond-to('lg') {
-        display: none;
+      &:hover {
+        color: $color-primary;
+      }
+    }
+
+    .mobile-subbar-cart-badge {
+      position: absolute;
+      top: -3px;
+      right: -6px;
+      background-color: $color-primary;
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 800;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      padding: 0 2px;
+    }
+
+    .mobile-subbar-order-btn {
+      background-color: $color-primary;
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      white-space: nowrap;
+      transition: background-color $transition-default;
+
+      &:hover {
+        background-color: $color-primary-hover;
+      }
+    }
+
+    .mobile-search-expand-wrap {
+      padding: 10px 15px 4px;
+      width: 100%;
+
+      .mobile-search-form {
+        display: flex;
+        align-items: center;
+        background-color: #F3F4F6;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        padding: 0 6px 0 12px;
+        height: 38px;
+
+        input {
+          background: transparent;
+          border: none;
+          outline: none;
+          color: #111111;
+          font-size: 13px;
+          flex: 1;
+          width: 100%;
+
+          &::placeholder {
+            color: #6B7280;
+          }
+        }
+
+        .mobile-search-submit {
+          background-color: $color-primary;
+          border: none;
+          border-radius: 6px;
+          width: 28px;
+          height: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #FFFFFF;
+          cursor: pointer;
+          flex-shrink: 0;
+
+          &:hover {
+            background-color: $color-primary-hover;
+          }
+        }
       }
     }
   }
