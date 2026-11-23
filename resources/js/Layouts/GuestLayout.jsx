@@ -29,7 +29,7 @@ export default function GuestLayout({ children }) {
                     <Wrench size={22} />
                 </div>
                 <span style={{ fontSize: '24px', fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.02em' }}>
-                    AUTO<span style={{ color: '#F36B16' }}>PARTS</span>
+                    SPEED <span style={{ color: '#F36B16' }}>AUTOS PARTS</span>
                 </span>
             </Link>
 
@@ -45,7 +45,7 @@ export default function GuestLayout({ children }) {
             </div>
 
             <span style={{ color: '#666', fontSize: '12px', marginTop: '24px' }}>
-                © {new Date().getFullYear()} AUTO PARTS E-Commerce Platform. All rights reserved.
+                © {new Date().getFullYear()} Speed Autos Parts E-Commerce Platform. All rights reserved.
             </span>
         </div>
     );

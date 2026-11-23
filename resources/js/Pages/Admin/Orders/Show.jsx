@@ -50,7 +50,6 @@ export default function AdminOrderShow({ order }) {
                                         <th>Part</th>
                                         <th>Price</th>
                                         <th>Qty</th>
-                                        <th>Tax (GST)</th>
                                         <th>Total</th>
                                     </tr>
                                 </thead>
@@ -68,7 +67,6 @@ export default function AdminOrderShow({ order }) {
                                             </td>
                                             <td>₹{Number(item.unit_price).toLocaleString('en-IN')}</td>
                                             <td>{item.quantity}</td>
-                                            <td>₹{Number(item.tax_amount).toLocaleString('en-IN')}</td>
                                             <td><strong>₹{Number(item.total).toLocaleString('en-IN')}</strong></td>
                                         </tr>
                                     ))}
@@ -184,28 +182,6 @@ export default function AdminOrderShow({ order }) {
                                 <span>Shipping Fee</span>
                                 <span>₹{Number(order.shipping_cost).toLocaleString('en-IN')}</span>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <span>GST Tax Total</span>
-                                <span>₹{Number(order.tax_amount).toLocaleString('en-IN')}</span>
-                            </div>
-                            {Number(order.cgst_amount) > 0 && (
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#888', paddingLeft: '8px' }}>
-                                    <span>CGST</span>
-                                    <span>₹{Number(order.cgst_amount).toLocaleString('en-IN')}</span>
-                                </div>
-                            )}
-                            {Number(order.sgst_amount) > 0 && (
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#888', paddingLeft: '8px' }}>
-                                    <span>SGST</span>
-                                    <span>₹{Number(order.sgst_amount).toLocaleString('en-IN')}</span>
-                                </div>
-                            )}
-                            {Number(order.igst_amount) > 0 && (
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#888', paddingLeft: '8px' }}>
-                                    <span>IGST</span>
-                                    <span>₹{Number(order.igst_amount).toLocaleString('en-IN')}</span>
-                                </div>
-                            )}
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 800, color: '#F36B16', paddingTop: '10px', borderTop: '1px solid #EEE' }}>
                                 <span>Grand Total</span>
                                 <span>₹{Number(order.total_amount).toLocaleString('en-IN')}</span>

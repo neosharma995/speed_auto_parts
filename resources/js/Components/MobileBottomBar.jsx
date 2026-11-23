@@ -44,26 +44,26 @@ export default function MobileBottomBar() {
                     <span className="mobile-bottom-bar-label">Search</span>
                 </Link>
 
-                {/* 4. Wishlist */}
+                {/* 4. Cart */}
                 <Link 
-                    href="/customer/wishlist" 
-                    className={`mobile-bottom-bar-item ${isCurrent('/customer/wishlist') ? 'mobile-bottom-bar-item--active' : ''}`}
+                    href="/cart" 
+                    className={`mobile-bottom-bar-item ${isCurrent('/cart') ? 'mobile-bottom-bar-item--active' : ''}`}
                 >
                     <Heart size={20} />
                     {wishlistCount > 0 && <span className="badge-count">{wishlistCount}</span>}
-                    <span className="mobile-bottom-bar-label">Wishlist</span>
+                    <span className="mobile-bottom-bar-label">Saved</span>
                 </Link>
 
-                {/* 5. Account */}
-                <Link 
-                    href={auth?.user ? '/customer/dashboard' : '/login'} 
-                    className={`mobile-bottom-bar-item ${isCurrent('/customer') || isCurrent('/login') ? 'mobile-bottom-bar-item--active' : ''}`}
-                >
-                    <User size={20} />
-                    <span className="mobile-bottom-bar-label">
-                        {auth?.user ? 'Account' : 'Login'}
-                    </span>
-                </Link>
+                {/* 5. Admin / Support */}
+                {auth?.user && (
+                    <Link 
+                        href="/admin/dashboard" 
+                        className={`mobile-bottom-bar-item ${isCurrent('/admin') ? 'mobile-bottom-bar-item--active' : ''}`}
+                    >
+                        <User size={20} />
+                        <span className="mobile-bottom-bar-label">Admin</span>
+                    </Link>
+                )}
             </div>
         </div>
     );

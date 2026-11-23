@@ -91,9 +91,9 @@ class StaticPageController extends Controller
     public function about(): Response
     {
         return Inertia::render('Public/StaticPage', [
-            'title' => 'About AUTO PARTS',
+            'title' => 'About Speed Autos Parts',
             'subtitle' => 'Specialized automotive engineering spares & motorsport hardware distribution.',
-            'content' => "Welcome to AUTO PARTS — your dedicated supplier for high-performance automotive replacement components, precision braking systems, high-flow induction setups, mandrel-bent exhausts, and track-grade suspension kits.\n\nFounded by passionate automotive engineers and drivers, AUTO PARTS bridges the gap between precision track performance and everyday street reliability. Every single component in our catalog is engineered to exacting tolerances, 100% genuine guaranteed, and backed by comprehensive vehicle compatibility databases.\n\nWhether you're executing a weekend garage build, upgrading track day brakes, or replacing critical OEM components, AUTO PARTS delivers verified fitment and fast nationwide distribution.",
+            'content' => "Welcome to Speed Autos Parts — your dedicated supplier for high-performance automotive replacement components, precision braking systems, high-flow induction setups, mandrel-bent exhausts, and track-grade suspension kits.\n\nFounded by passionate automotive engineers and drivers, Speed Autos Parts bridges the gap between precision track performance and everyday street reliability. Every single component in our catalog is engineered to exacting tolerances, 100% genuine guaranteed, and backed by comprehensive vehicle compatibility databases.\n\nWhether you're executing a weekend garage build, upgrading track day brakes, or replacing critical OEM components, Speed Autos Parts delivers verified fitment and fast nationwide distribution.",
         ]);
     }
 
@@ -102,7 +102,7 @@ class StaticPageController extends Controller
         return Inertia::render('Public/StaticPage', [
             'title' => 'Contact Engineering Support',
             'subtitle' => 'Have questions regarding vehicle fitment or part numbers? Our technical specialists are here to assist.',
-            'content' => "Our team of certified automotive mechanics and performance specialists is available Monday through Saturday, 9:00 AM – 7:00 PM IST.\n\nDirect Inquiries:\n• Support Hotline: +91 11 4050 9000\n• Technical Fitment Desk: support@autoparts.in\n• Corporate Office: AUTO PARTS Logistics Hub, Industrial Area Phase II, New Delhi - 110020\n\nFor part number verification, please include your 17-digit VIN (Vehicle Identification Number), Engine Code, and Year/Make/Model in your inquiry.",
+            'content' => "Our team of certified automotive mechanics and performance specialists is available Monday through Saturday, 9:00 AM – 7:00 PM IST.\n\nDirect Inquiries:\n• Support Hotline: +91 11 4050 9000\n• Technical Fitment Desk: support@autoparts.in\n• Corporate Office: Speed Autos Parts Logistics Hub, Industrial Area Phase II, New Delhi - 110020\n\nFor part number verification, please include your 17-digit VIN (Vehicle Identification Number), Engine Code, and Year/Make/Model in your inquiry.",
         ]);
     }
 
@@ -128,7 +128,7 @@ class StaticPageController extends Controller
     {
         return Inertia::render('Public/StaticPage', [
             'title' => 'Privacy Policy',
-            'subtitle' => 'How AUTO PARTS protects your vehicle details and account information.',
+            'subtitle' => 'How Speed Autos Parts protects your vehicle details and account information.',
             'content' => "We value your privacy. We only collect essential customer data required to fulfill parts orders, calculate accurate state GST, verify vehicle fitment compatibility, and coordinate courier delivery.\n\nWe never sell or rent your personal information to third-party marketing brokers. All financial transactions are securely processed via 256-bit SSL encrypted channels directly through RBI-compliant payment gateways (Razorpay). Your credit card and UPI credentials are never stored on our servers.",
         ]);
     }
@@ -138,25 +138,7 @@ class StaticPageController extends Controller
         return Inertia::render('Public/StaticPage', [
             'title' => 'Terms of Service',
             'subtitle' => 'Guidelines and legal terms governing parts procurement and vehicle fitment.',
-            'content' => "By accessing AUTO PARTS and placing an order, you agree to our standard terms of service:\n\n1. Component Installation: Automotive hardware, especially brake components, suspension coilovers, and high-performance exhausts, should always be installed by certified automotive technicians following factory torque specifications.\n2. Vehicle Modifications: Fitment compatibility guarantees apply to stock, unmodified OEM chassis configurations unless explicitly noted for aftermarket configurations.\n3. Warranties: All manufacturer warranties are passed directly to the purchaser. AUTO PARTS assists with RMA claims for certified defect inspections.",
-        ]);
-    }
-
-    public function helpCenter(): Response
-    {
-        return Inertia::render('Public/StaticPage', [
-            'title' => 'Help Center',
-            'subtitle' => 'Frequently needed support, order assistance, and fitment guidelines.',
-            'content' => "Welcome to the SpeedAutoParts Help Center.\n\n• Ordering & Shipping: We deliver verified automotive hardware nationwide with real-time tracking.\n• Fitment Verification: Use our Vehicle Finder to confirm engine code, year, make, and model compatibility before placing orders.\n• Returns: Unopened and uninstalled parts can be returned within 30 days.\n• Technical Inquiries: Need advice on brake disc thickness, exhaust bore, or coilover spring rates? Reach our engineering team at support@speedautoparts.com or call +91 98765 43210.",
-        ]);
-    }
-
-    public function faqs(): Response
-    {
-        return Inertia::render('Public/StaticPage', [
-            'title' => 'Frequently Asked Questions (FAQs)',
-            'subtitle' => 'Quick answers to common questions about parts, fitment, orders, and warranties.',
-            'content' => "Frequently Asked Questions:\n\n1. How do I verify part compatibility?\nUse the Vehicle Parts Finder at the top of the store. Select your vehicle Year, Make, Model, and Engine to filter catalog parts guaranteed to fit.\n\n2. How long does shipping take?\nOrders are dispatched within 24–48 hours. Standard surface transit takes 3–5 business days, and express courier takes 1–2 business days.\n\n3. Can I return a part if it doesn't fit?\nYes! If verified via our Vehicle Parts Finder and it does not fit your unmodified vehicle, we provide 100% free return pickup and replacement.\n\n4. Are the parts genuine OEM or certified aftermarket?\nAll components sold on SpeedAutoParts are 100% authentic, sourced directly from certified manufacturers and authorized global distributors.",
+            'content' => "By accessing Speed Autos Parts and placing an order, you agree to our standard terms of service:\n\n1. Component Installation: Automotive hardware, especially brake components, suspension coilovers, and high-performance exhausts, should always be installed by certified automotive technicians following factory torque specifications.\n2. Vehicle Modifications: Fitment compatibility guarantees apply to stock, unmodified OEM chassis configurations unless explicitly noted for aftermarket configurations.\n3. Warranties: All manufacturer warranties are passed directly to the purchaser. Speed Autos Parts assists with RMA claims for certified defect inspections.",
         ]);
     }
 }

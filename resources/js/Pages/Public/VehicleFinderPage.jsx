@@ -80,7 +80,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
 
     return (
         <AppLayout title="Shop Automotive Parts By Vehicle">
-            <div className="section bg-light" style={{ minHeight: '70vh' }}>
+            <div className="section bg-white" style={{ minHeight: '70vh' }}>
                 <div className="container-narrow">
                     <div style={{ textAlign: 'center', marginBottom: '36px' }}>
                         <span style={{ fontSize: '13px', fontWeight: 800, color: '#F36B16', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
@@ -129,7 +129,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                     )}
 
                     <div style={{
-                        backgroundColor: '#FFFFFF',
+                        backgroundColor: '#F8FAFC',
                         border: '1px solid #DCDCDC',
                         borderRadius: '8px',
                         padding: '32px'

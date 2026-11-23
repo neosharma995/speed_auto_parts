@@ -11,7 +11,7 @@ export default function AppLayout({ title, children }) {
 
     return (
         <div className="site-wrap">
-            <Head title={title ? `${title} | AUTO PARTS` : 'AUTO PARTS | Performance Spare Parts'} />
+            <Head title={title ? `${title} | Speed Autos Parts` : 'Speed Autos Parts | Performance Spare Parts'} />
 
             <Header />
 

@@ -17,14 +17,11 @@ import {
     LogOut, 
     Shield, 
     X,
-    Wrench,
-    Store,
-    Truck
+    Wrench
 } from 'lucide-react';
 
 export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
-    const { url, props } = usePage();
-    const pendingLotsCount = props?.pendingLotsCount || 0;
+    const { url } = usePage();
 
     const isCurrent = (path) => url.startsWith(path);
 
@@ -41,7 +38,7 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                     <div style={{ width: '32px', height: '32px', borderRadius: '4px', backgroundColor: '#F36B16', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Wrench size={18} />
                     </div>
-                    <span>AUTO<span style={{ color: '#F36B16' }}>PARTS</span> <small style={{ fontSize: '10px', color: '#888' }}>ADMIN</small></span>
+                    <span>SPEED <span style={{ color: '#F36B16' }}>AUTOS PARTS</span> <small style={{ fontSize: '10px', color: '#888' }}>ADMIN</small></span>
                     <button 
                         type="button" 
                         onClick={onCloseSidebar}
@@ -67,23 +64,6 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                         <span>Inventory</span>
                     </Link>
 
-                    <span className="nav-group-title">Supply Chain</span>
-                    <Link href="/admin/suppliers" className={isCurrent('/admin/suppliers') ? 'active' : ''}>
-                        <Truck size={18} />
-                        <span>Suppliers</span>
-                    </Link>
-                    <Link href="/admin/warehouse" className={isCurrent('/admin/warehouse') ? 'active' : ''}>
-                        <Boxes size={18} />
-                        <span>Warehouse</span>
-                        {pendingLotsCount > 0 && (
-                            <span className="badge-count">{pendingLotsCount}</span>
-                        )}
-                    </Link>
-                    <Link href="/admin/catalogue" className={isCurrent('/admin/catalogue') ? 'active' : ''}>
-                        <Store size={18} />
-                        <span>Website Catalogue</span>
-                    </Link>
-
                     <span className="nav-group-title">Automotive Catalog</span>
                     <Link href="/admin/products" className={isCurrent('/admin/products') ? 'active' : ''}>
                         <Package size={18} />
@@ -106,11 +86,7 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                         <span>Vehicles & Fitment</span>
                     </Link>
 
-                    <span className="nav-group-title">Customers & Marketing</span>
-                    <Link href="/admin/customers" className={isCurrent('/admin/customers') ? 'active' : ''}>
-                        <Users size={18} />
-                        <span>Customers</span>
-                    </Link>
+                    <span className="nav-group-title">Marketing</span>
                     <Link href="/admin/coupons" className={isCurrent('/admin/coupons') ? 'active' : ''}>
                         <Percent size={18} />
                         <span>Coupons</span>
@@ -120,11 +96,7 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                         <span>Reviews</span>
                     </Link>
 
-                    <span className="nav-group-title">Finance & Store</span>
-                    <Link href="/admin/taxes" className={isCurrent('/admin/taxes') ? 'active' : ''}>
-                        <Receipt size={18} />
-                        <span>Tax Management</span>
-                    </Link>
+                    <span className="nav-group-title">Store</span>
                     <Link href="/admin/settings" className={isCurrent('/admin/settings') ? 'active' : ''}>
                         <Settings size={18} />
                         <span>Store Settings</span>

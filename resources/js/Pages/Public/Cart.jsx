@@ -43,7 +43,7 @@ export default function Cart() {
     if (cartItems.length === 0) {
         return (
             <AppLayout title="Shopping Cart">
-                <div className="section bg-light" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
+                <div className="section bg-white" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
                     <div className="container" style={{ textAlign: 'center' }}>
                         <div style={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
                             <ShoppingBag size={64} color="#DCDCDC" />

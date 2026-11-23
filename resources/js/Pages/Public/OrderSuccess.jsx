@@ -135,8 +135,8 @@ export default function OrderSuccess({ order }) {
                         </div>
 
                         <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
-                            <Link href="/customer/orders" className="btn btn-outline" style={{ flex: 1 }}>
-                                View All Orders in Account
+                            <Link href="/track-order" className="btn btn-outline" style={{ flex: 1 }}>
+                                Track Order Status
                             </Link>
                             <Link href="/shop" className="btn btn-primary" style={{ flex: 1 }}>
                                 Continue Shopping <ArrowRight size={16} />

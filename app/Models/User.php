@@ -22,7 +22,6 @@ class User extends Authenticatable
         'name',
         'email',
         'phone',
-        'company_name',
         'password',
         'status',
     ];
@@ -45,58 +44,31 @@ class User extends Authenticatable
         return $this->hasRole(UserRole::Admin->value);
     }
 
-    public function isCustomer(): bool
-    {
-        return $this->hasRole(UserRole::Customer->value);
-    }
-
     public function isEditor(): bool
     {
         return $this->hasRole(UserRole::Editor->value);
-    }
-
-    public function isSupplier(): bool
-    {
-        return $this->hasRole(UserRole::Supplier->value);
     }
 
     public function isStaff(): bool
     {
         return $this->isAdmin()
             || $this->isEditor()
-            || $this->roles()->whereNotIn('name', [UserRole::Customer->value, UserRole::Supplier->value])->exists();
+            || $this->roles()->exists();
     }
 
     public function dashboardRoute(): string
     {
-        if ($this->isAdmin() || $this->isEditor() || $this->isStaff()) {
-            return UserRole::Admin->dashboardRoute();
-        }
-        if ($this->isSupplier()) {
-            return UserRole::Supplier->dashboardRoute();
-        }
-        return UserRole::Customer->dashboardRoute();
+        return UserRole::Admin->dashboardRoute();
     }
 
     public function accountRoute(): string
     {
-        if ($this->isAdmin() || $this->isEditor() || $this->isStaff()) {
-            return UserRole::Admin->accountRoute();
-        }
-        if ($this->isSupplier()) {
-            return UserRole::Supplier->accountRoute();
-        }
-        return UserRole::Customer->accountRoute();
+        return UserRole::Admin->accountRoute();
     }
 
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'user_id');
-    }
-
-    public function addresses(): HasMany
-    {
-        return $this->hasMany(CustomerAddress::class, 'user_id');
     }
 
     public function reviews(): HasMany
@@ -107,16 +79,6 @@ class User extends Authenticatable
     public function wishlist(): HasMany
     {
         return $this->hasMany(Wishlist::class, 'user_id');
-    }
-
-    public function suppliedProducts(): HasMany
-    {
-        return $this->hasMany(Product::class, 'supplier_id');
-    }
-
-    public function stockTransfers(): HasMany
-    {
-        return $this->hasMany(StockTransfer::class, 'supplier_id');
     }
 
     public function updateProfile(array $attributes): void

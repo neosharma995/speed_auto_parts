@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 50" width="100%" height="100%">
+  <defs>
+    <style>
+      .slash { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 32px; fill: #F36B16; font-style: italic; letter-spacing: -2px; }
+      .brand-w { font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif; font-weight: 900; font-size: 20px; fill: #FFFFFF; letter-spacing: -0.5px; }
+      .brand-o { font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif; font-weight: 900; font-size: 20px; fill: #FE6901; letter-spacing: -0.5px; }
+      .sub-o { font-family: 'Montserrat', Arial, sans-serif; font-weight: 800; font-size: 8.5px; fill: #F36B16; letter-spacing: 2px; }
+    </style>
+  </defs>
+  <g transform="translate(5, 5)">
+    <text x="0" y="32" class="slash">///</text>
+    <text x="38" y="25" class="brand-w">SPEED <tspan class="brand-o">AUTOS PARTS</tspan></text>
+    <text x="40" y="38" class="sub-o">PERFORMANCE SPARE PARTS</text>
+  </g>
+</svg>

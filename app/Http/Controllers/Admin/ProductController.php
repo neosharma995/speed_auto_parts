@@ -11,7 +11,6 @@ use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductVariation;
 use App\Models\ProductVehicle;
-use App\Models\TaxClass;
 use App\Models\Vehicle;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +23,7 @@ class ProductController extends Controller
     public function index(Request $request): Response
     {
         $query = Product::query()
-            ->with(['brand', 'category', 'supplier'])
+            ->with(['brand', 'category'])
             ->withCount('variations');
 
         if ($search = $request->query('search')) {
@@ -60,7 +59,6 @@ class ProductController extends Controller
         return Inertia::render('Admin/Products/Create', [
             'categories' => Category::query()->orderBy('name')->get(),
             'brands' => Brand::query()->orderBy('name')->get(),
-            'taxClasses' => TaxClass::query()->with('rates')->get(),
             'attributes' => ProductAttribute::query()->with('values')->get(),
             'vehicles' => Vehicle::query()->orderBy('year', 'desc')->orderBy('make')->get(),
         ]);
@@ -92,7 +90,6 @@ class ProductController extends Controller
             'weight_unit' => ['nullable', 'string'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'brand_id' => ['nullable', 'exists:brands,id'],
-            'tax_class_id' => ['nullable', 'exists:tax_classes,id'],
             'attributes' => ['nullable', 'array'],
             'variations' => ['nullable', 'array'],
             'vehicle_ids' => ['nullable', 'array'],
@@ -173,7 +170,6 @@ class ProductController extends Controller
                 'weight_unit' => $product->weight_unit ?? 'kg',
                 'category_id' => $product->category_id,
                 'brand_id' => $product->brand_id,
-                'tax_class_id' => $product->tax_class_id,
                 'seo_title' => $product->seo_title,
                 'seo_description' => $product->seo_description,
                 'attributes' => $product->attributes->pluck('id')->toArray(),
@@ -192,7 +188,6 @@ class ProductController extends Controller
             ],
             'categories' => Category::query()->orderBy('name')->get(),
             'brands' => Brand::query()->orderBy('name')->get(),
-            'taxClasses' => TaxClass::query()->with('rates')->get(),
             'attributes' => ProductAttribute::query()->with('values')->get(),
             'vehicles' => Vehicle::query()->orderBy('year', 'desc')->orderBy('make')->get(),
         ]);
@@ -224,7 +219,6 @@ class ProductController extends Controller
             'weight_unit' => ['nullable', 'string'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'brand_id' => ['nullable', 'exists:brands,id'],
-            'tax_class_id' => ['nullable', 'exists:tax_classes,id'],
             'attributes' => ['nullable', 'array'],
             'variations' => ['nullable', 'array'],
             'vehicle_ids' => ['nullable', 'array'],

@@ -82,10 +82,9 @@ export default function AdminProductsIndex({ products, categories = [], brands =
                                 <th>Photo</th>
                                 <th>Product Name & Part #</th>
                                 <th>Category / Brand</th>
-                                <th>Supplier</th>
                                 <th>Type</th>
                                 <th>Base Price</th>
-                                <th>Stock (Whs / Cat)</th>
+                                <th>Stock</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -93,7 +92,7 @@ export default function AdminProductsIndex({ products, categories = [], brands =
                         <tbody>
                             {items.length === 0 ? (
                                 <tr>
-                                    <td colSpan="9" style={{ textAlign: 'center', padding: '32px', color: '#666' }}>
+                                    <td colSpan="8" style={{ textAlign: 'center', padding: '32px', color: '#666' }}>
                                         No automotive products found matching your filters.
                                     </td>
                                 </tr>
@@ -120,11 +119,6 @@ export default function AdminProductsIndex({ products, categories = [], brands =
                                             </small>
                                         </td>
                                         <td>
-                                            <span style={{ fontSize: '12px' }}>
-                                                {product.supplier?.company_name || product.supplier?.name || 'In-House'}
-                                            </span>
-                                        </td>
-                                        <td>
                                             <span className="badge badge-neutral" style={{ textTransform: 'capitalize' }}>
                                                 {product.product_type}
                                             </span>
@@ -138,14 +132,9 @@ export default function AdminProductsIndex({ products, categories = [], brands =
                                             )}
                                         </td>
                                         <td>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                                <span className={`badge ${product.warehouse_stock > 0 ? 'badge-warning' : 'badge-neutral'}`}>
-                                                    Whs: {product.warehouse_stock || 0}
-                                                </span>
-                                                <span className={`badge ${product.stock_quantity > 10 ? 'badge-success' : (product.stock_quantity > 0 ? 'badge-warning' : 'badge-danger')}`}>
-                                                    Cat: {product.stock_quantity}
-                                                </span>
-                                            </div>
+                                            <span className={`badge ${product.stock_quantity > 10 ? 'badge-success' : (product.stock_quantity > 0 ? 'badge-warning' : 'badge-danger')}`}>
+                                                {product.stock_quantity} units
+                                            </span>
                                         </td>
                                         <td>
                                             <span className={`badge ${product.status === 'published' ? 'badge-success' : 'badge-neutral'}`}>

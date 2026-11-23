@@ -61,36 +61,8 @@ export default function Checkout({ savedAddresses = [], user = null }) {
         }
     }, []);
 
-    // Dynamic Tax Calculation state
-    const [taxData, setTaxData] = useState({
-        tax_amount: 0,
-        cgst_amount: 0,
-        sgst_amount: 0,
-        igst_amount: 0,
-        is_interstate: false,
-    });
-    const [loadingTax, setLoadingTax] = useState(false);
     const [processingOrder, setProcessingOrder] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-
-    // Fetch dynamic GST tax calculation whenever items or shipping state changes
-    useEffect(() => {
-        if (cartItems.length === 0) return;
-
-        setLoadingTax(true);
-        axios.post('/api/checkout/calculate-tax', {
-            items: cartItems,
-            customer_state: state,
-        }).then(res => {
-            if (res.data.success) {
-                setTaxData(res.data);
-            }
-        }).catch(err => {
-            console.error('Tax calculation error', err);
-        }).finally(() => {
-            setLoadingTax(false);
-        });
-    }, [cartItems, state]);
 
     const handleApplyCoupon = async (e) => {
         e.preventDefault();
@@ -115,7 +87,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
     };
 
     const finalSubtotal = Math.max(0, subtotal - discountAmount);
-    const grandTotal = finalSubtotal + taxData.tax_amount + shippingCost;
+    const grandTotal = finalSubtotal + shippingCost;
 
     const handlePlaceOrder = async (e) => {
         e.preventDefault();
@@ -151,10 +123,10 @@ export default function Checkout({ savedAddresses = [], user = null }) {
             shipping_cost: shippingCost,
             coupon_code: discountAmount > 0 ? couponCode : null,
             discount_amount: discountAmount,
-            tax_amount: taxData.tax_amount,
-            cgst_amount: taxData.cgst_amount,
-            sgst_amount: taxData.sgst_amount,
-            igst_amount: taxData.igst_amount,
+            tax_amount: 0,
+            cgst_amount: 0,
+            sgst_amount: 0,
+            igst_amount: 0,
             subtotal,
             total_amount: grandTotal,
             order_notes: orderNotes,
@@ -195,7 +167,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                         key: rzpData.key,
                         amount: rzpData.amount,
                         currency: rzpData.currency || 'INR',
-                        name: 'AUTO PARTS',
+                        name: 'Speed Autos Parts',
                         description: `Order ${rzpData.order_number}`,
                         order_id: rzpData.razorpay_order_id,
                         prefill: {
@@ -261,7 +233,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
     if (cartItems.length === 0) {
         return (
             <AppLayout title="Checkout">
-                <div className="section bg-light" style={{ minHeight: '60vh', textAlign: 'center', padding: '64px 20px' }}>
+                <div className="section bg-white" style={{ minHeight: '60vh', textAlign: 'center', padding: '64px 20px' }}>
                     <h2>No items to checkout</h2>
                     <p style={{ color: '#666', marginTop: '8px' }}>Your shopping cart is currently empty.</p>
                     <Link href="/shop" className="btn btn-primary" style={{ marginTop: '16px' }}>
@@ -535,25 +507,6 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                     <span>Shipping</span>
                                     <span>{shippingCost === 0 ? 'FREE Ground Shipping' : `₹${shippingCost}`}</span>
                                 </div>
-
-                                {/* Detailed GST breakdown */}
-                                {taxData.is_interstate ? (
-                                    <div className="total-row">
-                                        <span>IGST (Integrated Tax)</span>
-                                        <span>₹{taxData.igst_amount.toLocaleString('en-IN')}</span>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="total-row">
-                                            <span>CGST (Central GST)</span>
-                                            <span>₹{taxData.cgst_amount.toLocaleString('en-IN')}</span>
-                                        </div>
-                                        <div className="total-row">
-                                            <span>SGST (State GST)</span>
-                                            <span>₹{taxData.sgst_amount.toLocaleString('en-IN')}</span>
-                                        </div>
-                                    </>
-                                )}
 
                                 <div className="total-row total-row--grand">
                                     <span>Total Payable</span>

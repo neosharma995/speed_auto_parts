@@ -15,20 +15,11 @@ enum UserPermission: string
     case ManageVariations = 'manage variations';
     case ManageVehicles = 'manage vehicles';
     case ManageInventory = 'manage inventory';
-    case ManageCustomers = 'manage customers';
     case ManageCoupons = 'manage coupons';
-    case ManageTaxes = 'manage taxes';
     case ManageReviews = 'manage reviews';
     case ManageSettings = 'manage settings';
     case ManageStaff = 'manage staff';
     case ManageRoles = 'manage roles';
-    case ManageSuppliers = 'manage suppliers';
-    case ManageWarehouse = 'manage warehouse';
-    case ManageCatalogue = 'manage catalogue';
-
-    // Supplier
-    case SupplierManageProducts = 'supplier manage products';
-    case SupplierSendLots = 'supplier send lots';
 
     // Content Editor
     case ManageContent = 'manage content';
@@ -66,14 +57,6 @@ enum UserPermission: string
             self::PlaceOrders->value,
             self::ManageProfile->value,
             self::ViewOwnOrders->value,
-        ];
-    }
-
-    public static function supplierPermissions(): array
-    {
-        return [
-            self::SupplierManageProducts->value,
-            self::SupplierSendLots->value,
         ];
     }
 

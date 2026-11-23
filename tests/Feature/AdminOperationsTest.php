@@ -13,13 +13,10 @@ use Tests\TestCase;
 
 class AdminOperationsTest extends TestCase
 {
-    public function test_customer_cannot_access_admin_dashboard(): void
+    public function test_guest_cannot_access_admin_dashboard(): void
     {
-        $customer = User::where('email', 'customer@autoparts.com')->first();
-        $this->actingAs($customer);
-
         $response = $this->get('/admin/dashboard');
-        $response->assertStatus(403);
+        $response->assertRedirect('/login');
     }
 
     public function test_admin_can_access_admin_dashboard(): void
@@ -105,15 +102,15 @@ class AdminOperationsTest extends TestCase
         if (!$order) {
             $order = Order::create([
                 'order_number' => 'ORD-TEST-' . rand(1000, 9999),
-                'shipping_name' => 'Test Customer',
-                'shipping_email' => 'customer@autoparts.com',
-                'shipping_phone' => '+91 98765 43210',
-                'shipping_address_line1' => 'Test St',
-                'shipping_city' => 'Delhi',
-                'shipping_state' => 'Delhi',
-                'shipping_pincode' => '110001',
+                'customer_name' => 'Test Customer',
+                'customer_email' => 'guest@autoparts.com',
+                'customer_phone' => '+91 98765 43210',
+                'shipping_address' => 'Test St',
+                'city' => 'Delhi',
+                'state' => 'Delhi',
+                'pincode' => '110001',
                 'subtotal' => 5000.00,
-                'total_amount' => 5900.00,
+                'total_amount' => 5000.00,
                 'payment_method' => 'cod',
                 'payment_status' => 'pending',
                 'delivery_status' => 'pending',

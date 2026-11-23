@@ -25,7 +25,6 @@ class ProductController extends Controller
             ->with([
                 'brand',
                 'category',
-                'taxClass.rates',
                 'variations',
                 'attributes.values',
                 'productVehicles.vehicle',

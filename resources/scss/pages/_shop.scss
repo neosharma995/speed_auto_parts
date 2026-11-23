@@ -6,8 +6,6 @@
 @use '../abstracts/mixins' as *;
 
 .shop-page {
-  background-color: $color-background;
-  min-height: 75vh;
   padding: 32px 0 64px;
 
   &-layout {
@@ -120,7 +118,6 @@
       gap: 12px;
 
       .mobile-filter-btn {
-        background-color: $color-white;
         display: flex;
         align-items: center;
         gap: 6px;
@@ -136,7 +133,6 @@
       }
 
       .sort-select {
-        background-color: $color-white;
         padding: 8px 32px 8px 12px;
         font-size: 13px;
         font-weight: 600;

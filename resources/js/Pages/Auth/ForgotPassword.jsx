@@ -15,7 +15,7 @@ export default function ForgotPassword({ status }) {
 
     return (
         <GuestLayout>
-            <Head title="Forgot Password | AUTO PARTS" />
+            <Head title="Forgot Password | Speed Autos Parts" />
 
             <div style={{ marginBottom: '24px', textAlign: 'center' }}>
                 <h1 style={{ fontSize: '22px', fontWeight: 900, color: '#151515', textTransform: 'uppercase' }}>

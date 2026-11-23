@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerAddress;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -13,7 +12,6 @@ use App\Models\Product;
 use App\Models\ProductVariation;
 use App\Services\InventoryService;
 use App\Services\RazorpayService;
-use App\Services\TaxCalculationService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,7 +26,6 @@ class CheckoutController extends Controller
 {
     public function __construct(
         protected RazorpayService $razorpayService,
-        protected TaxCalculationService $taxService,
         protected InventoryService $inventoryService
     ) {}
 
@@ -39,12 +36,9 @@ class CheckoutController extends Controller
 
     public function view(Request $request): Response
     {
-        $user = $request->user();
-        $savedAddresses = $user ? $user->addresses : [];
-
         return Inertia::render('Public/Checkout', [
-            'savedAddresses' => $savedAddresses,
-            'user' => $user,
+            'savedAddresses' => [],
+            'user' => $request->user(),
         ]);
     }
 
@@ -111,22 +105,6 @@ class CheckoutController extends Controller
         return $this->placeCodOrder($request);
     }
 
-    public function calculateTax(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'items' => ['required', 'array'],
-            'customer_state' => ['nullable', 'string'],
-        ]);
-
-        $state = $validated['customer_state'] ?? 'Delhi';
-        $taxData = $this->taxService->calculate($validated['items'], $state);
-
-        return response()->json([
-            'success' => true,
-            ...$taxData,
-        ]);
-    }
-
     public function createRazorpayOrder(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -162,11 +140,9 @@ class CheckoutController extends Controller
                 $subtotal += ((float) $item['price']) * ((int) $item['quantity']);
             }
 
-            // Recalculate Tax server-side
-            $taxResult = $this->taxService->calculate($validated['items'], $validated['state']);
-            $taxAmount = $taxResult['tax_amount'];
+            $taxAmount = 0.0;
 
-            $finalTotal = max(0, $subtotal - $discountAmount) + $shippingCost + $taxAmount;
+            $finalTotal = max(0, $subtotal - $discountAmount) + $shippingCost;
 
             $temporaryReceipt = 'AP-RCPT-' . date('Ymd') . '-' . strtoupper(Str::random(5));
 
@@ -199,10 +175,10 @@ class CheckoutController extends Controller
                 'coupon_code' => $validated['coupon_code'] ?? null,
                 'discount_amount' => $discountAmount,
                 'subtotal' => $subtotal,
-                'tax_amount' => $taxAmount,
-                'cgst_amount' => $taxResult['cgst_amount'],
-                'sgst_amount' => $taxResult['sgst_amount'],
-                'igst_amount' => $taxResult['igst_amount'],
+                'tax_amount' => 0.0,
+                'cgst_amount' => 0.0,
+                'sgst_amount' => 0.0,
+                'igst_amount' => 0.0,
                 'total_amount' => $finalTotal,
                 'order_notes' => $validated['order_notes'] ?? null,
                 'items' => $validated['items'],
@@ -381,9 +357,7 @@ class CheckoutController extends Controller
                 $subtotal += ((float) $item['price']) * ((int) $item['quantity']);
             }
 
-            $taxResult = $this->taxService->calculate($validated['items'], $validated['state']);
-            $taxAmount = $taxResult['tax_amount'];
-            $finalTotal = max(0, $subtotal - $discountAmount) + $shippingCost + $taxAmount;
+            $finalTotal = max(0, $subtotal - $discountAmount) + $shippingCost;
 
             $order = Order::create([
                 'user_id' => $user?->id,
@@ -405,10 +379,10 @@ class CheckoutController extends Controller
                 'subtotal' => $subtotal,
                 'discount_amount' => $discountAmount,
                 'coupon_code' => $validated['coupon_code'] ?? null,
-                'tax_amount' => $taxAmount,
-                'cgst_amount' => $taxResult['cgst_amount'],
-                'sgst_amount' => $taxResult['sgst_amount'],
-                'igst_amount' => $taxResult['igst_amount'],
+                'tax_amount' => 0.0,
+                'cgst_amount' => 0.0,
+                'sgst_amount' => 0.0,
+                'igst_amount' => 0.0,
                 'total_amount' => $finalTotal,
                 'currency' => 'INR',
                 'payment_method' => 'cod',

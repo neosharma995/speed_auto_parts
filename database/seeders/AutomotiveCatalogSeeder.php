@@ -7,7 +7,6 @@ namespace Database\Seeders;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Coupon;
-use App\Models\CustomerAddress;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -16,38 +15,14 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductReview;
 use App\Models\ProductVariation;
 use App\Models\ProductVehicle;
-use App\Models\StockTransfer;
-use App\Models\TaxClass;
-use App\Models\TaxRate;
-use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class AutomotiveCatalogSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Taxes
-        $taxClassStandard = TaxClass::firstOrCreate(
-            ['slug' => 'gst-18'],
-            ['name' => 'Standard Auto Parts (GST 18%)', 'description' => 'Applicable to mechanical, intake & suspension parts', 'is_default' => true]
-        );
-        TaxRate::firstOrCreate(
-            ['tax_class_id' => $taxClassStandard->id, 'country_code' => 'IN'],
-            ['name' => 'GST 18% (9% CGST + 9% SGST)', 'rate' => 18.00, 'cgst_rate' => 9.00, 'sgst_rate' => 9.00, 'igst_rate' => 18.00, 'is_active' => true]
-        );
-
-        $taxClassHigh = TaxClass::firstOrCreate(
-            ['slug' => 'gst-28'],
-            ['name' => 'High Performance & Luxury Spares (GST 28%)', 'description' => 'Applicable to big brake kits and performance exhausts', 'is_default' => false]
-        );
-        TaxRate::firstOrCreate(
-            ['tax_class_id' => $taxClassHigh->id, 'country_code' => 'IN'],
-            ['name' => 'GST 28% (14% CGST + 14% SGST)', 'rate' => 28.00, 'cgst_rate' => 14.00, 'sgst_rate' => 14.00, 'igst_rate' => 28.00, 'is_active' => true]
-        );
-
-        // 2. Categories
+        // 1. Categories
         $categoriesData = [
             [
                 'name' => 'Tires',
@@ -159,7 +134,6 @@ class AutomotiveCatalogSeeder extends Seeder
         ProductAttributeValue::firstOrCreate(['attribute_id' => $attrRotorDia->id, 'slug' => '355mm'], ['value' => '355 mm']);
 
         // 6. Products from prompt specifications
-        $supplier = User::where('email', 'supplier@autoparts.com')->first();
 
         // Product 1: Performance Summer Tire
         $pTire = Product::updateOrCreate(
@@ -167,26 +141,21 @@ class AutomotiveCatalogSeeder extends Seeder
             [
                 'brand_id' => $brands['michelin']->id,
                 'category_id' => $categories['tires']->id,
-                'tax_class_id' => $taxClassStandard->id,
-                'supplier_id' => $supplier?->id,
                 'name' => 'Performance Summer Tire',
                 'slug' => 'performance-summer-tire',
                 'part_number' => 'AP-12345',
                 'short_description' => 'Ultra-high performance compound engineered for maximum dry road traction and razor-sharp steering feedback.',
                 'description' => "Developed directly from motorsport championship compounds, the Performance Summer Tire delivers benchmark cornering grip, exceptional high-speed stability, and responsive dry braking performance. Equipped with dual-compound technology across the asymmetrical tread pattern for optimal road contact under extreme lateral loads.",
                 'technical_specifications' => "Treadwear: 300 | Traction: AA | Temperature: A | Speed Rating: (Y) >300 km/h | Construction: Radial Steel Belted | Origin: France",
-                'main_image' => '/assets/images/products/performance-tire.webp',
+                'main_image' => '/assets/images/products/michelin-tire.svg',
                 'gallery_images' => [
-                    '/assets/images/products/performance-tire.webp',
+                    '/assets/images/products/michelin-tire.svg',
                 ],
                 'product_type' => 'variable',
                 'base_price' => 14500.00,
                 'sale_price' => 12999.00,
                 'cost_price' => 8500.00,
-                'supplier_price' => 8500.00,
                 'stock_quantity' => 45,
-                'supplier_stock' => 60,
-                'warehouse_stock' => 30,
                 'stock_status' => 'in_stock',
                 'weight' => 11.20,
                 'weight_unit' => 'kg',
@@ -195,7 +164,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'is_best_seller' => true,
                 'is_new_arrival' => false,
                 'status' => 'published',
-                'seo_title' => 'Performance Summer Tire - Auto Parts Shop',
+                'seo_title' => 'Performance Summer Tire - Speed Autos Parts',
                 'seo_description' => 'Buy Michelin Performance Summer Tires online. High-speed track and street radial performance.',
                 'rating' => 4.90,
                 'rating_count' => 84,
@@ -243,26 +212,21 @@ class AutomotiveCatalogSeeder extends Seeder
             [
                 'brand_id' => $brands['brembo']->id,
                 'category_id' => $categories['brakes']->id,
-                'tax_class_id' => $taxClassHigh->id,
-                'supplier_id' => $supplier?->id,
                 'name' => 'Slotted & Drilled Brake Rotor',
                 'slug' => 'slotted-drilled-brake-rotor',
                 'part_number' => 'AP-54012',
                 'short_description' => 'High-carbon cast iron brake rotor with directional cross-drilling and curved gas expansion slots.',
                 'description' => "Engineered to withstand intense thermal stress on the street and circuit. The precision cross-drilled holes ensure optimal heat dissipation and wet-weather bite, while the bidirectional slots continuously sweep brake pad glaze and outgassing away from the contact surface.",
                 'technical_specifications' => "Material: High-Carbon G3000 Alloy | Coating: Anti-corrosion Zinc Dichromate | Balancing: Dynamically 100% Runout Balanced | Vane Type: Curved Directional Vane",
-                'main_image' => '/assets/images/products/brake-rotor.webp',
+                'main_image' => '/assets/images/products/brembo-rotor.svg',
                 'gallery_images' => [
-                    '/assets/images/products/brake-rotor.webp',
+                    '/assets/images/products/brembo-rotor.svg',
                 ],
                 'product_type' => 'variable',
                 'base_price' => 11200.00,
                 'sale_price' => 9850.00,
                 'cost_price' => 6200.00,
-                'supplier_price' => 6200.00,
                 'stock_quantity' => 38,
-                'supplier_stock' => 40,
-                'warehouse_stock' => 25,
                 'stock_status' => 'in_stock',
                 'weight' => 9.40,
                 'weight_unit' => 'kg',
@@ -319,26 +283,21 @@ class AutomotiveCatalogSeeder extends Seeder
             [
                 'brand_id' => $brands['borla']->id,
                 'category_id' => $categories['exhaust']->id,
-                'tax_class_id' => $taxClassStandard->id,
-                'supplier_id' => $supplier?->id,
                 'name' => 'Performance Cat-Back Exhaust',
                 'slug' => 'performance-cat-back-exhaust',
                 'part_number' => 'AP-88024',
                 'short_description' => 'Acoustically tuned T304 aircraft-grade stainless steel cat-back exhaust with aggressive quad tips.',
                 'description' => "Unleash genuine exhaust acoustics and improved horsepower with mandrel-bent T304 stainless steel piping. Straight-through multi-core patented muffler chambers reduce backpressure and provide zero in-cabin highway drone while yielding an unmistakable deep exhaust note under wide-open throttle.",
                 'technical_specifications' => "Tubing Diameter: 3.0 Inch Mandrel-Bent | Material: T-304 Austenitic Stainless Steel | Tip Finish: 4.0 Inch Dual Angle-Cut Polished Tips | Sound Level: ATAK Aggressive",
-                'main_image' => '/assets/images/products/performance-exhaust.webp',
+                'main_image' => '/assets/images/products/borla-exhaust.svg',
                 'gallery_images' => [
-                    '/assets/images/products/performance-exhaust.webp',
+                    '/assets/images/products/borla-exhaust.svg',
                 ],
                 'product_type' => 'simple',
                 'base_price' => 48500.00,
                 'sale_price' => 42999.00,
                 'cost_price' => 29000.00,
-                'supplier_price' => 29000.00,
                 'stock_quantity' => 12,
-                'supplier_stock' => 20,
-                'warehouse_stock' => 15,
                 'stock_status' => 'in_stock',
                 'weight' => 18.50,
                 'weight_unit' => 'kg',
@@ -360,26 +319,21 @@ class AutomotiveCatalogSeeder extends Seeder
             [
                 'brand_id' => $brands['kn-engineering']->id,
                 'category_id' => $categories['intake']->id,
-                'tax_class_id' => $taxClassStandard->id,
-                'supplier_id' => $supplier?->id,
                 'name' => 'High-Flow Cold Air Intake System',
                 'slug' => 'high-flow-cold-air-intake-system',
                 'part_number' => 'AP-30109',
                 'short_description' => 'Dyno-proven cold air intake kit featuring mandrel-bent aluminum tube and washable conical cotton filter.',
                 'description' => "Guaranteed to increase horsepower and throttle response. Features a custom heat shield to block hot engine bay air and direct dense, cold external air straight to the throttle body for maximum combustion efficiency.",
                 'technical_specifications' => "Filter Media: Washable Oiled Cotton Gauze | Pipe: Powdercoated 3.5\" Aluminum | Estimated Gain: +14.2 HP @ 5800 RPM",
-                'main_image' => '/assets/images/products/cold-air-intake.webp',
+                'main_image' => '/assets/images/products/kn-intake.svg',
                 'gallery_images' => [
-                    '/assets/images/products/cold-air-intake.webp',
+                    '/assets/images/products/kn-intake.svg',
                 ],
                 'product_type' => 'simple',
                 'base_price' => 24500.00,
                 'sale_price' => 21999.00,
                 'cost_price' => 14000.00,
-                'supplier_price' => 14000.00,
                 'stock_quantity' => 22,
-                'supplier_stock' => 30,
-                'warehouse_stock' => 18,
                 'stock_status' => 'in_stock',
                 'weight' => 5.20,
                 'weight_unit' => 'kg',
@@ -401,26 +355,21 @@ class AutomotiveCatalogSeeder extends Seeder
             [
                 'brand_id' => $brands['bilstein']->id,
                 'category_id' => $categories['suspension']->id,
-                'tax_class_id' => $taxClassStandard->id,
-                'supplier_id' => $supplier?->id,
                 'name' => 'Track-Spec Adjustable Coilover Kit',
                 'slug' => 'track-spec-adjustable-coilover-kit',
                 'part_number' => 'AP-77001',
                 'short_description' => 'Monotube inverted shock dampers with 16-way combined rebound & compression damping adjustment.',
                 'description' => "Engineered for drivers who demand race-winning chassis control without sacrificing road usability. Threaded aluminum shock bodies allow independent ride height adjustment from 30mm to 65mm lowering.",
                 'technical_specifications' => "Design: Inverted Monotube Gas Pressurized | Adjustability: 16-click simultaneous Damping | Spring Rates: Front 8k / Rear 6k",
-                'main_image' => '/assets/images/products/coilover-suspension.webp',
+                'main_image' => '/assets/images/build/coilover.svg',
                 'gallery_images' => [
-                    '/assets/images/products/coilover-suspension.webp',
+                    '/assets/images/build/coilover.svg',
                 ],
                 'product_type' => 'simple',
                 'base_price' => 74500.00,
                 'sale_price' => 68900.00,
                 'cost_price' => 48000.00,
-                'supplier_price' => 48000.00,
                 'stock_quantity' => 10,
-                'supplier_stock' => 18,
-                'warehouse_stock' => 12,
                 'stock_status' => 'in_stock',
                 'weight' => 24.00,
                 'weight_unit' => 'kg',
@@ -522,80 +471,61 @@ class AutomotiveCatalogSeeder extends Seeder
             ]
         );
 
-        // 9. Customer address for seed user
-        $customerUser = User::where('email', 'customer@autoparts.com')->first();
-        if ($customerUser) {
-            CustomerAddress::firstOrCreate(
-                ['user_id' => $customerUser->id, 'address_line1' => 'Flat 402, Speedline Towers, Outer Ring Road'],
-                [
-                    'type' => 'both',
-                    'full_name' => 'Vikram Singh',
-                    'phone' => '+91 98765 12345',
-                    'address_line2' => 'Near Formula 1 Circuit Track',
-                    'city' => 'Greater Noida',
-                    'state' => 'Uttar Pradesh',
-                    'pincode' => '201310',
-                    'country' => 'India',
-                    'is_default' => true,
-                ]
-            );
+        // 9. Sample Guest Order (no customer account or tax)
+        $sampleOrder = Order::firstOrCreate(
+            ['order_number' => 'AP-20261119-DEMO1'],
+            [
+                'user_id' => null,
+                'customer_name' => 'Arjun Kapoor',
+                'customer_email' => 'driver@circuit.in',
+                'customer_phone' => '+91 98765 12345',
+                'shipping_address' => 'Flat 402, Speedline Towers, Outer Ring Road',
+                'apartment' => 'Tower B, 4th Floor',
+                'city' => 'Greater Noida',
+                'state' => 'Uttar Pradesh',
+                'pincode' => '201310',
+                'country' => 'India',
+                'shipping_method_title' => 'Express Ground Freight',
+                'shipping_cost' => 500.00,
+                'subtotal' => 25998.00,
+                'discount_amount' => 2000.00,
+                'coupon_code' => 'TRACKDAY',
+                'tax_amount' => 0.00,
+                'cgst_amount' => 0.00,
+                'sgst_amount' => 0.00,
+                'igst_amount' => 0.00,
+                'total_amount' => 24498.00,
+                'currency' => 'INR',
+                'payment_method' => 'razorpay',
+                'payment_status' => 'paid',
+                'delivery_status' => 'processing',
+                'razorpay_order_id' => 'order_sim_demo_01',
+                'razorpay_payment_id' => 'pay_sim_demo_01',
+                'razorpay_signature' => 'simulated_signature',
+                'order_notes' => 'Please deliver during afternoon hours.',
+                'tracking_number' => 'BLUEDART-88291039',
+                'tracking_carrier' => 'Blue Dart Express',
+                'tracking_url' => 'https://www.bluedart.com',
+                'paid_at' => now()->subDay(),
+            ]
+        );
 
-            // Sample Order for customer
-            $sampleOrder = Order::firstOrCreate(
-                ['order_number' => 'AP-20261119-DEMO1'],
-                [
-                    'user_id' => $customerUser->id,
-                    'customer_name' => 'Vikram Singh',
-                    'customer_email' => 'customer@autoparts.com',
-                    'customer_phone' => '+91 98765 12345',
-                    'shipping_address' => 'Flat 402, Speedline Towers, Outer Ring Road',
-                    'apartment' => 'Tower B, 4th Floor',
-                    'city' => 'Greater Noida',
-                    'state' => 'Uttar Pradesh',
-                    'pincode' => '201310',
-                    'country' => 'India',
-                    'shipping_method_title' => 'Express Ground Freight',
-                    'shipping_cost' => 500.00,
-                    'subtotal' => 25998.00,
-                    'discount_amount' => 2000.00,
-                    'coupon_code' => 'TRACKDAY',
-                    'tax_amount' => 4319.64,
-                    'cgst_amount' => 0.00,
-                    'sgst_amount' => 0.00,
-                    'igst_amount' => 4319.64,
-                    'total_amount' => 28817.64,
-                    'currency' => 'INR',
-                    'payment_method' => 'razorpay',
-                    'payment_status' => 'paid',
-                    'delivery_status' => 'processing',
-                    'razorpay_order_id' => 'order_sim_demo_01',
-                    'razorpay_payment_id' => 'pay_sim_demo_01',
-                    'razorpay_signature' => 'simulated_signature',
-                    'order_notes' => 'Please deliver during afternoon hours.',
-                    'tracking_number' => 'BLUEDART-88291039',
-                    'tracking_carrier' => 'Blue Dart Express',
-                    'tracking_url' => 'https://www.bluedart.com',
-                    'paid_at' => now()->subDay(),
-                ]
-            );
-
-            OrderItem::firstOrCreate(
-                ['order_id' => $sampleOrder->id, 'product_id' => $pTire->id],
-                [
-                    'product_name' => 'Performance Summer Tire',
-                    'variation_name' => '245/40R18 97Y XL',
-                    'sku' => 'AP-TIRE-992-245-18',
-                    'part_number' => 'AP-12345-A',
-                    'unit_price' => 12999.00,
-                    'quantity' => 2,
-                    'tax_rate_percent' => 18.00,
-                    'tax_amount' => 4319.64,
-                    'subtotal' => 25998.00,
-                    'total' => 30317.64,
-                    'product_image' => 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80',
-                ]
-            );
-        }
+        OrderItem::firstOrCreate(
+            ['order_id' => $sampleOrder->id, 'product_id' => $pTire->id],
+            [
+                'product_name' => 'Performance Summer Tire',
+                'variation_name' => '245/40R18 97Y XL',
+                'sku' => 'AP-TIRE-992-245-18',
+                'part_number' => 'AP-12345-A',
+                'unit_price' => 12999.00,
+                'quantity' => 2,
+                'tax_rate_percent' => 0.00,
+                'tax_amount' => 0.00,
+                'subtotal' => 25998.00,
+                'total' => 25998.00,
+                'product_image' => 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80',
+            ]
+        );
 
         // 10. Product Reviews
         ProductReview::firstOrCreate(
@@ -621,46 +551,5 @@ class AutomotiveCatalogSeeder extends Seeder
                 'is_approved' => true,
             ]
         );
-
-        // 11. Supplier-Created Draft Product + Pending Incoming Lot for Admin Warehouse
-        $pClutch = Product::updateOrCreate(
-            ['sku' => 'SUP-CLT-9001'],
-            [
-                'brand_id' => $brands['garrett-motion']->id,
-                'category_id' => $categories['brakes']->id,
-                'tax_class_id' => $taxClassStandard->id,
-                'supplier_id' => $supplier?->id,
-                'name' => 'Carbon Kevlar Racing Clutch Kit',
-                'slug' => 'carbon-kevlar-racing-clutch-kit',
-                'part_number' => 'SUP-9001',
-                'short_description' => 'Twin-disc carbon kevlar clutch assembly engineered for high-torque track builds.',
-                'description' => 'Supplied directly by Apex Motorsport Spares. Pending Admin Warehouse receiving and catalogue pricing before website publication.',
-                'main_image' => '/assets/images/products/placeholder.jpg',
-                'product_type' => 'simple',
-                'base_price' => 18500.00,
-                'cost_price' => 18500.00,
-                'supplier_price' => 18500.00,
-                'stock_quantity' => 0,
-                'supplier_stock' => 35,
-                'warehouse_stock' => 0,
-                'stock_status' => 'out_of_stock',
-                'status' => 'draft',
-            ]
-        );
-
-        if ($supplier) {
-            StockTransfer::firstOrCreate(
-                ['lot_number' => 'LOT-20261120-DEMO', 'product_id' => $pClutch->id],
-                [
-                    'supplier_id' => $supplier->id,
-                    'initiated_by' => $supplier->id,
-                    'direction' => 'supplier_to_warehouse',
-                    'quantity' => 15,
-                    'unit_price' => 18500.00,
-                    'status' => 'pending',
-                    'notes' => 'Initial racing clutch shipment lot awaiting Admin Warehouse receipt.',
-                ]
-            );
-        }
     }
 }

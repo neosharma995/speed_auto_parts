@@ -31,17 +31,11 @@ class RoleAndPermissionSeeder extends Seeder
         $editorRole = Role::firstOrCreate(['name' => UserRole::Editor->value, 'guard_name' => 'web']);
         $editorRole->syncPermissions(UserPermission::editorPermissions());
 
-        $customerRole = Role::firstOrCreate(['name' => UserRole::Customer->value, 'guard_name' => 'web']);
-        $customerRole->syncPermissions(UserPermission::customerPermissions());
-
-        $supplierRole = Role::firstOrCreate(['name' => UserRole::Supplier->value, 'guard_name' => 'web']);
-        $supplierRole->syncPermissions(UserPermission::supplierPermissions());
-
         // 3. Default Admin user
         $adminUser = User::updateOrCreate(
             ['email' => 'admin@autoparts.com'],
             [
-                'name' => 'Auto Parts Admin',
+                'name' => 'Speed Autos Parts Admin',
                 'phone' => '+91 98765 00001',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
@@ -62,32 +56,5 @@ class RoleAndPermissionSeeder extends Seeder
             ]
         );
         $editorUser->syncRoles([$editorRole]);
-
-        // 5. Default Customer user
-        $customerUser = User::updateOrCreate(
-            ['email' => 'customer@autoparts.com'],
-            [
-                'name' => 'Vikram Singh',
-                'phone' => '+91 98765 12345',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-                'status' => 'active',
-            ]
-        );
-        $customerUser->syncRoles([$customerRole]);
-
-        // 6. Default Supplier user
-        $supplierUser = User::updateOrCreate(
-            ['email' => 'supplier@autoparts.com'],
-            [
-                'name' => 'Rajesh Sharma',
-                'company_name' => 'Apex Motorsport Spares Pvt. Ltd.',
-                'phone' => '+91 98765 00003',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-                'status' => 'active',
-            ]
-        );
-        $supplierUser->syncRoles([$supplierRole]);
     }
 }

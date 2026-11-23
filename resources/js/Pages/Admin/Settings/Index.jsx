@@ -4,7 +4,7 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import { Settings, Save, Shield, CreditCard } from 'lucide-react';
 
 export default function AdminSettingsIndex({ settings = {} }) {
-    const [storeName, setStoreName] = useState(settings.store_name || 'AUTO PARTS');
+    const [storeName, setStoreName] = useState(settings.store_name || 'Speed Autos Parts');
     const [storeEmail, setStoreEmail] = useState(settings.store_email || 'support@autoparts.com');
     const [storePhone, setStorePhone] = useState(settings.store_phone || '+91 98765 43210');
     const [storeAddress, setStoreAddress] = useState(settings.store_address || 'Sector 5, New Delhi 110001');

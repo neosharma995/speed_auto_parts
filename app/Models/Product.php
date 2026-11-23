@@ -19,8 +19,6 @@ class Product extends Model
     protected $fillable = [
         'brand_id',
         'category_id',
-        'tax_class_id',
-        'supplier_id',
         'name',
         'slug',
         'sku',
@@ -34,10 +32,7 @@ class Product extends Model
         'base_price',
         'sale_price',
         'cost_price',
-        'supplier_price',
         'stock_quantity',
-        'supplier_stock',
-        'warehouse_stock',
         'stock_status',
         'weight',
         'weight_unit',
@@ -58,10 +53,7 @@ class Product extends Model
         'base_price' => 'decimal:2',
         'sale_price' => 'decimal:2',
         'cost_price' => 'decimal:2',
-        'supplier_price' => 'decimal:2',
         'stock_quantity' => 'integer',
-        'supplier_stock' => 'integer',
-        'warehouse_stock' => 'integer',
         'weight' => 'decimal:2',
         'is_featured' => 'boolean',
         'is_best_seller' => 'boolean',
@@ -95,21 +87,6 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    }
-
-    public function taxClass(): BelongsTo
-    {
-        return $this->belongsTo(TaxClass::class);
-    }
-
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'supplier_id');
-    }
-
-    public function stockTransfers(): HasMany
-    {
-        return $this->hasMany(StockTransfer::class);
     }
 
     public function variations(): HasMany

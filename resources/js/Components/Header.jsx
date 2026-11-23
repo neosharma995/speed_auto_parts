@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import {
     ShoppingCart,
@@ -7,16 +7,9 @@ import {
     List,
     X,
     ChevronDown,
-    ChevronUp,
     CarFront,
     Heart,
-    Phone,
-    LayoutDashboard,
-    ShoppingBag,
-    MapPin,
-    LogOut,
-    Shield,
-    Package
+    Phone
 } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useWishlist } from '@/Context/WishlistContext';
@@ -29,23 +22,6 @@ export default function Header() {
     const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isScrolled, setIsScrolled] = useState(false);
-    const accountRef = useRef(null);
-
-    // Click outside listener for user account dropdown (using capture to intercept reliably)
-    useEffect(() => {
-        if (!accountDropdownOpen) return;
-        const handleClickOutside = (e) => {
-            if (accountRef.current && !accountRef.current.contains(e.target)) {
-                setAccountDropdownOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside, true);
-        document.addEventListener('touchstart', handleClickOutside, true);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside, true);
-            document.removeEventListener('touchstart', handleClickOutside, true);
-        };
-    }, [accountDropdownOpen]);
 
     // Passive scroll listener for subtle shadow only - pure CSS handles sticky positioning
     useEffect(() => {
@@ -96,16 +72,11 @@ export default function Header() {
                             <ChevronDown size={11} strokeWidth={2.2} />
                         </div>
                         <Link href="/track-order" className="utility-link">Track Order</Link>
-                        <Link href="/contact-us" className="utility-link">Help & Support</Link>
+                        <Link href="/contact" className="utility-link">Help & Support</Link>
 
                         {auth?.user?.roles?.includes('admin') && (
                             <Link href="/admin/dashboard" className="utility-link-accent">
                                 Admin
-                            </Link>
-                        )}
-                        {auth?.user?.roles?.includes('supplier') && (
-                            <Link href="/supplier/dashboard" className="utility-link-accent">
-                                Supplier
                             </Link>
                         )}
                     </div>
@@ -121,11 +92,11 @@ export default function Header() {
                 {/* ------------------------------------------------------------ */}
                 <div className="site-header-main">
                     <div className="container site-header-main-inner">
-                        {/* Official SpeedAutoParts Logo Image */}
+                        {/* Official Speed Autos Parts Logo Image */}
                         <Link href="/" className="site-header-logo">
                             <img
                                 src="/assets/images/logo/speedautoparts-official.png"
-                                alt="SpeedAutoParts - Performance Spare Parts"
+                                alt="Speed Autos Parts - Performance Spare Parts"
                                 className="site-header-logo-img"
                             />
                         </Link>
@@ -144,120 +115,8 @@ export default function Header() {
                             </button>
                         </form>
 
-                        {/* Right: Actions (Account, Wishlist, Cart) */}
+                        {/* Right: Actions (Cart & Mobile Menu) */}
                         <div className="site-header-actions">
-                            {/* Account Button */}
-                            <div className="site-header-account-wrap" ref={accountRef}>
-                                {auth?.user ? (
-                                    <button 
-                                        type="button" 
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            setAccountDropdownOpen(prev => !prev);
-                                        }}
-                                        className="site-header-action-user"
-                                        aria-expanded={accountDropdownOpen}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <UserIcon size={24} strokeWidth={1.8} className="action-user-icon" />
-                                        <div className="action-user-text">
-                                            <span className="user-sub">Account</span>
-                                            <strong className="user-name">{auth.user.name.split(' ')[0]}</strong>
-                                        </div>
-                                        {accountDropdownOpen ? (
-                                            <ChevronUp size={11} strokeWidth={2.2} className="user-chevron" />
-                                        ) : (
-                                            <ChevronDown size={11} strokeWidth={2.2} className="user-chevron" />
-                                        )}
-                                    </button>
-                                ) : (
-                                    <Link href="/login" className="site-header-action-user">
-                                        <UserIcon size={24} strokeWidth={1.8} className="action-user-icon" />
-                                        <div className="action-user-text">
-                                            <span className="user-sub">Account</span>
-                                            <strong className="user-name">Sign In / Register</strong>
-                                        </div>
-                                    </Link>
-                                )}
-
-                                {accountDropdownOpen && auth?.user && (
-                                    <div 
-                                        className="site-header-dropdown user-menu-dropdown"
-                                        style={{ display: 'block' }}
-                                    >
-                                        {auth.user.roles?.includes('admin') && (
-                                            <Link 
-                                                href="/admin/dashboard" 
-                                                className="site-header-dropdown-item"
-                                                onClick={() => setAccountDropdownOpen(false)}
-                                            >
-                                                <Shield size={16} strokeWidth={2} />
-                                                <span>Admin Dashboard</span>
-                                            </Link>
-                                        )}
-                                        {auth.user.roles?.includes('supplier') && (
-                                            <Link 
-                                                href="/supplier/dashboard" 
-                                                className="site-header-dropdown-item"
-                                                onClick={() => setAccountDropdownOpen(false)}
-                                            >
-                                                <Package size={16} strokeWidth={2} />
-                                                <span>Supplier Dashboard</span>
-                                            </Link>
-                                        )}
-                                        <Link 
-                                            href="/customer/dashboard" 
-                                            className="site-header-dropdown-item"
-                                            onClick={() => setAccountDropdownOpen(false)}
-                                        >
-                                            <LayoutDashboard size={16} strokeWidth={2} />
-                                            <span>My Dashboard</span>
-                                        </Link>
-                                        <Link 
-                                            href="/customer/orders" 
-                                            className="site-header-dropdown-item"
-                                            onClick={() => setAccountDropdownOpen(false)}
-                                        >
-                                            <ShoppingBag size={16} strokeWidth={2} />
-                                            <span>Order History</span>
-                                        </Link>
-                                        <Link 
-                                            href="/customer/addresses" 
-                                            className="site-header-dropdown-item"
-                                            onClick={() => setAccountDropdownOpen(false)}
-                                        >
-                                            <MapPin size={16} strokeWidth={2} />
-                                            <span>Saved Addresses</span>
-                                        </Link>
-                                        <Link 
-                                            href="/customer/wishlist" 
-                                            className="site-header-dropdown-item"
-                                            onClick={() => setAccountDropdownOpen(false)}
-                                        >
-                                            <Heart size={16} strokeWidth={2} />
-                                            <span>My Wishlist</span>
-                                        </Link>
-                                        <Link 
-                                            href="/logout" 
-                                            method="post" 
-                                            as="button" 
-                                            className="site-header-dropdown-item logout-link"
-                                            onClick={() => setAccountDropdownOpen(false)}
-                                        >
-                                            <LogOut size={16} strokeWidth={2} />
-                                            <span>Sign Out</span>
-                                        </Link>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Wishlist Icon */}
-                            <Link href="/customer/wishlist" className="site-header-action-icon" title="Wishlist">
-                                <Heart size={24} strokeWidth={1.8} />
-                                {wishlist.length > 0 && <span className="action-badge">{wishlist.length}</span>}
-                            </Link>
-
                             {/* Shopping Cart Icon with Orange Badge */}
                             <button 
                                 type="button" 
@@ -354,13 +213,13 @@ export default function Header() {
                                 </div>
 
                                 <div className="site-header-nav-item">
-                                    <Link href="/contact-us" className="site-header-nav-link">
+                                    <Link href="/contact" className="site-header-nav-link">
                                         <span>Support</span>
                                         <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
                                     <div className="site-header-dropdown">
-                                        <Link href="/contact-us" className="site-header-dropdown-item">Contact Us</Link>
-                                        <Link href="/about-us" className="site-header-dropdown-item">About Us</Link>
+                                        <Link href="/contact" className="site-header-dropdown-item">Contact Us</Link>
+                                        <Link href="/about" className="site-header-dropdown-item">About Us</Link>
                                         <Link href="/track-order" className="site-header-dropdown-item">Track Order</Link>
                                         <Link href="/shipping-policy" className="site-header-dropdown-item">Shipping Policy</Link>
                                         <Link href="/return-policy" className="site-header-dropdown-item">Return & Refund</Link>
@@ -398,7 +257,7 @@ export default function Header() {
                         <div className="mobile-drawer-header">
                             <img
                                 src="/assets/images/logo/speedautoparts-official.png"
-                                alt="SpeedAutoParts"
+                                alt="Speed Autos Parts"
                                 style={{ height: '30px', width: 'auto' }}
                             />
                             <button
@@ -455,7 +314,7 @@ export default function Header() {
                                 <span className="site-header-deals-icon">%</span> Deals
                             </Link>
                             <Link
-                                href="/contact-us"
+                                href="/contact"
                                 className="mobile-drawer-link"
                                 onClick={() => setMobileDrawerOpen(false)}
                             >
@@ -463,25 +322,17 @@ export default function Header() {
                             </Link>
                         </div>
 
-                        <div className="mobile-drawer-footer">
-                            {auth?.user ? (
+                        {auth?.user?.roles?.includes('admin') && (
+                            <div className="mobile-drawer-footer">
                                 <Link
-                                    href="/customer/dashboard"
+                                    href="/admin/dashboard"
                                     className="mobile-account-btn"
                                     onClick={() => setMobileDrawerOpen(false)}
                                 >
-                                    <UserIcon size={16} /> My Account
+                                    <UserIcon size={16} /> Admin Dashboard
                                 </Link>
-                            ) : (
-                                <Link
-                                    href="/login"
-                                    className="mobile-account-btn"
-                                    onClick={() => setMobileDrawerOpen(false)}
-                                >
-                                    <UserIcon size={16} /> Sign In / Register
-                                </Link>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 </>
             )}

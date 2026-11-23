@@ -10,7 +10,7 @@ export default function AdminLayout({ title = 'Administration', children }) {
 
     return (
         <div className="admin-shell">
-            <Head title={`${title} | AUTO PARTS Control Panel`} />
+            <Head title={`${title} | Speed Autos Parts Control Panel`} />
 
             <AdminSidebar 
                 sidebarOpen={sidebarOpen} 

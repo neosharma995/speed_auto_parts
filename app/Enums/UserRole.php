@@ -8,16 +8,12 @@ enum UserRole: string
 {
     case Admin = 'admin';
     case Editor = 'editor';
-    case Supplier = 'supplier';
-    case Customer = 'customer';
 
     public function label(): string
     {
         return match ($this) {
             self::Admin => 'Administrator',
             self::Editor => 'Catalog Manager',
-            self::Supplier => 'Supplier',
-            self::Customer => 'Customer',
         };
     }
 
@@ -26,8 +22,6 @@ enum UserRole: string
         return match ($this) {
             self::Admin => 'admin.dashboard',
             self::Editor => 'admin.dashboard',
-            self::Supplier => 'supplier.dashboard',
-            self::Customer => 'customer.dashboard',
         };
     }
 
@@ -36,8 +30,6 @@ enum UserRole: string
         return match ($this) {
             self::Admin => 'admin.account',
             self::Editor => 'admin.account',
-            self::Supplier => 'supplier.dashboard',
-            self::Customer => 'customer.account',
         };
     }
 

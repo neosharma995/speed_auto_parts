@@ -14,10 +14,10 @@ router.on('invalid', (event) => {
     }
 });
 
-const appName = import.meta.env.VITE_APP_NAME || 'AUTO PARTS';
+const appName = import.meta.env.VITE_APP_NAME || 'Speed Autos Parts';
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    title: (title) => (title ? (title.includes(appName) ? title : `${title} - ${appName}`) : appName),
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.jsx`,

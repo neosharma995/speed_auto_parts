@@ -4,10 +4,8 @@ namespace App\Http\Middleware;
 
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\StockTransfer;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -44,7 +42,6 @@ class HandleInertiaRequests extends Middleware
                     'name' => $user->name,
                     'email' => $user->email,
                     'phone' => $user->phone,
-                    'company_name' => $user->company_name,
                     'status' => $user->status,
                     'email_verified_at' => $user->email_verified_at,
                     'created_at' => $user->created_at,
@@ -52,14 +49,6 @@ class HandleInertiaRequests extends Middleware
                     'permissions' => $user->getAllPermissions()->pluck('name')->values()->all(),
                 ] : null,
             ],
-            'pendingLotsCount' => function () use ($user) {
-                if (! $user || ! $user->isStaff() || ! Schema::hasTable('stock_transfers')) {
-                    return 0;
-                }
-                return StockTransfer::where('direction', 'supplier_to_warehouse')
-                    ->where('status', 'pending')
-                    ->count();
-            },
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
@@ -95,10 +84,10 @@ class HandleInertiaRequests extends Middleware
             },
             'settings' => function () {
                 return [
-                    'store_name' => 'AUTO PARTS',
+                    'store_name' => 'Speed Autos Parts',
                     'store_phone' => '+91 98765 43210',
                     'store_email' => 'support@autoparts.com',
-                    'store_address' => 'Auto Parts HQ, Performance Drive, Industrial Area, Sector 5, New Delhi 110001',
+                    'store_address' => 'Speed Autos Parts HQ, Performance Drive, Industrial Area, Sector 5, New Delhi 110001',
                     'currency_symbol' => '₹',
                     'currency_code' => 'INR',
                 ];

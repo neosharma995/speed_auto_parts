@@ -21,42 +21,28 @@ export default function Login({ status, canResetPassword }) {
         post('/login');
     };
 
-    const fillDemo = (role) => {
-        if (role === 'admin') {
-            setData({
-                email: 'admin@autoparts.com',
-                password: 'password',
-                remember: true,
-            });
-        } else if (role === 'supplier') {
-            setData({
-                email: 'supplier@autoparts.com',
-                password: 'password',
-                remember: true,
-            });
-        } else {
-            setData({
-                email: 'customer@autoparts.com',
-                password: 'password',
-                remember: true,
-            });
-        }
+    const fillDemo = () => {
+        setData({
+            email: 'admin@autoparts.com',
+            password: 'password',
+            remember: true,
+        });
     };
 
     return (
         <GuestLayout>
-            <Head title="Sign In | AUTO PARTS" />
+            <Head title="Admin Sign In | Speed Autos Parts" />
 
             <div style={{ marginBottom: '24px', textAlign: 'center' }}>
                 <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#151515', textTransform: 'uppercase' }}>
-                    Welcome Back
+                    Admin Sign In
                 </h1>
                 <p style={{ color: '#666', fontSize: '13px', marginTop: '4px' }}>
-                    Sign in to track orders, manage fitment, and checkout faster.
+                    Sign in to manage products, orders, and store operations.
                 </p>
             </div>
 
-            {/* Quick Demo Login Fillers */}
+            {/* Quick Demo Login Filler */}
             <div style={{
                 backgroundColor: '#F8FAFC',
                 border: '1px solid #DCDCDC',
@@ -68,32 +54,16 @@ export default function Login({ status, canResetPassword }) {
                 gap: '8px'
             }}>
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
-                    Quick Demo Credentials:
+                    Quick Admin Demo:
                 </span>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     <button 
                         type="button" 
-                        onClick={() => fillDemo('admin')}
+                        onClick={fillDemo}
                         className="btn btn-outline btn-sm"
                         style={{ flex: 1, fontSize: '11px' }}
                     >
                         Fill Admin Demo
-                    </button>
-                    <button 
-                        type="button" 
-                        onClick={() => fillDemo('supplier')}
-                        className="btn btn-outline btn-sm"
-                        style={{ flex: 1, fontSize: '11px' }}
-                    >
-                        Fill Supplier Demo
-                    </button>
-                    <button 
-                        type="button" 
-                        onClick={() => fillDemo('customer')}
-                        className="btn btn-outline btn-sm"
-                        style={{ flex: 1, fontSize: '11px' }}
-                    >
-                        Fill Customer Demo
                     </button>
                 </div>
             </div>
@@ -162,13 +132,6 @@ export default function Login({ status, canResetPassword }) {
                 >
                     <LogIn size={18} /> {processing ? 'Signing In...' : 'Sign In'}
                 </button>
-
-                <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '13px', color: '#666' }}>
-                    Don't have an account?{' '}
-                    <Link href="/register" style={{ color: '#F36B16', fontWeight: 700 }}>
-                        Create an Account
-                    </Link>
-                </div>
             </form>
         </GuestLayout>
     );

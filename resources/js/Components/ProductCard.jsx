@@ -52,15 +52,11 @@ export default function ProductCard({ product }) {
             </button>
 
             {/* Media */}
-            <Link href={`/products/${product.slug || ''}`} className="product-card-media">
+            <Link href={`/product/${product.slug || ''}`} className="product-card-media">
                 <img 
                     src={product.main_image || '/assets/images/products/performance-tire.webp'} 
                     alt={product.name} 
                     loading="lazy" 
-                    onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = '/assets/images/products/performance-tire.webp';
-                    }}
                 />
             </Link>
 
@@ -71,7 +67,7 @@ export default function ProductCard({ product }) {
                 )}
 
                 <h3 className="product-card-title">
-                    <Link href={`/products/${product.slug || ''}`}>{product.name}</Link>
+                    <Link href={`/product/${product.slug || ''}`}>{product.name}</Link>
                 </h3>
 
                 {product.short_description && (

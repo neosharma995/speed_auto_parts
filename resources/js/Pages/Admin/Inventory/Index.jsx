@@ -21,7 +21,7 @@ export default function AdminInventoryIndex({ products = [] }) {
         <AdminLayout title="Inventory & Stock Management">
             <div className="admin-card">
                 <div className="admin-card-header">
-                    <h3>Warehouse Stock Quantities</h3>
+                    <h3>Product Stock Quantities</h3>
                 </div>
                 <div className="admin-card-body" style={{ padding: 0 }}>
                     <table className="admin-table">

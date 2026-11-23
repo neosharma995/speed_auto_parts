@@ -9,7 +9,6 @@ import {
     Sliders, 
     GitMerge, 
     Car, 
-    Receipt, 
     Search,
     Save,
     ArrowLeft,
@@ -21,7 +20,6 @@ export default function ProductForm({
     product = null, 
     categories = [], 
     brands = [], 
-    taxClasses = [], 
     attributes = [], 
     vehicles = [],
     isEditing = false 
@@ -81,10 +79,7 @@ export default function ProductForm({
     );
     const [fitmentNotes, setFitmentNotes] = useState('');
 
-    // 9. Tax
-    const [taxClassId, setTaxClassId] = useState(product?.tax_class_id || '');
-
-    // 10. SEO
+    // 9. SEO
     const [seoTitle, setSeoTitle] = useState(product?.seo_title || '');
     const [seoDescription, setSeoDescription] = useState(product?.seo_description || '');
 
@@ -154,7 +149,6 @@ export default function ProductForm({
             weight_unit: weightUnit,
             category_id: categoryId || null,
             brand_id: brandId || null,
-            tax_class_id: taxClassId || null,
             attributes: selectedAttributes,
             variations: variationsList,
             vehicle_ids: selectedVehicleIds,
@@ -185,8 +179,7 @@ export default function ProductForm({
         { id: 'attributes', label: '6. Attributes', icon: Sliders },
         { id: 'variations', label: '7. Variations', icon: GitMerge },
         { id: 'fitment', label: '8. Vehicle Fitment', icon: Car },
-        { id: 'tax', label: '9. GST & Tax', icon: Receipt },
-        { id: 'seo', label: '10. SEO Metadata', icon: Search },
+        { id: 'seo', label: '9. SEO Metadata', icon: Search },
     ];
 
     return (
@@ -596,29 +589,12 @@ export default function ProductForm({
                         </div>
                     )}
 
-                    {/* SECTION 9: Tax */}
-                    {activeTab === 'tax' && (
-                        <div className="form-group">
-                            <label className="form-label">Applicable GST Tax Class</label>
-                            <select 
-                                className="form-select"
-                                value={taxClassId}
-                                onChange={e => setTaxClassId(e.target.value)}
-                            >
-                                <option value="">Default GST (18%)</option>
-                                {taxClasses.map(t => (
-                                    <option key={t.id} value={t.id}>{t.name} ({t.slug})</option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-
-                    {/* SECTION 10: SEO */}
+                    {/* SECTION 9: SEO */}
                     {activeTab === 'seo' && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div className="form-group">
                                 <label className="form-label">SEO Meta Title</label>
-                                <input type="text" className="form-input" placeholder="e.g. Brembo Slotted Brake Rotors | Auto Parts" value={seoTitle} onChange={e => setSeoTitle(e.target.value)} />
+                                <input type="text" className="form-input" placeholder="e.g. Brembo Slotted Brake Rotors | Speed Autos Parts" value={seoTitle} onChange={e => setSeoTitle(e.target.value)} />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">SEO Meta Description</label>
