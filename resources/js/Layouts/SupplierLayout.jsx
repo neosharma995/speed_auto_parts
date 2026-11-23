@@ -9,7 +9,7 @@ export default function SupplierLayout({ title = 'Supplier Portal', children }) 
 
     return (
         <div className="admin-shell">
-            <Head title={`${title} | AUTO PARTS Supplier`} />
+            <Head title={`${title} | SPEED AUTOS PARTS Supplier`} />
 
             <SupplierSidebar
                 sidebarOpen={sidebarOpen}

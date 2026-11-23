@@ -39,9 +39,9 @@ class RoleAndPermissionSeeder extends Seeder
 
         // 3. Default Admin user
         $adminUser = User::updateOrCreate(
-            ['email' => 'admin@autoparts.com'],
+            ['email' => 'admin@autosparts.com'],
             [
-                'name' => 'Auto Parts Admin',
+                'name' => 'Autos Parts Admin',
                 'phone' => '+91 98765 00001',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
@@ -52,7 +52,7 @@ class RoleAndPermissionSeeder extends Seeder
 
         // 4. Default Editor user
         $editorUser = User::updateOrCreate(
-            ['email' => 'editor@autoparts.com'],
+            ['email' => 'editor@autosparts.com'],
             [
                 'name' => 'Catalog Specialist',
                 'phone' => '+91 98765 00002',
@@ -65,7 +65,7 @@ class RoleAndPermissionSeeder extends Seeder
 
         // 5. Default Customer user
         $customerUser = User::updateOrCreate(
-            ['email' => 'customer@autoparts.com'],
+            ['email' => 'customer@autosparts.com'],
             [
                 'name' => 'Vikram Singh',
                 'phone' => '+91 98765 12345',
@@ -78,7 +78,7 @@ class RoleAndPermissionSeeder extends Seeder
 
         // 6. Default Supplier user
         $supplierUser = User::updateOrCreate(
-            ['email' => 'supplier@autoparts.com'],
+            ['email' => 'supplier@autosparts.com'],
             [
                 'name' => 'Rajesh Sharma',
                 'company_name' => 'Apex Motorsport Spares Pvt. Ltd.',

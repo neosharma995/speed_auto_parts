@@ -25,7 +25,7 @@ export default function Register() {
 
     return (
         <GuestLayout>
-            <Head title="Create Account | AUTO PARTS" />
+            <Head title="Create Account | SPEED AUTOS PARTS" />
 
             <div style={{ marginBottom: '24px', textAlign: 'center' }}>
                 <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#151515', textTransform: 'uppercase' }}>

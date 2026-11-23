@@ -31,7 +31,7 @@ class AutomotiveCatalogSeeder extends Seeder
         // 1. Taxes
         $taxClassStandard = TaxClass::firstOrCreate(
             ['slug' => 'gst-18'],
-            ['name' => 'Standard Auto Parts (GST 18%)', 'description' => 'Applicable to mechanical, intake & suspension parts', 'is_default' => true]
+            ['name' => 'Standard Autos Parts (GST 18%)', 'description' => 'Applicable to mechanical, intake & suspension parts', 'is_default' => true]
         );
         TaxRate::firstOrCreate(
             ['tax_class_id' => $taxClassStandard->id, 'country_code' => 'IN'],
@@ -159,7 +159,7 @@ class AutomotiveCatalogSeeder extends Seeder
         ProductAttributeValue::firstOrCreate(['attribute_id' => $attrRotorDia->id, 'slug' => '355mm'], ['value' => '355 mm']);
 
         // 6. Products from prompt specifications
-        $supplier = User::where('email', 'supplier@autoparts.com')->first();
+        $supplier = User::where('email', 'supplier@autosparts.com')->first();
 
         // Product 1: Performance Summer Tire
         $pTire = Product::updateOrCreate(
@@ -195,7 +195,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'is_best_seller' => true,
                 'is_new_arrival' => false,
                 'status' => 'published',
-                'seo_title' => 'Performance Summer Tire - Auto Parts Shop',
+                'seo_title' => 'Performance Summer Tire - Autos Parts Shop',
                 'seo_description' => 'Buy Michelin Performance Summer Tires online. High-speed track and street radial performance.',
                 'rating' => 4.90,
                 'rating_count' => 84,
@@ -523,7 +523,7 @@ class AutomotiveCatalogSeeder extends Seeder
         );
 
         // 9. Customer address for seed user
-        $customerUser = User::where('email', 'customer@autoparts.com')->first();
+        $customerUser = User::where('email', 'customer@autosparts.com')->first();
         if ($customerUser) {
             CustomerAddress::firstOrCreate(
                 ['user_id' => $customerUser->id, 'address_line1' => 'Flat 402, Speedline Towers, Outer Ring Road'],
@@ -546,7 +546,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 [
                     'user_id' => $customerUser->id,
                     'customer_name' => 'Vikram Singh',
-                    'customer_email' => 'customer@autoparts.com',
+                    'customer_email' => 'customer@autosparts.com',
                     'customer_phone' => '+91 98765 12345',
                     'shipping_address' => 'Flat 402, Speedline Towers, Outer Ring Road',
                     'apartment' => 'Tower B, 4th Floor',

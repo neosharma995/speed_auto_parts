@@ -95,10 +95,10 @@ class HandleInertiaRequests extends Middleware
             },
             'settings' => function () {
                 return [
-                    'store_name' => 'AUTO PARTS',
+                    'store_name' => config('app.name', 'SPEED AUTOS PARTS'),
                     'store_phone' => '+91 98765 43210',
-                    'store_email' => 'support@autoparts.com',
-                    'store_address' => 'Auto Parts HQ, Performance Drive, Industrial Area, Sector 5, New Delhi 110001',
+                    'store_email' => 'support@speedautosparts.com',
+                    'store_address' => 'Speed Autos Parts HQ, Performance Drive, Industrial Area, Sector 5, New Delhi 110001',
                     'currency_symbol' => '₹',
                     'currency_code' => 'INR',
                 ];

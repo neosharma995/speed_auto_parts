@@ -121,11 +121,11 @@ export default function Header() {
                 {/* ------------------------------------------------------------ */}
                 <div className="site-header-main">
                     <div className="container site-header-main-inner">
-                        {/* Official SpeedAutoParts Logo Image */}
+                        {/* Official Speed Autos Parts Logo Image */}
                         <Link href="/" className="site-header-logo">
                             <img
                                 src="/assets/images/logo/speedautoparts-official.png"
-                                alt="SpeedAutoParts - Performance Spare Parts"
+                                alt="Speed Autos Parts - Performance Spare Parts"
                                 className="site-header-logo-img"
                             />
                         </Link>
@@ -398,7 +398,7 @@ export default function Header() {
                         <div className="mobile-drawer-header">
                             <img
                                 src="/assets/images/logo/speedautoparts-official.png"
-                                alt="SpeedAutoParts"
+                                alt="Speed Autos Parts"
                                 style={{ height: '30px', width: 'auto' }}
                             />
                             <button

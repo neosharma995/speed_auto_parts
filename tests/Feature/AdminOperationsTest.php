@@ -15,7 +15,7 @@ class AdminOperationsTest extends TestCase
 {
     public function test_customer_cannot_access_admin_dashboard(): void
     {
-        $customer = User::where('email', 'customer@autoparts.com')->first();
+        $customer = User::where('email', 'customer@autosparts.com')->first();
         $this->actingAs($customer);
 
         $response = $this->get('/admin/dashboard');
@@ -24,7 +24,7 @@ class AdminOperationsTest extends TestCase
 
     public function test_admin_can_access_admin_dashboard(): void
     {
-        $admin = User::where('email', 'admin@autoparts.com')->first();
+        $admin = User::where('email', 'admin@autosparts.com')->first();
         $this->actingAs($admin);
 
         $response = $this->get('/admin/dashboard');
@@ -33,7 +33,7 @@ class AdminOperationsTest extends TestCase
 
     public function test_admin_can_manage_products(): void
     {
-        $admin = User::where('email', 'admin@autoparts.com')->first();
+        $admin = User::where('email', 'admin@autosparts.com')->first();
         $this->actingAs($admin);
 
         $category = Category::first();
@@ -98,7 +98,7 @@ class AdminOperationsTest extends TestCase
 
     public function test_admin_can_update_order_tracking_and_status(): void
     {
-        $admin = User::where('email', 'admin@autoparts.com')->first();
+        $admin = User::where('email', 'admin@autosparts.com')->first();
         $this->actingAs($admin);
 
         $order = Order::first();
@@ -106,7 +106,7 @@ class AdminOperationsTest extends TestCase
             $order = Order::create([
                 'order_number' => 'ORD-TEST-' . rand(1000, 9999),
                 'shipping_name' => 'Test Customer',
-                'shipping_email' => 'customer@autoparts.com',
+                'shipping_email' => 'customer@autosparts.com',
                 'shipping_phone' => '+91 98765 43210',
                 'shipping_address_line1' => 'Test St',
                 'shipping_city' => 'Delhi',

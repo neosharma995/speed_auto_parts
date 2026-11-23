@@ -19,11 +19,11 @@ class CustomerAccountTest extends TestCase
 
     public function test_customer_can_login_and_access_dashboard(): void
     {
-        $customer = User::where('email', 'customer@autoparts.com')->first();
+        $customer = User::where('email', 'customer@autosparts.com')->first();
         $this->assertNotNull($customer);
 
         $loginResponse = $this->post('/login', [
-            'email' => 'customer@autoparts.com',
+            'email' => 'customer@autosparts.com',
             'password' => 'password',
         ]);
 
@@ -36,7 +36,7 @@ class CustomerAccountTest extends TestCase
 
     public function test_customer_can_manage_addresses(): void
     {
-        $customer = User::where('email', 'customer@autoparts.com')->first();
+        $customer = User::where('email', 'customer@autosparts.com')->first();
         $this->actingAs($customer);
 
         // Store new address
@@ -63,7 +63,7 @@ class CustomerAccountTest extends TestCase
 
     public function test_customer_can_toggle_wishlist(): void
     {
-        $customer = User::where('email', 'customer@autoparts.com')->first();
+        $customer = User::where('email', 'customer@autosparts.com')->first();
         $this->actingAs($customer);
 
         $product = Product::first();

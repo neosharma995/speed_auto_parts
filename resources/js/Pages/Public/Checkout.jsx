@@ -195,7 +195,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                         key: rzpData.key,
                         amount: rzpData.amount,
                         currency: rzpData.currency || 'INR',
-                        name: 'AUTO PARTS',
+                        name: 'SPEED AUTOS PARTS',
                         description: `Order ${rzpData.order_number}`,
                         order_id: rzpData.razorpay_order_id,
                         prefill: {

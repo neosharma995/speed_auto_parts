@@ -154,7 +154,7 @@ export function HeroVideo({ sceneIndex, isVisible, isReducedMotion, isPlaying = 
                 {/* Fallback Image */}
                 <img
                     src="/assets/images/hero/automotive-poster.webp"
-                    alt="AUTO PARTS High Performance Drift Showcase"
+                    alt="SPEED AUTOS PARTS High Performance Drift Showcase"
                     className="hero-video-fallback"
                 />
             </video>
@@ -342,7 +342,7 @@ export function HeroExplodedView({
         keyLight.castShadow = true;
         scene.add(keyLight);
 
-        // AUTO PARTS Signature Orange Rim Light (#F36B16)
+        // SPEED AUTOS PARTS Signature Orange Rim Light (#F36B16)
         const orangeRimLight = new THREE.DirectionalLight(0xf36b16, 3.8);
         orangeRimLight.position.set(-14, 8, -6);
         scene.add(orangeRimLight);
@@ -1013,7 +1013,7 @@ export function HeroScene({
 
 // ============================================================================
 // Main Hero Component
-// AUTO PARTS Homepage Hero – Cinematic 3D Automotive Experience
+// SPEED AUTOS PARTS Homepage Hero – Cinematic 3D Automotive Experience
 // ============================================================================
 export default function Hero({ banner = null }) {
     const heroSectionRef = useRef(null);

@@ -7,7 +7,7 @@ export function WishlistProvider({ children, initialWishlist = [] }) {
     const [wishlist, setWishlist] = useState(() => {
         if (typeof window !== 'undefined') {
             try {
-                const stored = localStorage.getItem('autoparts_wishlist');
+                const stored = localStorage.getItem('autosparts_wishlist') || localStorage.getItem('autoparts_wishlist');
                 if (stored) return JSON.parse(stored);
             } catch (e) {
                 console.error('Error reading wishlist', e);
@@ -25,7 +25,7 @@ export function WishlistProvider({ children, initialWishlist = [] }) {
         }
         setWishlist(updated);
         if (typeof window !== 'undefined') {
-            localStorage.setItem('autoparts_wishlist', JSON.stringify(updated));
+            localStorage.setItem('autosparts_wishlist', JSON.stringify(updated));
         }
         try {
             await axios.post('/wishlist/toggle', { product_id: productId });

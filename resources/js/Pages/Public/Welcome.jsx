@@ -418,7 +418,7 @@ export default function Welcome({
                 </div>
             </section>
 
-            {/* 8. Why Choose SpeedAutoParts Strip */}
+            {/* 8. Why Choose Speed Autos Parts Strip */}
             <section className="section why-choose-section">
                 <div className="container">
                     <div className="why-choose-card">
@@ -426,7 +426,7 @@ export default function Welcome({
                             <img src="/assets/icons/heading-stripe.webp" alt="" className="wc-brand-stripe" />
                             <div className="wc-brand-title">
                                 <span>Why Choose</span>
-                                <span>SpeedAutoParts?</span>
+                                <span>Speed Autos Parts?</span>
                             </div>
                         </div>
 

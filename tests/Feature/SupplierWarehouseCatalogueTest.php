@@ -16,12 +16,12 @@ class SupplierWarehouseCatalogueTest extends TestCase
 {
     public function test_role_isolation_and_supplier_login_redirect(): void
     {
-        $supplier = User::where('email', 'supplier@autoparts.com')->firstOrFail();
-        $customer = User::where('email', 'customer@autoparts.com')->firstOrFail();
+        $supplier = User::where('email', 'supplier@autosparts.com')->firstOrFail();
+        $customer = User::where('email', 'customer@autosparts.com')->firstOrFail();
 
         // Supplier login redirects to /supplier/dashboard
         $loginRes = $this->post('/login', [
-            'email' => 'supplier@autoparts.com',
+            'email' => 'supplier@autosparts.com',
             'password' => 'password',
         ]);
         $loginRes->assertRedirect('/supplier/dashboard');
@@ -39,7 +39,7 @@ class SupplierWarehouseCatalogueTest extends TestCase
 
     public function test_admin_can_create_supplier(): void
     {
-        $admin = User::where('email', 'admin@autoparts.com')->firstOrFail();
+        $admin = User::where('email', 'admin@autosparts.com')->firstOrFail();
         $this->actingAs($admin);
 
         $email = 'supplier_' . strtolower(Str::random(6)) . '@example.com';
@@ -62,8 +62,8 @@ class SupplierWarehouseCatalogueTest extends TestCase
 
     public function test_supplier_product_lot_warehouse_reject_receive_and_catalogue_flow(): void
     {
-        $supplier = User::where('email', 'supplier@autoparts.com')->firstOrFail();
-        $admin = User::where('email', 'admin@autoparts.com')->firstOrFail();
+        $supplier = User::where('email', 'supplier@autosparts.com')->firstOrFail();
+        $admin = User::where('email', 'admin@autosparts.com')->firstOrFail();
         $category = Category::first();
         $brand = Brand::first();
 
@@ -190,8 +190,8 @@ class SupplierWarehouseCatalogueTest extends TestCase
 
     public function test_multi_item_lot_transfer_supplier_to_warehouse_to_catalogue(): void
     {
-        $supplier = User::where('email', 'supplier@autoparts.com')->firstOrFail();
-        $admin = User::where('email', 'admin@autoparts.com')->firstOrFail();
+        $supplier = User::where('email', 'supplier@autosparts.com')->firstOrFail();
+        $admin = User::where('email', 'admin@autosparts.com')->firstOrFail();
         $category = Category::first();
         $brand = Brand::first();
 

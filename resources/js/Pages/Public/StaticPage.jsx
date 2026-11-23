@@ -14,7 +14,7 @@ export default function StaticPage({ title, subtitle, content }) {
                     }}>
                         <div style={{ borderBottom: '1px solid #EEE', paddingBottom: '20px', marginBottom: '28px' }}>
                             <span style={{ fontSize: '12px', fontWeight: 800, color: '#F36B16', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                                AUTO PARTS Store Policy
+                                SPEED AUTOS PARTS Policy
                             </span>
                             <h1 style={{ fontSize: '32px', fontWeight: 900, color: '#151515', marginTop: '4px' }}>
                                 {title}

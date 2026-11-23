@@ -14,7 +14,7 @@ router.on('invalid', (event) => {
     }
 });
 
-const appName = import.meta.env.VITE_APP_NAME || 'AUTO PARTS';
+const appName = import.meta.env.VITE_APP_NAME || 'SPEED AUTOS PARTS';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
