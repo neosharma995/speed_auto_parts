@@ -27,7 +27,7 @@ export default function SupplierSidebar({ sidebarOpen, onCloseSidebar }) {
                     <div style={{ width: '32px', height: '32px', borderRadius: '4px', backgroundColor: '#F36B16', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Wrench size={18} />
                     </div>
-                    <span>AUTOS<span style={{ color: '#F36B16' }}>PARTS</span> <small style={{ fontSize: '10px', color: '#888' }}>SUPPLIER</small></span>
+                    <span>SPEED <span style={{ color: '#F36B16' }}>AUTOS PARTS</span> <small style={{ fontSize: '10px', color: '#888' }}>SUPPLIER</small></span>
                     <button
                         type="button"
                         onClick={onCloseSidebar}
