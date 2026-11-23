@@ -180,6 +180,7 @@ export default function ProductShow({
                             {/* Brand Header */}
                             <div className="product-info-top-row">
                                 <span className="brand-subtitle">
+                                    <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
                                     {product.brand ? `${product.brand.name.toUpperCase()} PRECISION SPARES` : 'PRECISION AUTOMOTIVE HARDWARE'}
                                 </span>
                             </div>

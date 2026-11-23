@@ -114,7 +114,10 @@ export default function Shop({
                     {/* Shop Top Header */}
                     <div className="shop-page-top">
                         <div className="shop-page-top-info">
-                            <h1>Automotive Performance Catalog</h1>
+                            <h1>
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                                Automotive Performance Catalog
+                            </h1>
                             <p>Showing {products.total || items.length} verified automotive spare parts</p>
                         </div>
 
