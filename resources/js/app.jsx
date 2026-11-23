@@ -7,6 +7,27 @@ import { createRoot } from 'react-dom/client';
 import { CartProvider } from './Context/CartContext';
 import { WishlistProvider } from './Context/WishlistContext';
 
+const syncCsrfMeta = (page) => {
+    const newToken = page?.props?.csrf_token;
+    if (newToken) {
+        const meta = document.head.querySelector('meta[name="csrf-token"]');
+        if (meta) {
+            meta.content = newToken;
+        }
+        if (window.axios) {
+            window.axios.defaults.headers.common['X-CSRF-TOKEN'] = newToken;
+        }
+    }
+};
+
+router.on('navigate', (event) => {
+    syncCsrfMeta(event.detail?.page);
+});
+
+router.on('success', (event) => {
+    syncCsrfMeta(event.detail?.page);
+});
+
 router.on('invalid', (event) => {
     if (event.detail.response?.status === 419) {
         event.preventDefault();
@@ -14,16 +35,17 @@ router.on('invalid', (event) => {
     }
 });
 
-const appName = import.meta.env.VITE_APP_NAME || 'Speed Autos Parts';
+const appName = import.meta.env.VITE_APP_NAME || 'SPEED AUTOS PARTS';
 
 createInertiaApp({
-    title: (title) => (title ? (title.includes(appName) ? title : `${title} - ${appName}`) : appName),
+    title: (title) => `${title} - ${appName}`,
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.jsx`,
             import.meta.glob('./Pages/**/*.jsx'),
         ),
     setup({ el, App, props }) {
+        syncCsrfMeta(props?.initialPage);
         const root = createRoot(el);
 
         root.render(

@@ -36,6 +36,7 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
+            'csrf_token' => fn () => csrf_token(),
             'auth' => [
                 'user' => $user ? [
                     'id' => $user->id,
@@ -88,7 +89,7 @@ class HandleInertiaRequests extends Middleware
                     'store_phone' => '+91 98765 43210',
                     'store_email' => 'support@autoparts.com',
                     'store_address' => 'Speed Autos Parts HQ, Performance Drive, Industrial Area, Sector 5, New Delhi 110001',
-                    'currency_symbol' => '₹',
+                    'currency_symbol' => 'â‚¹',
                     'currency_code' => 'INR',
                 ];
             },
