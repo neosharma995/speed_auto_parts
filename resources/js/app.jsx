@@ -7,6 +7,27 @@ import { createRoot } from 'react-dom/client';
 import { CartProvider } from './Context/CartContext';
 import { WishlistProvider } from './Context/WishlistContext';
 
+const syncCsrfMeta = (page) => {
+    const newToken = page?.props?.csrf_token;
+    if (newToken) {
+        const meta = document.head.querySelector('meta[name="csrf-token"]');
+        if (meta) {
+            meta.content = newToken;
+        }
+        if (window.axios) {
+            window.axios.defaults.headers.common['X-CSRF-TOKEN'] = newToken;
+        }
+    }
+};
+
+router.on('navigate', (event) => {
+    syncCsrfMeta(event.detail?.page);
+});
+
+router.on('success', (event) => {
+    syncCsrfMeta(event.detail?.page);
+});
+
 router.on('invalid', (event) => {
     if (event.detail.response?.status === 419) {
         event.preventDefault();
@@ -24,6 +45,7 @@ createInertiaApp({
             import.meta.glob('./Pages/**/*.jsx'),
         ),
     setup({ el, App, props }) {
+        syncCsrfMeta(props?.initialPage);
         const root = createRoot(el);
 
         root.render(
