@@ -44,6 +44,8 @@ Route::get('/terms', [StaticPageController::class, 'terms'])->name('terms');
 
 Route::get('/help-center', [StaticPageController::class, 'helpCenter'])->name('help-center');
 Route::get('/faqs', [StaticPageController::class, 'faqs'])->name('faqs');
+Route::get('/404', [StaticPageController::class, 'notFound'])->name('not-found');
+Route::fallback([StaticPageController::class, 'notFound']);
 
 // Category & Product Redirects
 Route::get('/products', [ShopController::class, 'index'])->name('products');
