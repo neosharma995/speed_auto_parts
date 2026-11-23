@@ -58,4 +58,15 @@ class PublicCatalogTest extends TestCase
         $response = $this->get("/shop?search={$product->part_number}");
         $response->assertStatus(200);
     }
+
+    public function test_not_found_page_renders_404(): void
+    {
+        $response = $this->get('/404');
+        $response->assertStatus(404);
+        $response->assertInertia(fn ($page) => $page->component('Public/NotFound'));
+
+        $fallbackResponse = $this->get('/non-existent-page-url');
+        $fallbackResponse->assertStatus(404);
+        $fallbackResponse->assertInertia(fn ($page) => $page->component('Public/NotFound'));
+    }
 }

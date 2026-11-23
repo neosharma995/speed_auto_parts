@@ -161,7 +161,7 @@ class AutomotiveCatalogSeeder extends Seeder
         // 6. Products from prompt specifications
         $supplier = User::where('email', 'supplier@autosparts.com')->first();
 
-        // Product 1: Performance Summer Tire
+        // Product 1: Pilot Sport 5 Performance Tire
         $pTire = Product::updateOrCreate(
             ['sku' => 'AP-TIRE-992'],
             [
@@ -169,8 +169,8 @@ class AutomotiveCatalogSeeder extends Seeder
                 'category_id' => $categories['tires']->id,
                 'tax_class_id' => $taxClassStandard->id,
                 'supplier_id' => $supplier?->id,
-                'name' => 'Performance Summer Tire',
-                'slug' => 'performance-summer-tire',
+                'name' => 'Pilot Sport 5 Performance Tire',
+                'slug' => 'pilot-sport-5-performance-tire',
                 'part_number' => 'AP-12345',
                 'short_description' => 'Ultra-high performance compound engineered for maximum dry road traction and razor-sharp steering feedback.',
                 'description' => "Developed directly from motorsport championship compounds, the Performance Summer Tire delivers benchmark cornering grip, exceptional high-speed stability, and responsive dry braking performance. Equipped with dual-compound technology across the asymmetrical tread pattern for optimal road contact under extreme lateral loads.",
@@ -354,7 +354,7 @@ class AutomotiveCatalogSeeder extends Seeder
             ]
         );
 
-        // Product 4: High-Flow Cold Air Intake
+        // Product 4: Cold-Air Intake System
         $pIntake = Product::updateOrCreate(
             ['sku' => 'AP-INT-3010'],
             [
@@ -362,8 +362,8 @@ class AutomotiveCatalogSeeder extends Seeder
                 'category_id' => $categories['intake']->id,
                 'tax_class_id' => $taxClassStandard->id,
                 'supplier_id' => $supplier?->id,
-                'name' => 'High-Flow Cold Air Intake System',
-                'slug' => 'high-flow-cold-air-intake-system',
+                'name' => 'Cold-Air Intake System',
+                'slug' => 'cold-air-intake-system',
                 'part_number' => 'AP-30109',
                 'short_description' => 'Dyno-proven cold air intake kit featuring mandrel-bent aluminum tube and washable conical cotton filter.',
                 'description' => "Guaranteed to increase horsepower and throttle response. Features a custom heat shield to block hot engine bay air and direct dense, cold external air straight to the throttle body for maximum combustion efficiency.",
@@ -395,7 +395,7 @@ class AutomotiveCatalogSeeder extends Seeder
             ]
         );
 
-        // Product 5: Track-Spec Adjustable Coilover Kit
+        // Product 5: B16 PSS10 Coilover Suspension Kit
         $pCoilovers = Product::updateOrCreate(
             ['sku' => 'AP-SUS-7700'],
             [
@@ -403,8 +403,8 @@ class AutomotiveCatalogSeeder extends Seeder
                 'category_id' => $categories['suspension']->id,
                 'tax_class_id' => $taxClassStandard->id,
                 'supplier_id' => $supplier?->id,
-                'name' => 'Track-Spec Adjustable Coilover Kit',
-                'slug' => 'track-spec-adjustable-coilover-kit',
+                'name' => 'B16 PSS10 Coilover Suspension Kit',
+                'slug' => 'b16-pss10-coilover-suspension-kit',
                 'part_number' => 'AP-77001',
                 'short_description' => 'Monotube inverted shock dampers with 16-way combined rebound & compression damping adjustment.',
                 'description' => "Engineered for drivers who demand race-winning chassis control without sacrificing road usability. Threaded aluminum shock bodies allow independent ride height adjustment from 30mm to 65mm lowering.",

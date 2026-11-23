@@ -159,4 +159,9 @@ class StaticPageController extends Controller
             'content' => "Frequently Asked Questions:\n\n1. How do I verify part compatibility?\nUse the Vehicle Parts Finder at the top of the store. Select your vehicle Year, Make, Model, and Engine to filter catalog parts guaranteed to fit.\n\n2. How long does shipping take?\nOrders are dispatched within 24–48 hours. Standard surface transit takes 3–5 business days, and express courier takes 1–2 business days.\n\n3. Can I return a part if it doesn't fit?\nYes! If verified via our Vehicle Parts Finder and it does not fit your unmodified vehicle, we provide 100% free return pickup and replacement.\n\n4. Are the parts genuine OEM or certified aftermarket?\nAll components sold on Speed Autos Parts are 100% authentic, sourced directly from certified manufacturers and authorized global distributors.",
         ]);
     }
+
+    public function notFound(): \Symfony\Component\HttpFoundation\Response
+    {
+        return Inertia::render('Public/NotFound')->toResponse(request())->setStatusCode(404);
+    }
 }

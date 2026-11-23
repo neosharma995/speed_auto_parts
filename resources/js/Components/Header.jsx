@@ -4,6 +4,7 @@ import {
     ShoppingCart,
     User as UserIcon,
     Search,
+    Menu,
     List,
     X,
     ChevronDown,
@@ -26,6 +27,7 @@ export default function Header() {
     const { itemCount, setIsCartOpen } = useCart();
     const { wishlist = [] } = useWishlist();
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isScrolled, setIsScrolled] = useState(false);
@@ -149,8 +151,8 @@ export default function Header() {
                             {/* Account Button */}
                             <div className="site-header-account-wrap" ref={accountRef}>
                                 {auth?.user ? (
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
@@ -182,13 +184,13 @@ export default function Header() {
                                 )}
 
                                 {accountDropdownOpen && auth?.user && (
-                                    <div 
+                                    <div
                                         className="site-header-dropdown user-menu-dropdown"
                                         style={{ display: 'block' }}
                                     >
                                         {auth.user.roles?.includes('admin') && (
-                                            <Link 
-                                                href="/admin/dashboard" 
+                                            <Link
+                                                href="/admin/dashboard"
                                                 className="site-header-dropdown-item"
                                                 onClick={() => setAccountDropdownOpen(false)}
                                             >
@@ -197,8 +199,8 @@ export default function Header() {
                                             </Link>
                                         )}
                                         {auth.user.roles?.includes('supplier') && (
-                                            <Link 
-                                                href="/supplier/dashboard" 
+                                            <Link
+                                                href="/supplier/dashboard"
                                                 className="site-header-dropdown-item"
                                                 onClick={() => setAccountDropdownOpen(false)}
                                             >
@@ -206,42 +208,42 @@ export default function Header() {
                                                 <span>Supplier Dashboard</span>
                                             </Link>
                                         )}
-                                        <Link 
-                                            href="/customer/dashboard" 
+                                        <Link
+                                            href="/customer/dashboard"
                                             className="site-header-dropdown-item"
                                             onClick={() => setAccountDropdownOpen(false)}
                                         >
                                             <LayoutDashboard size={16} strokeWidth={2} />
                                             <span>My Dashboard</span>
                                         </Link>
-                                        <Link 
-                                            href="/customer/orders" 
+                                        <Link
+                                            href="/customer/orders"
                                             className="site-header-dropdown-item"
                                             onClick={() => setAccountDropdownOpen(false)}
                                         >
                                             <ShoppingBag size={16} strokeWidth={2} />
                                             <span>Order History</span>
                                         </Link>
-                                        <Link 
-                                            href="/customer/addresses" 
+                                        <Link
+                                            href="/customer/addresses"
                                             className="site-header-dropdown-item"
                                             onClick={() => setAccountDropdownOpen(false)}
                                         >
                                             <MapPin size={16} strokeWidth={2} />
                                             <span>Saved Addresses</span>
                                         </Link>
-                                        <Link 
-                                            href="/customer/wishlist" 
+                                        <Link
+                                            href="/customer/wishlist"
                                             className="site-header-dropdown-item"
                                             onClick={() => setAccountDropdownOpen(false)}
                                         >
                                             <Heart size={16} strokeWidth={2} />
                                             <span>My Wishlist</span>
                                         </Link>
-                                        <Link 
-                                            href="/logout" 
-                                            method="post" 
-                                            as="button" 
+                                        <Link
+                                            href="/logout"
+                                            method="post"
+                                            as="button"
                                             className="site-header-dropdown-item logout-link"
                                             onClick={() => setAccountDropdownOpen(false)}
                                         >
@@ -259,8 +261,8 @@ export default function Header() {
                             </Link>
 
                             {/* Shopping Cart Icon with Orange Badge */}
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 className="site-header-action-icon cart-action-btn"
                                 onClick={() => setIsCartOpen(true)}
                                 aria-label="Open Cart"
@@ -268,18 +270,82 @@ export default function Header() {
                                 <ShoppingCart size={24} strokeWidth={1.8} />
                                 <span className="action-badge">{itemCount}</span>
                             </button>
+                        </div>
 
-                            {/* Mobile Drawer Trigger */}
-                            <button 
-                                type="button" 
-                                className="site-header-mobile-toggle"
-                                onClick={() => setMobileDrawerOpen(true)}
-                                aria-label="Open Menu"
+                        {/* Mobile Toggle Button with Custom Burger Icon */}
+                        <button
+                            type="button"
+                            className="site-header-mobile-toggle"
+                            onClick={() => setMobileDrawerOpen(true)}
+                            aria-label="Open Menu"
+                        >
+                            <svg className="ekit-menu-icon ekit-svg-icon icon-burger-menu" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" aria-hidden="true">
+                                <path d="M0 18.294h32v-2.563h-32v2.563zM11.519 25.975h20.481v-2.563h-20.481v2.563zM6.4 8.056v2.563h25.6v-2.563h-25.6z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                {/* ------------------------------------------------------------ */}
+                {/* ROW 2.5: MOBILE SUBBAR (SEARCH, ACCOUNT, CART & ORDER NOW)   */}
+                {/* ------------------------------------------------------------ */}
+                <div className="site-header-mobile-subbar">
+                    <div className="container site-header-mobile-subbar-inner">
+                        <div className="mobile-subbar-right-group">
+                            {/* Search Toggle Icon */}
+                            <button
+                                type="button"
+                                className="mobile-subbar-icon-btn"
+                                onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+                                aria-label="Search Catalog"
                             >
-                                <List size={22} strokeWidth={2} />
+                                <Search size={21} strokeWidth={2} />
                             </button>
+
+                            {/* Account Icon */}
+                            <Link
+                                href={auth?.user ? "/customer/dashboard" : "/login"}
+                                className="mobile-subbar-icon-btn"
+                                aria-label="My Account"
+                            >
+                                <UserIcon size={21} strokeWidth={2} />
+                            </Link>
+
+                            {/* Shopping Cart Icon with Badge */}
+                            <button
+                                type="button"
+                                className="mobile-subbar-icon-btn mobile-subbar-cart-btn"
+                                onClick={() => setIsCartOpen(true)}
+                                aria-label="Open Cart"
+                            >
+                                <ShoppingCart size={21} strokeWidth={2} />
+                                <span className="mobile-subbar-cart-badge">{itemCount}</span>
+                            </button>
+
+                            {/* ORDER NOW solid button -> redirect to /shop */}
+                            <Link href="/shop" className="mobile-subbar-order-btn">
+                                ORDER NOW
+                            </Link>
                         </div>
                     </div>
+
+                    {/* Expandable Mobile Search Field */}
+                    {mobileSearchOpen && (
+                        <div className="mobile-search-expand-wrap">
+                            <form onSubmit={handleSearchSubmit} className="mobile-search-form">
+                                <input
+                                    type="text"
+                                    placeholder="Search by part number, product, brand..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    autoFocus
+                                />
+                                <button type="submit" className="mobile-search-submit" aria-label="Search">
+                                    <Search size={16} />
+                                </button>
+                            </form>
+                        </div>
+                    )}
                 </div>
 
                 {/* ------------------------------------------------------------ */}
@@ -341,7 +407,7 @@ export default function Header() {
                                     </Link>
                                     <div className="site-header-dropdown">
                                         {navBrands.map(b => (
-                                            <Link key={b.id} href={`/brands/${b.slug}`} className="site-header-dropdown-item">{b.name}</Link>
+                                            <Link key={b.id} href={`/shop?brand=${b.slug}`} className="site-header-dropdown-item">{b.name}</Link>
                                         ))}
                                     </div>
                                 </div>
