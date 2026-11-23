@@ -5,9 +5,12 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
     server: {
         host: '127.0.0.1',
-        port: 5174,
+        port: 5173,
+        strictPort: true,
+        cors: true,
         headers: {
             'Cache-Control': 'no-cache',
+            'Access-Control-Allow-Origin': '*',
         },
         hmr: {
             host: '127.0.0.1',

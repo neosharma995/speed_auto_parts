@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import Hero from '@/Components/Hero';
@@ -7,7 +7,7 @@ import {
     ArrowRight,
     Truck,
     ShieldCheck,
-    RotateCcw,
+    RefreshCw,
     Headphones,
     Users,
     Package,
@@ -18,6 +18,45 @@ import {
     ChevronRight
 } from 'lucide-react';
 
+function StatCounter({ value, suffix = '', decimals = 0, isVisible, duration = 1800 }) {
+    const [displayVal, setDisplayVal] = useState(0);
+
+    useEffect(() => {
+        if (!isVisible) return;
+        let startTimestamp = null;
+        let animationFrameId;
+
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const current = easeOut * value;
+            setDisplayVal(current);
+
+            if (progress < 1) {
+                animationFrameId = requestAnimationFrame(step);
+            } else {
+                setDisplayVal(value);
+            }
+        };
+
+        animationFrameId = requestAnimationFrame(step);
+        return () => {
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        };
+    }, [isVisible, value, duration]);
+
+    if (!isVisible) {
+        return <span>0{suffix}</span>;
+    }
+
+    const formatted = decimals > 0 
+        ? displayVal.toFixed(decimals) 
+        : Math.floor(displayVal).toLocaleString();
+
+    return <span>{formatted}{suffix}</span>;
+}
+
 export default function Welcome({ 
     categories = [], 
     featuredProducts = [], 
@@ -27,8 +66,23 @@ export default function Welcome({
 }) {
     const [activeTab, setActiveTab] = useState('All');
     const [topPickTab, setTopPickTab] = useState('Performance');
-    const [newsletterEmail, setNewsletterEmail] = useState('');
-    const [subscribed, setSubscribed] = useState(false);
+    const [countersVisible, setCountersVisible] = useState(false);
+    const resultsSectionRef = useRef(null);
+
+    useEffect(() => {
+        if (!resultsSectionRef.current) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setCountersVisible(true);
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.2 }
+        );
+        observer.observe(resultsSectionRef.current);
+        return () => observer.disconnect();
+    }, []);
 
     // 8 Popular Categories with optimized WebP assets
     const popularCategories = [
@@ -153,14 +207,6 @@ export default function Welcome({
         { title: 'Coilover Kits', slug: 'suspension', img: '/assets/images/categories/suspension.webp' },
         { title: 'Exhaust Systems', slug: 'exhaust', img: '/assets/images/categories/exhaust.webp' },
     ];
-
-    const handleNewsletterSubmit = (e) => {
-        e.preventDefault();
-        if (newsletterEmail) {
-            setSubscribed(true);
-            setNewsletterEmail('');
-        }
-    };
 
     return (
         <AppLayout title="Performance Automotive Spare Parts">
@@ -353,23 +399,21 @@ export default function Welcome({
                         </Link>
                     </div>
 
-                    <div className="brands-container-box">
-                        <div className="brands-row-8">
-                            {brandLogos.map((brand, idx) => (
-                                <Link 
-                                    key={idx} 
-                                    href={`/brands/${brand.slug}`} 
-                                    className="brand-logo-card"
-                                    title={brand.name}
-                                >
-                                    <img 
-                                        src={brand.logo} 
-                                        alt={brand.name} 
-                                        className="brand-logo-img"
-                                    />
-                                </Link>
-                            ))}
-                        </div>
+                    <div className="brands-row-8">
+                        {brandLogos.map((brand, idx) => (
+                            <Link 
+                                key={idx} 
+                                href={`/brands/${brand.slug}`} 
+                                className="brand-logo-card"
+                                title={brand.name}
+                            >
+                                <img 
+                                    src={brand.logo} 
+                                    alt={brand.name} 
+                                    className="brand-logo-img"
+                                />
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </section>
@@ -379,13 +423,16 @@ export default function Welcome({
                 <div className="container">
                     <div className="why-choose-card">
                         <div className="why-choose-brand-col">
-                            <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
-                            <span className="wc-brand-title">Why Choose SpeedAutoParts?</span>
+                            <img src="/assets/icons/heading-stripe.webp" alt="" className="wc-brand-stripe" />
+                            <div className="wc-brand-title">
+                                <span>Why Choose</span>
+                                <span>SpeedAutoParts?</span>
+                            </div>
                         </div>
 
                         <div className="why-choose-item">
-                            <div className="wc-icon-circle">
-                                <ShieldCheck size={20} />
+                            <div className="wc-icon-wrap">
+                                <ShieldCheck size={34} strokeWidth={1.8} />
                             </div>
                             <div className="wc-text">
                                 <h4>Genuine Parts</h4>
@@ -394,8 +441,8 @@ export default function Welcome({
                         </div>
 
                         <div className="why-choose-item">
-                            <div className="wc-icon-circle">
-                                <Truck size={20} />
+                            <div className="wc-icon-wrap">
+                                <Truck size={34} strokeWidth={1.8} />
                             </div>
                             <div className="wc-text">
                                 <h4>International Shipping</h4>
@@ -404,8 +451,8 @@ export default function Welcome({
                         </div>
 
                         <div className="why-choose-item">
-                            <div className="wc-icon-circle">
-                                <RotateCcw size={20} />
+                            <div className="wc-icon-wrap">
+                                <RefreshCw size={30} strokeWidth={1.8} />
                             </div>
                             <div className="wc-text">
                                 <h4>30-Day Returns</h4>
@@ -414,8 +461,8 @@ export default function Welcome({
                         </div>
 
                         <div className="why-choose-item">
-                            <div className="wc-icon-circle">
-                                <Headphones size={20} />
+                            <div className="wc-icon-wrap">
+                                <Headphones size={32} strokeWidth={1.8} />
                             </div>
                             <div className="wc-text">
                                 <h4>Expert Support</h4>
@@ -492,11 +539,14 @@ export default function Welcome({
             </section>
 
             {/* 10. Real Results Banner (Built by Enthusiasts Trusted Worldwide) */}
-            <section className="section real-results-section">
+            <section className="section real-results-section" ref={resultsSectionRef}>
                 <div className="container">
                     <div className="real-results-card">
                         <div className="rr-left">
-                            <span className="rr-badge">REAL RESULTS</span>
+                            <div className="rr-eyebrow">
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                                <span>REAL RESULTS</span>
+                            </div>
                             <h2 className="rr-heading">
                                 BUILT BY ENTHUSIASTS<br />TRUSTED WORLDWIDE
                             </h2>
@@ -504,7 +554,7 @@ export default function Welcome({
                                 See how our parts perform in real builds from customers around the globe.
                             </p>
                             <Link href="/shop" className="btn btn-primary rr-btn">
-                                Explore Customer Builds <ArrowRight size={15} />
+                                Explore Customer Builds <ArrowRight size={14} />
                             </Link>
                         </div>
 
@@ -512,78 +562,51 @@ export default function Welcome({
                             <img 
                                 src="/assets/images/customer/customer-builds.webp" 
                                 alt="Customer Performance Build" 
+                                className="rr-car-img"
                                 loading="lazy" 
                             />
                         </div>
 
-                        <div className="rr-stats-grid">
-                            <div className="rr-stat-item">
-                                <Users size={22} className="rr-stat-icon" />
-                                <span className="rr-stat-num">100,000+</span>
+                        <div className="rr-stats-row">
+                            <div className="rr-stat-col">
+                                <Users size={26} className="rr-stat-icon" />
+                                <span className="rr-stat-num">
+                                    <StatCounter value={100000} suffix="+" isVisible={countersVisible} />
+                                </span>
                                 <span className="rr-stat-label">Happy Customers</span>
                             </div>
 
-                            <div className="rr-stat-item">
-                                <Package size={22} className="rr-stat-icon" />
-                                <span className="rr-stat-num">250,000+</span>
+                            <div className="rr-stat-divider" />
+
+                            <div className="rr-stat-col">
+                                <Package size={26} className="rr-stat-icon" />
+                                <span className="rr-stat-num">
+                                    <StatCounter value={250000} suffix="+" isVisible={countersVisible} />
+                                </span>
                                 <span className="rr-stat-label">Parts In Stock</span>
                             </div>
 
-                            <div className="rr-stat-item">
-                                <Globe size={22} className="rr-stat-icon" />
-                                <span className="rr-stat-num">100+</span>
+                            <div className="rr-stat-divider" />
+
+                            <div className="rr-stat-col">
+                                <Globe size={26} className="rr-stat-icon" />
+                                <span className="rr-stat-num">
+                                    <StatCounter value={100} suffix="+" isVisible={countersVisible} />
+                                </span>
                                 <span className="rr-stat-label">Countries Served</span>
                             </div>
 
-                            <div className="rr-stat-item">
-                                <Star size={22} className="rr-stat-icon" />
-                                <span className="rr-stat-num">4.8/5</span>
+                            <div className="rr-stat-divider" />
+
+                            <div className="rr-stat-col">
+                                <Star size={26} className="rr-stat-icon" />
+                                <span className="rr-stat-num">
+                                    <StatCounter value={4.8} suffix="/5" decimals={1} isVisible={countersVisible} />
+                                </span>
                                 <span className="rr-stat-label">Customer Rating</span>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            {/* 11. Newsletter Strip */}
-            <section className="newsletter-strip">
-                <div className="newsletter-bg-wrap">
-                    <img 
-                        src="/assets/images/footer/footer-sports-car.webp" 
-                        alt="Performance car tail lights" 
-                        className="newsletter-bg-img"
-                    />
-                    <div className="newsletter-overlay" />
-                </div>
-
-                <div className="container newsletter-content-wrap">
-                    <span className="nl-eyebrow">STAY IN THE LOOP</span>
-                    <h3 className="nl-heading">
-                        Get Exclusive Deals & Performance Updates
-                    </h3>
-                    <p className="nl-desc">
-                        Subscribe to our newsletter and be the first to know about new products, special offers, and expert automotive insights.
-                    </p>
-
-                    {subscribed ? (
-                        <div className="nl-success-msg">
-                            <CheckCircle size={18} /> Thank you for subscribing to SpeedAutoParts!
-                        </div>
-                    ) : (
-                        <form onSubmit={handleNewsletterSubmit} className="nl-form">
-                            <input 
-                                type="email" 
-                                required 
-                                placeholder="Enter your email address" 
-                                value={newsletterEmail}
-                                onChange={(e) => setNewsletterEmail(e.target.value)}
-                                aria-label="Email address"
-                            />
-                            <button type="submit" className="btn btn-primary nl-submit-btn">
-                                Subscribe <ArrowRight size={15} />
-                            </button>
-                        </form>
-                    )}
                 </div>
             </section>
         </AppLayout>

@@ -14,14 +14,6 @@
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
         <meta name="theme-color" content="#0B0B0E">
 
-        <!-- Google Fonts: Inter -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-        <!-- Razorpay Checkout Script -->
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
         <!-- Scripts & Styles -->
         @routes
         @viteReactRefresh

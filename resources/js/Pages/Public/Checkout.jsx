@@ -52,6 +52,15 @@ export default function Checkout({ savedAddresses = [], user = null }) {
     const [paymentMethod, setPaymentMethod] = useState('razorpay');
     const [orderNotes, setOrderNotes] = useState('');
 
+    useEffect(() => {
+        if (typeof window !== 'undefined' && !window.Razorpay) {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.async = true;
+            document.body.appendChild(script);
+        }
+    }, []);
+
     // Dynamic Tax Calculation state
     const [taxData, setTaxData] = useState({
         tax_amount: 0,
