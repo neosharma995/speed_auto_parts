@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import {
     ShoppingCart,
@@ -7,9 +7,12 @@ import {
     List,
     X,
     ChevronDown,
+    ChevronUp,
     CarFront,
     Heart,
-    Phone
+    Phone,
+    LogOut,
+    Shield
 } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useWishlist } from '@/Context/WishlistContext';
@@ -22,6 +25,23 @@ export default function Header() {
     const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isScrolled, setIsScrolled] = useState(false);
+    const accountRef = useRef(null);
+
+    // Click outside listener for user account dropdown (using capture to intercept reliably)
+    useEffect(() => {
+        if (!accountDropdownOpen) return;
+        const handleClickOutside = (e) => {
+            if (accountRef.current && !accountRef.current.contains(e.target)) {
+                setAccountDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside, true);
+        document.addEventListener('touchstart', handleClickOutside, true);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside, true);
+            document.removeEventListener('touchstart', handleClickOutside, true);
+        };
+    }, [accountDropdownOpen]);
 
     // Passive scroll listener for subtle shadow only - pure CSS handles sticky positioning
     useEffect(() => {
@@ -115,8 +135,70 @@ export default function Header() {
                             </button>
                         </form>
 
-                        {/* Right: Actions (Cart & Mobile Menu) */}
+                        {/* Right: Actions (Login/Account, Cart & Mobile Menu) */}
                         <div className="site-header-actions">
+                            {/* Login / Account Button */}
+                            <div className="site-header-account-wrap" ref={accountRef}>
+                                {auth?.user ? (
+                                    <button 
+                                        type="button" 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setAccountDropdownOpen(prev => !prev);
+                                        }}
+                                        className="site-header-action-user"
+                                        aria-expanded={accountDropdownOpen}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <UserIcon size={24} strokeWidth={1.8} className="action-user-icon" />
+                                        <div className="action-user-text">
+                                            <span className="user-sub">Account</span>
+                                            <strong className="user-name">{auth.user.name.split(' ')[0]}</strong>
+                                        </div>
+                                        {accountDropdownOpen ? (
+                                            <ChevronUp size={11} strokeWidth={2.2} className="user-chevron" />
+                                        ) : (
+                                            <ChevronDown size={11} strokeWidth={2.2} className="user-chevron" />
+                                        )}
+                                    </button>
+                                ) : (
+                                    <Link href="/login" className="site-header-action-user">
+                                        <UserIcon size={24} strokeWidth={1.8} className="action-user-icon" />
+                                        <div className="action-user-text">
+                                            <span className="user-sub">Account</span>
+                                            <strong className="user-name">Sign In</strong>
+                                        </div>
+                                    </Link>
+                                )}
+
+                                {accountDropdownOpen && auth?.user && (
+                                    <div 
+                                        className="site-header-dropdown user-menu-dropdown"
+                                        style={{ display: 'block' }}
+                                    >
+                                        <Link 
+                                            href="/admin/dashboard" 
+                                            className="site-header-dropdown-item"
+                                            onClick={() => setAccountDropdownOpen(false)}
+                                        >
+                                            <Shield size={16} strokeWidth={2} />
+                                            <span>Admin Dashboard</span>
+                                        </Link>
+                                        <Link 
+                                            href="/logout" 
+                                            method="post" 
+                                            as="button" 
+                                            className="site-header-dropdown-item logout-link"
+                                            onClick={() => setAccountDropdownOpen(false)}
+                                        >
+                                            <LogOut size={16} strokeWidth={2} />
+                                            <span>Sign Out</span>
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
+
                             {/* Shopping Cart Icon with Orange Badge */}
                             <button 
                                 type="button" 
@@ -322,8 +404,8 @@ export default function Header() {
                             </Link>
                         </div>
 
-                        {auth?.user?.roles?.includes('admin') && (
-                            <div className="mobile-drawer-footer">
+                        <div className="mobile-drawer-footer">
+                            {auth?.user ? (
                                 <Link
                                     href="/admin/dashboard"
                                     className="mobile-account-btn"
@@ -331,8 +413,16 @@ export default function Header() {
                                 >
                                     <UserIcon size={16} /> Admin Dashboard
                                 </Link>
-                            </div>
-                        )}
+                            ) : (
+                                <Link
+                                    href="/login"
+                                    className="mobile-account-btn"
+                                    onClick={() => setMobileDrawerOpen(false)}
+                                >
+                                    <UserIcon size={16} /> Sign In
+                                </Link>
+                            )}
+                        </div>
                     </div>
                 </>
             )}

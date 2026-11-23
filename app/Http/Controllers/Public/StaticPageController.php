@@ -120,7 +120,7 @@ class StaticPageController extends Controller
         return Inertia::render('Public/StaticPage', [
             'title' => 'Return & Refund Policy',
             'subtitle' => 'Hassle-free 30-day returns on uninstalled, verified automotive spares.',
-            'content' => "Fitment Guarantee & Return Rules:\n\n• 30-Day Return Window: If a component is unopened, uninstalled, and in its original manufacturer packaging with all hardware intact, you may initiate a return within 30 days of delivery.\n• Fitment Guarantee: If an item verified through our Vehicle Parts Finder fails to fit your unmodified vehicle, we provide 100% free return pickup and replacement.\n• Non-Returnable Items: Electrical components (ECUs, wiring harnesses, opened sensors) and custom-drilled or mounted wheels/tires cannot be returned once test-fitted.\n• Refund Processing: Refunds are initiated within 48 hours of inspection at our central warehouse back to the original payment source.",
+            'content' => "Fitment Guarantee & Return Rules:\n\n• 30-Day Return Window: If a component is unopened, uninstalled, and in its original manufacturer packaging with all hardware intact, you may initiate a return within 30 days of delivery.\n• Fitment Guarantee: If an item verified through our Vehicle Parts Finder fails to fit your unmodified vehicle, we provide 100% free return pickup and replacement.\n• Non-Returnable Items: Electrical components (ECUs, wiring harnesses, opened sensors) and custom-drilled or mounted wheels/tires cannot be returned once test-fitted.\n• Refund Processing: Refunds are initiated within 48 hours of inspection at our central depot back to the original payment source.",
         ]);
     }
 
@@ -128,8 +128,8 @@ class StaticPageController extends Controller
     {
         return Inertia::render('Public/StaticPage', [
             'title' => 'Privacy Policy',
-            'subtitle' => 'How Speed Autos Parts protects your vehicle details and account information.',
-            'content' => "We value your privacy. We only collect essential customer data required to fulfill parts orders, calculate accurate state GST, verify vehicle fitment compatibility, and coordinate courier delivery.\n\nWe never sell or rent your personal information to third-party marketing brokers. All financial transactions are securely processed via 256-bit SSL encrypted channels directly through RBI-compliant payment gateways (Razorpay). Your credit card and UPI credentials are never stored on our servers.",
+            'subtitle' => 'How Speed Autos Parts protects your vehicle details and order information.',
+            'content' => "We value your privacy. We only collect essential customer data required to fulfill parts orders, verify vehicle fitment compatibility, and coordinate courier delivery.\n\nWe never sell or rent your personal information to third-party marketing brokers. All financial transactions are securely processed via 256-bit SSL encrypted channels directly through RBI-compliant payment gateways (Razorpay). Your credit card and UPI credentials are never stored on our servers.",
         ]);
     }
 
@@ -139,6 +139,24 @@ class StaticPageController extends Controller
             'title' => 'Terms of Service',
             'subtitle' => 'Guidelines and legal terms governing parts procurement and vehicle fitment.',
             'content' => "By accessing Speed Autos Parts and placing an order, you agree to our standard terms of service:\n\n1. Component Installation: Automotive hardware, especially brake components, suspension coilovers, and high-performance exhausts, should always be installed by certified automotive technicians following factory torque specifications.\n2. Vehicle Modifications: Fitment compatibility guarantees apply to stock, unmodified OEM chassis configurations unless explicitly noted for aftermarket configurations.\n3. Warranties: All manufacturer warranties are passed directly to the purchaser. Speed Autos Parts assists with RMA claims for certified defect inspections.",
+        ]);
+    }
+
+    public function helpCenter(): Response
+    {
+        return Inertia::render('Public/StaticPage', [
+            'title' => 'Help Center',
+            'subtitle' => 'Frequently needed support, order assistance, and fitment guidelines.',
+            'content' => "Welcome to the Speed Autos Parts Help Center.\n\n• Ordering & Shipping: We deliver verified automotive hardware nationwide with real-time tracking.\n• Fitment Verification: Use our Vehicle Finder to confirm engine code, year, make, and model compatibility before placing orders.\n• Returns: Unopened and uninstalled parts can be returned within 30 days.\n• Technical Inquiries: Need advice on brake disc thickness, exhaust bore, or coilover spring rates? Reach our engineering team at support@speedautoparts.com or call +91 98765 43210.",
+        ]);
+    }
+
+    public function faqs(): Response
+    {
+        return Inertia::render('Public/StaticPage', [
+            'title' => 'Frequently Asked Questions (FAQs)',
+            'subtitle' => 'Quick answers to common questions about parts, fitment, orders, and warranties.',
+            'content' => "Frequently Asked Questions:\n\n1. How do I verify part compatibility?\nUse the Vehicle Parts Finder at the top of the store. Select your vehicle Year, Make, Model, and Engine to filter catalog parts guaranteed to fit.\n\n2. How long does shipping take?\nOrders are dispatched within 24–48 hours. Standard surface transit takes 3–5 business days, and express courier takes 1–2 business days.\n\n3. Can I return a part if it doesn't fit?\nYes! If verified via our Vehicle Parts Finder and it does not fit your unmodified vehicle, we provide 100% free return pickup and replacement.\n\n4. Are the parts genuine OEM or certified aftermarket?\nAll components sold on Speed Autos Parts are 100% authentic, sourced directly from certified manufacturers and authorized global distributors.",
         ]);
     }
 }

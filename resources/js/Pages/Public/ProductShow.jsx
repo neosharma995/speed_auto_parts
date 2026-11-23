@@ -89,7 +89,14 @@ export default function ProductShow({
                         {/* Left: Gallery */}
                         <div className="product-single-gallery">
                             <div className="product-single-gallery-main">
-                                <img src={activeImage || product.main_image} alt={product.name} />
+                                <img 
+                                    src={activeImage || product.main_image || '/assets/images/products/performance-tire.webp'} 
+                                    alt={product.name}
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = '/assets/images/products/performance-tire.webp';
+                                    }}
+                                />
                             </div>
 
                             {galleryImages.length > 1 && (

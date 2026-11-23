@@ -54,16 +54,16 @@ export default function MobileBottomBar() {
                     <span className="mobile-bottom-bar-label">Saved</span>
                 </Link>
 
-                {/* 5. Admin / Support */}
-                {auth?.user && (
-                    <Link 
-                        href="/admin/dashboard" 
-                        className={`mobile-bottom-bar-item ${isCurrent('/admin') ? 'mobile-bottom-bar-item--active' : ''}`}
-                    >
-                        <User size={20} />
-                        <span className="mobile-bottom-bar-label">Admin</span>
-                    </Link>
-                )}
+                {/* 5. Account / Login */}
+                <Link 
+                    href={auth?.user ? '/admin/dashboard' : '/login'} 
+                    className={`mobile-bottom-bar-item ${isCurrent('/admin') || isCurrent('/login') ? 'mobile-bottom-bar-item--active' : ''}`}
+                >
+                    <User size={20} />
+                    <span className="mobile-bottom-bar-label">
+                        {auth?.user ? 'Admin' : 'Login'}
+                    </span>
+                </Link>
             </div>
         </div>
     );

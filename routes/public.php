@@ -26,10 +26,14 @@ Route::get('/order-success/{orderNumber}', [CheckoutController::class, 'success'
 // Static Pages
 Route::get('/about', [StaticPageController::class, 'about'])->name('about');
 Route::get('/contact', [StaticPageController::class, 'contact'])->name('contact');
+Route::get('/contact-us', [StaticPageController::class, 'contact'])->name('contact-us');
+Route::get('/help-center', [StaticPageController::class, 'helpCenter'])->name('help-center');
+Route::get('/faqs', [StaticPageController::class, 'faqs'])->name('faqs');
 Route::get('/shipping-policy', [StaticPageController::class, 'shippingPolicy'])->name('shipping-policy');
 Route::get('/return-policy', [StaticPageController::class, 'returnPolicy'])->name('return-policy');
 Route::get('/privacy-policy', [StaticPageController::class, 'privacyPolicy'])->name('privacy-policy');
 Route::get('/terms', [StaticPageController::class, 'terms'])->name('terms');
+Route::get('/terms-of-service', [StaticPageController::class, 'terms'])->name('terms-of-service');
 
 // Cart Routes
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
