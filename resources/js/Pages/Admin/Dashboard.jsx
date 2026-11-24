@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { 
     Package, 
     Layers, 
@@ -13,6 +14,8 @@ export default function AdminDashboard({
     stats = {}, 
     recentProducts = []
 }) {
+    const { formatAdminPrice, defaultCurrency } = useCurrency();
+
     return (
         <AdminLayout title="Operations Overview">
             {/* Top Stats Cards */}
@@ -84,7 +87,7 @@ export default function AdminDashboard({
                                     <th>SKU / Part #</th>
                                     <th>Category</th>
                                     <th>Brand</th>
-                                    <th>Price (INR)</th>
+                                    <th>Price ({defaultCurrency.code})</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -98,7 +101,7 @@ export default function AdminDashboard({
                                         </td>
                                         <td>{product.category?.name || 'Uncategorized'}</td>
                                         <td>{product.brand?.name || 'Generic'}</td>
-                                        <td><strong>₹{Number(product.effective_price ?? product.base_price).toLocaleString('en-IN')}</strong></td>
+                                        <td><strong>{formatAdminPrice(product.effective_price ?? product.base_price)}</strong></td>
                                         <td>
                                             <span className={`badge ${product.status === 'published' ? 'badge-success' : 'badge-warning'}`}>
                                                 {product.status}

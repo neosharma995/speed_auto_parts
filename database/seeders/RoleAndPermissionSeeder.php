@@ -36,7 +36,7 @@ class RoleAndPermissionSeeder extends Seeder
             ['email' => 'admin@autoparts.com'],
             [
                 'name' => 'Speed Autos Parts Admin',
-                'phone' => '+91 98765 00001',
+                'phone' => '+971 50 512 0001',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'status' => 'active',
@@ -49,7 +49,7 @@ class RoleAndPermissionSeeder extends Seeder
             ['email' => 'editor@autoparts.com'],
             [
                 'name' => 'Catalog Specialist',
-                'phone' => '+91 98765 00002',
+                'phone' => '+971 50 512 0002',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'status' => 'active',

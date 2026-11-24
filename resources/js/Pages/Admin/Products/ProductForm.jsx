@@ -380,7 +380,7 @@ export default function ProductForm({
                     {activeTab === 'pricing' && (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
                             <div className="form-group">
-                                <label className="form-label">Base Retail Price (₹) <span className="required">*</span></label>
+                                <label className="form-label">Base Retail Price (AED) <span className="required">*</span></label>
                                 <input 
                                     type="number" 
                                     step="0.01" 
@@ -391,7 +391,7 @@ export default function ProductForm({
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Special Sale Price (₹ Optional)</label>
+                                <label className="form-label">Special Sale Price (AED Optional)</label>
                                 <input 
                                     type="number" 
                                     step="0.01" 
@@ -401,7 +401,7 @@ export default function ProductForm({
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Cost Price (₹ For internal profit calculation)</label>
+                                <label className="form-label">Cost Price (AED For internal profit calculation)</label>
                                 <input 
                                     type="number" 
                                     step="0.01" 
@@ -511,7 +511,7 @@ export default function ProductForm({
                                     <input type="text" className="form-input" placeholder="Name (e.g. 355mm Front)" value={newVarName} onChange={e => setNewVarName(e.target.value)} />
                                     <input type="text" className="form-input" placeholder="SKU" value={newVarSku} onChange={e => setNewVarSku(e.target.value)} />
                                     <input type="text" className="form-input" placeholder="Part Number" value={newVarPart} onChange={e => setNewVarPart(e.target.value)} />
-                                    <input type="number" step="0.01" className="form-input" placeholder="Price (₹)" value={newVarPrice} onChange={e => setNewVarPrice(e.target.value)} />
+                                    <input type="number" step="0.01" className="form-input" placeholder="Price (AED)" value={newVarPrice} onChange={e => setNewVarPrice(e.target.value)} />
                                     <input type="number" className="form-input" placeholder="Stock" value={newVarStock} onChange={e => setNewVarStock(e.target.value)} />
                                 </div>
                                 <button type="button" className="btn btn-dark btn-sm" style={{ marginTop: '12px' }} onClick={handleAddVariation}>
@@ -543,7 +543,7 @@ export default function ProductForm({
                                                 <td><strong>{v.name}</strong></td>
                                                 <td>{v.sku}</td>
                                                 <td>{v.part_number}</td>
-                                                <td>₹{Number(v.price).toLocaleString('en-IN')}</td>
+                                                <td>AED {Number(v.price || 0).toLocaleString('en-AE')}</td>
                                                 <td>{v.stock_quantity}</td>
                                                 <td>
                                                     <button type="button" onClick={() => handleRemoveVariation(i)} style={{ color: '#D93025', background: 'none', border: 'none' }}>

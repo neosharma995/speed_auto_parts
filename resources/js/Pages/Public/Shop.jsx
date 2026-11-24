@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import ProductCard from '@/Components/ProductCard';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { SlidersHorizontal, ChevronRight, X, RotateCcw, Check } from 'lucide-react';
 
 export default function Shop({ 
@@ -11,6 +12,7 @@ export default function Shop({
     filters = {}, 
     activeVehicle = null 
 }) {
+    const { activeCurrency } = useCurrency();
     const safeFilters = filters && !Array.isArray(filters) ? filters : {};
 
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -244,7 +246,7 @@ export default function Shop({
 
                             {/* Price Filter */}
                             <div className="filter-widget">
-                                <h4 className="filter-widget-title">Price Range (₹)</h4>
+                                <h4 className="filter-widget-title">Price Range ({activeCurrency.symbol})</h4>
                                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                                     <input 
                                         type="number" 

@@ -91,4 +91,47 @@ class AdminOperationsTest extends TestCase
         $deleteResponse->assertRedirect('/admin/products');
         $this->assertNull(Product::find($created->id));
     }
+
+    public function test_admin_can_configure_default_currency_and_conversion_rate_in_settings(): void
+    {
+        $admin = User::where('email', 'admin@autoparts.com')->first();
+        $this->actingAs($admin);
+
+        // Save USD as default currency with 0.2723 rate and only the 3 supported currencies (AED, USD, EUR)
+        $this->post('/admin/settings', [
+            'store_name' => 'SPEED AUTOS PARTS',
+            'currency_code' => 'USD',
+            'currency_symbol' => '$',
+            'currency_locale' => 'en-US',
+            'currency_rate' => 0.2723,
+            'currency_rates' => [
+                'AED' => 3.6725,
+                'USD' => 1,
+                'EUR' => 0.92,
+            ],
+        ])->assertRedirect();
+
+        // Verify shared Inertia settings reflect USD, rate, and only 3 currencies
+        $this->get('/admin/dashboard')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->where('settings.currency_code', 'USD')
+                ->where('settings.currency_symbol', '$')
+                ->where('settings.currency_rate', 0.2723)
+                ->has('settings.currency_rates', 3)
+            );
+
+        // Restore default Dubai AED configuration
+        $this->post('/admin/settings', [
+            'currency_code' => 'AED',
+            'currency_symbol' => 'د.إ',
+            'currency_locale' => 'en-AE',
+            'currency_rate' => 1,
+            'currency_rates' => [
+                'AED' => 1,
+                'USD' => 0.2723,
+                'EUR' => 0.251,
+            ],
+        ])->assertRedirect();
+    }
 }

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useWishlist } from '@/Context/WishlistContext';
+import { useCurrency } from '@/Context/CurrencyContext';
 
 export default function ProductShow({
     product,
@@ -29,6 +30,7 @@ export default function ProductShow({
 }) {
     const { addToCart } = useCart();
     const { toggleWishlist, isInWishlist } = useWishlist();
+    const { formatPrice } = useCurrency();
 
     // Select default variation or first
     const defaultVar = variations.find(v => v.is_default) || variations[0] || null;
@@ -131,10 +133,10 @@ export default function ProductShow({
 
                             {/* Pricing */}
                             <div className="pricing-box">
-                                <span className="current-price">₹{effectivePrice.toLocaleString('en-IN')}</span>
+                                <span className="current-price">{formatPrice(effectivePrice)}</span>
                                 {hasDiscount && (
                                     <>
-                                        <span className="old-price">₹{currentPrice.toLocaleString('en-IN')}</span>
+                                        <span className="old-price">{formatPrice(currentPrice)}</span>
                                         <span className="discount-badge">
                                             SAVE {Math.round(((currentPrice - effectivePrice) / currentPrice) * 100)}%
                                         </span>
@@ -246,7 +248,7 @@ export default function ProductShow({
                                         </>
                                     ) : (
                                         <>
-                                            <ShoppingCart size={18} /> Add to Cart — ₹{(effectivePrice * quantity).toLocaleString('en-IN')}
+                                            <ShoppingCart size={18} /> Add to Cart — {formatPrice(effectivePrice * quantity)}
                                         </>
                                     )}
                                 </button>
@@ -265,7 +267,7 @@ export default function ProductShow({
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginTop: '12px', paddingTop: '16px', borderTop: '1px solid #EEEEEE' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#666' }}>
                                     <Truck size={16} color="#F36B16" />
-                                    <span>Insured Pan-India Express Freight</span>
+                                    <span>Insured Dubai &amp; UAE Express Freight</span>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#666' }}>
                                     <ShieldCheck size={16} color="#168A35" />
@@ -390,7 +392,7 @@ export default function ProductShow({
             <div className="product-single-sticky-mobile">
                 <div className="sticky-price">
                     <span>Total</span>
-                    <strong>₹{effectivePrice.toLocaleString('en-IN')}</strong>
+                    <strong>{formatPrice(effectivePrice * quantity)}</strong>
                 </div>
                 <button
                     type="button"
