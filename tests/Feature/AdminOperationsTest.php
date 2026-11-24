@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductAttribute;
@@ -405,5 +406,67 @@ class AdminOperationsTest extends TestCase
             'password' => 'password',
             'password_confirmation' => 'password',
         ])->assertRedirect();
+    }
+
+    public function test_admin_can_crud_coupons_with_pagination(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->first();
+        $this->actingAs($admin);
+
+        // 1. Index renders paginated Coupons page and supports search
+        $this->get('/admin/coupons')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Coupons/Index')
+                ->has('coupons.data')
+                ->has('filters')
+            );
+
+        $this->get('/admin/coupons?search=SPEED10')->assertStatus(200);
+
+        // 2. Create coupon (lowercase should normalize to uppercase)
+        $code = 'POPUP' . random_int(100, 999);
+        $this->post('/admin/coupons', [
+            'code' => strtolower($code),
+            'type' => 'percentage',
+            'value' => 15,
+            'min_spend' => 2500,
+            'max_discount' => 1500,
+            'usage_limit' => 50,
+            'usage_per_user' => 2,
+            'is_active' => true,
+        ])->assertRedirect();
+
+        $coupon = Coupon::where('code', $code)->first();
+        $this->assertNotNull($coupon);
+        $this->assertEquals('percentage', $coupon->type);
+        $this->assertEquals(15.0, (float) $coupon->value);
+        $this->assertEquals(1500.0, (float) $coupon->max_discount);
+        $this->assertEquals(50, $coupon->usage_limit);
+        $this->assertEquals(2, $coupon->usage_per_user);
+        $this->assertTrue($coupon->is_active);
+
+        // 3. Update coupon to fixed amount and deactivate
+        $this->put("/admin/coupons/{$coupon->id}", [
+            'code' => $code,
+            'type' => 'fixed',
+            'value' => 750,
+            'min_spend' => 4000,
+            'max_discount' => 999, // should be cleared for fixed type
+            'usage_limit' => 25,
+            'usage_per_user' => 1,
+            'is_active' => false,
+        ])->assertRedirect();
+
+        $coupon->refresh();
+        $this->assertEquals('fixed', $coupon->type);
+        $this->assertEquals(750.0, (float) $coupon->value);
+        $this->assertNull($coupon->max_discount);
+        $this->assertEquals(25, $coupon->usage_limit);
+        $this->assertFalse($coupon->is_active);
+
+        // 4. Delete coupon
+        $this->delete("/admin/coupons/{$coupon->id}")->assertRedirect();
+        $this->assertDatabaseMissing('coupons', ['id' => $coupon->id]);
     }
 }

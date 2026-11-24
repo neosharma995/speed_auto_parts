@@ -14,7 +14,6 @@ import {
     Percent, 
     Star, 
     Settings, 
-    LogOut, 
     Shield, 
     X,
     Wrench,
@@ -123,12 +122,6 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                         <span>Settings</span>
                     </Link>
                 </nav>
-
-                <div className="admin-shell-sidebar-footer">
-                    <Link href="/logout" method="post" as="button" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#EF4444', fontSize: '13px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
-                        <LogOut size={16} /> Sign Out
-                    </Link>
-                </div>
             </aside>
         </>
     );
