@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useWishlist } from '@/Context/WishlistContext';
+import { useCurrency } from '@/Context/CurrencyContext';
 
 export default function ProductShow({
     product,
@@ -38,6 +39,7 @@ export default function ProductShow({
 }) {
     const { addToCart } = useCart();
     const { toggleWishlist, isInWishlist } = useWishlist();
+    const { formatPrice } = useCurrency();
 
     const defaultVar = variations.find(v => v.is_default) || variations[0] || null;
     const [selectedVariation, setSelectedVariation] = useState(defaultVar);
@@ -276,16 +278,16 @@ export default function ProductShow({
                             {/* Pricing Box */}
                             <div className="product-pricing-card">
                                 <div className="pricing-primary-row">
-                                    <span className="price-effective">₹{effectivePrice.toLocaleString('en-IN')}</span>
+                                    <span className="price-effective">{formatPrice(effectivePrice)}</span>
                                     {hasDiscount && (
                                         <>
-                                            <span className="price-strikethrough">₹{currentPrice.toLocaleString('en-IN')}</span>
+                                            <span className="price-strikethrough">{formatPrice(currentPrice)}</span>
                                             <span className="badge-discount">SAVE {discountPercentage}%</span>
                                         </>
                                     )}
                                 </div>
                                 <p className="tax-notice-text">
-                                    Applicable GST calculated at checkout (18% / 28% based on state and HSN).
+                                    UAE VAT (5%) calculated at checkout.
                                 </p>
                             </div>
 
@@ -413,7 +415,7 @@ export default function ProductShow({
                                         </>
                                     ) : (
                                         <>
-                                            <ShoppingCart size={18} /> Add to Cart — ₹{(effectivePrice * quantity).toLocaleString('en-IN')}
+                                            <ShoppingCart size={18} /> Add to Cart — {formatPrice(effectivePrice * quantity)}
                                         </>
                                     )}
                                 </button>
@@ -433,7 +435,7 @@ export default function ProductShow({
                             <div className="trust-badges-bar">
                                 <div className="trust-badge-item">
                                     <Truck size={18} className="trust-icon" />
-                                    <span>Insured Pan-India Express Freight</span>
+                                    <span>Insured Dubai &amp; UAE Express Freight</span>
                                 </div>
                                 <div className="trust-badge-item">
                                     <ShieldCheck size={18} className="trust-icon" />
@@ -674,7 +676,7 @@ export default function ProductShow({
             <div className="product-single-sticky-mobile">
                 <div className="sticky-price">
                     <span>Total</span>
-                    <strong>₹{(effectivePrice * quantity).toLocaleString('en-IN')}</strong>
+                    <strong>{formatPrice(effectivePrice * quantity)}</strong>
                 </div>
                 <button
                     type="button"

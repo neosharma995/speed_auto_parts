@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { LayoutDashboard, ShoppingBag, MapPin, Heart, LogOut, Package, Truck, ExternalLink } from 'lucide-react';
 
 export default function CustomerOrders({ orders = [] }) {
+    const { formatPrice } = useCurrency();
+
     return (
         <AppLayout title="My Orders">
             <div className="customer-portal">
@@ -106,7 +109,7 @@ export default function CustomerOrders({ orders = [] }) {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <span>Qty: {item.quantity} × ₹{Number(item.unit_price).toLocaleString('en-IN')}</span>
+                                                            <span>Qty: {item.quantity} × {formatPrice(item.unit_price)}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -124,7 +127,7 @@ export default function CustomerOrders({ orders = [] }) {
                                                     <div>
                                                         <span style={{ fontSize: '13px', color: '#666' }}>Total Amount: </span>
                                                         <strong style={{ fontSize: '16px', color: '#F36B16' }}>
-                                                            ₹{Number(order.total_amount).toLocaleString('en-IN')}
+                                                            {formatPrice(order.total_amount)}
                                                         </strong>
                                                     </div>
 

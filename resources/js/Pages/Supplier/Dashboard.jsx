@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import SupplierLayout from '@/Layouts/SupplierLayout';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { Package, Boxes, Clock, CheckCircle2, Truck, Plus, AlertTriangle } from 'lucide-react';
 
 export default function SupplierDashboard({ stats = {}, recentLots = [], lowStockProducts = [] }) {
+    const { formatAdminPrice } = useCurrency();
     const statusBadge = (status) => {
         if (status === 'received') return 'badge-success';
         if (status === 'rejected') return 'badge-danger';
@@ -101,7 +103,7 @@ export default function SupplierDashboard({ stats = {}, recentLots = [], lowStoc
                                                 <strong>{p.name}</strong>
                                                 <small style={{ display: 'block', color: '#64748B', fontFamily: 'monospace' }}>{p.sku}</small>
                                             </td>
-                                            <td>₹{Number(p.supplier_price || p.cost_price || 0).toLocaleString('en-IN')}</td>
+                                            <td>{formatAdminPrice(p.supplier_price || p.cost_price || 0)}</td>
                                             <td>
                                                 <span className={`badge ${p.supplier_stock <= 0 ? 'badge-danger' : 'badge-warning'}`}>
                                                     {p.supplier_stock} units
@@ -144,7 +146,7 @@ export default function SupplierDashboard({ stats = {}, recentLots = [], lowStoc
                                             <td><code>{lot.lot_number}</code></td>
                                             <td><strong>{lot.product?.name || 'Product'}</strong></td>
                                             <td>{lot.quantity} units</td>
-                                            <td>₹{Number(lot.unit_price || 0).toLocaleString('en-IN')}</td>
+                                            <td>{formatAdminPrice(lot.unit_price || 0)}</td>
                                             <td>
                                                 <span className={`badge ${statusBadge(lot.status)}`} style={{ textTransform: 'capitalize' }}>
                                                     {lot.status}

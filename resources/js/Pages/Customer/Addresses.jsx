@@ -9,8 +9,8 @@ export default function CustomerAddresses({ addresses = [] }) {
     const [phone, setPhone] = useState('');
     const [addressLine1, setAddressLine1] = useState('');
     const [addressLine2, setAddressLine2] = useState('');
-    const [city, setCity] = useState('');
-    const [state, setState] = useState('Delhi');
+    const [city, setCity] = useState('Dubai');
+    const [state, setState] = useState('Dubai');
     const [pincode, setPincode] = useState('');
     const [isDefault, setIsDefault] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -195,13 +195,25 @@ export default function CustomerAddresses({ addresses = [] }) {
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div className="form-group">
-                                    <label className="form-label">City</label>
+                                    <label className="form-label">City / Area</label>
                                     <input type="text" className="form-input" required value={city} onChange={e => setCity(e.target.value)} />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label">Pincode</label>
-                                    <input type="text" className="form-input" required value={pincode} onChange={e => setPincode(e.target.value)} />
+                                    <label className="form-label">Emirate</label>
+                                    <select className="form-select" value={state} onChange={e => setState(e.target.value)}>
+                                        <option value="Dubai">Dubai</option>
+                                        <option value="Abu Dhabi">Abu Dhabi</option>
+                                        <option value="Sharjah">Sharjah</option>
+                                        <option value="Ajman">Ajman</option>
+                                        <option value="Umm Al Quwain">Umm Al Quwain</option>
+                                        <option value="Ras Al Khaimah">Ras Al Khaimah</option>
+                                        <option value="Fujairah">Fujairah</option>
+                                    </select>
                                 </div>
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">PO Box / Postal Code</label>
+                                <input type="text" className="form-input" required value={pincode} onChange={e => setPincode(e.target.value)} placeholder="e.g. 00000" />
                             </div>
                             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
                                 <input type="checkbox" checked={isDefault} onChange={e => setIsDefault(e.target.checked)} />

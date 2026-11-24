@@ -723,7 +723,7 @@ export default function ProductForm({
                                     )}
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
                                         <div className="form-group">
-                                            <label className="form-label">Base Retail Price (₹) <span className="required">*</span></label>
+                                            <label className="form-label">Base Retail Price (AED) <span className="required">*</span></label>
                                             <input
                                                 type="number"
                                                 step="0.01"
@@ -734,7 +734,7 @@ export default function ProductForm({
                                             />
                                         </div>
                                         <div className="form-group">
-                                            <label className="form-label">Special Sale Price (₹ Optional)</label>
+                                            <label className="form-label">Special Sale Price (AED Optional)</label>
                                             <input
                                                 type="number"
                                                 step="0.01"
@@ -744,7 +744,7 @@ export default function ProductForm({
                                             />
                                         </div>
                                         <div className="form-group">
-                                            <label className="form-label">Cost Price (₹ Internal)</label>
+                                            <label className="form-label">Cost Price (AED Internal)</label>
                                             <input
                                                 type="number"
                                                 step="0.01"
@@ -808,19 +808,19 @@ export default function ProductForm({
                                     </div>
                                 </div>
 
-                                {/* GST & Tax */}
+                                {/* VAT & Tax */}
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                                     <h4 style={{ fontSize: '14px', fontWeight: 800, color: '#151515', margin: 0, borderBottom: '1px solid #E2E8F0', paddingBottom: '8px' }}>
                                         GST &amp; Tax Class
                                     </h4>
                                     <div className="form-group" style={{ maxWidth: '420px' }}>
-                                        <label className="form-label">Applicable GST Tax Class</label>
+                                        <label className="form-label">Applicable UAE VAT Class</label>
                                         <select
                                             className="form-select"
                                             value={taxClassId}
                                             onChange={(e) => setTaxClassId(e.target.value)}
                                         >
-                                            <option value="">Default GST (18%)</option>
+                                            <option value="">Default UAE VAT (5%)</option>
                                             {taxClasses.map((t) => (
                                                 <option key={t.id} value={t.id}>{t.name} ({t.slug})</option>
                                             ))}
@@ -1239,7 +1239,7 @@ export default function ProductForm({
                                                                     </label>
                                                                 ))}
                                                                 <span className="badge badge-neutral" style={{ fontSize: '11px' }}>
-                                                                    ₹{Number(v.price || 0).toLocaleString('en-IN')}
+                                                                    AED {Number(v.price || 0).toLocaleString('en-AE')}
                                                                 </span>
                                                                 <span className={`badge ${Number(v.stock_quantity) > 0 ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '11px' }}>
                                                                     {v.stock_quantity} in stock
@@ -1302,7 +1302,7 @@ export default function ProductForm({
 
                                                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
                                                                     <div className="form-group">
-                                                                        <label className="form-label">Regular Price (₹) <span className="required">*</span></label>
+                                                                        <label className="form-label">Regular Price (AED) <span className="required">*</span></label>
                                                                         <input
                                                                             type="number"
                                                                             step="0.01"
@@ -1312,7 +1312,7 @@ export default function ProductForm({
                                                                         />
                                                                     </div>
                                                                     <div className="form-group">
-                                                                        <label className="form-label">Sale Price (₹ Optional)</label>
+                                                                        <label className="form-label">Sale Price (AED Optional)</label>
                                                                         <input
                                                                             type="number"
                                                                             step="0.01"

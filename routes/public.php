@@ -72,10 +72,11 @@ Route::post('/api/checkout/calculate-tax', [CheckoutController::class, 'calculat
 Route::post('/api/coupons/validate', [CheckoutController::class, 'validateCoupon'])->name('coupons.validate');
 Route::post('/api/checkout/apply-coupon', [CheckoutController::class, 'validateCoupon'])->name('checkout.apply-coupon');
 Route::post('/checkout/cod', [CheckoutController::class, 'placeCodOrder'])->name('checkout.cod');
-Route::post('/checkout/razorpay-init', [CheckoutController::class, 'createRazorpayOrder'])->name('checkout.razorpay-init');
-Route::post('/checkout/verify-payment', [CheckoutController::class, 'verifyPayment'])->name('checkout.verify-payment');
 Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
-Route::post('/checkout/razorpay/verify', [CheckoutController::class, 'verifyPayment'])->name('checkout.razorpay.verify');
+Route::post('/checkout/stripe-session', [CheckoutController::class, 'createStripeSession'])->name('checkout.stripe-session');
+Route::get('/checkout/stripe/success', [CheckoutController::class, 'stripeSuccess'])->name('checkout.stripe.success');
+Route::get('/checkout/stripe/cancel', [CheckoutController::class, 'stripeCancel'])->name('checkout.stripe.cancel');
+Route::post('/stripe/webhook', [CheckoutController::class, 'stripeWebhook'])->name('stripe.webhook');
 
 // Vehicle Cascading APIs
 Route::prefix('api/vehicles')->group(function () {

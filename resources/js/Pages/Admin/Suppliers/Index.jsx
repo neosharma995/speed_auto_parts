@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminDataTable from '@/Components/Admin/AdminDataTable';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { Plus, Edit, Trash2, X, CheckCircle2, Package, Truck, Inbox, History } from 'lucide-react';
 
 export default function AdminSuppliersIndex({
@@ -13,6 +14,7 @@ export default function AdminSuppliersIndex({
 }) {
     const safeFilters = filters && !Array.isArray(filters) ? filters : {};
     const { errors } = usePage().props;
+    const { formatAdminPrice } = useCurrency();
 
     const [tab, setTab] = useState(initialTab === 'incoming' ? 'incoming' : 'suppliers');
     useEffect(() => {
@@ -371,7 +373,7 @@ export default function AdminSuppliersIndex({
                                                 />
                                                 <strong>{group.items.length}</strong> items •{' '}
                                                 <strong>{group.total_qty}</strong> total units • Lot Value:{' '}
-                                                <strong>₹{group.total_value.toLocaleString('en-IN')}</strong>
+                                                <strong>{formatAdminPrice(group.total_value)}</strong>
                                                 {group.notes && (
                                                     <span style={{ marginLeft: '10px', color: '#64748B' }}>— {group.notes}</span>
                                                 )}
@@ -433,10 +435,10 @@ export default function AdminSuppliersIndex({
                                                     <td>
                                                         <span className="badge badge-warning">{lot.quantity} units</span>
                                                     </td>
-                                                    <td>₹{Number(lot.unit_price || 0).toLocaleString('en-IN')}</td>
+                                                    <td>{formatAdminPrice(lot.unit_price || 0)}</td>
                                                     <td>
                                                         <strong>
-                                                            ₹{(lot.quantity * Number(lot.unit_price || 0)).toLocaleString('en-IN')}
+                                                            {formatAdminPrice(lot.quantity * Number(lot.unit_price || 0))}
                                                         </strong>
                                                     </td>
                                                     <td>
@@ -528,7 +530,7 @@ export default function AdminSuppliersIndex({
                                     required
                                     value={companyName}
                                     onChange={(e) => setCompanyName(e.target.value)}
-                                    placeholder="e.g. Apex Motorsport Spares Pvt. Ltd."
+                                    placeholder="e.g. Apex Motorsport Spares LLC (Dubai)"
                                 />
                             </div>
                             <div className="form-group">
@@ -541,7 +543,7 @@ export default function AdminSuppliersIndex({
                                     required
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="e.g. Rajesh Sharma"
+                                    placeholder="e.g. Omar Haddad"
                                 />
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -565,7 +567,7 @@ export default function AdminSuppliersIndex({
                                         className="form-input"
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
-                                        placeholder="+91 98765 00003"
+                                        placeholder="+971 4 512 0003"
                                     />
                                 </div>
                             </div>

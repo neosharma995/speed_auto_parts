@@ -3,6 +3,7 @@ import { Link, router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminDataTable from '@/Components/Admin/AdminDataTable';
 import BulkCatalogueTransferModal from '@/Components/Admin/BulkCatalogueTransferModal';
+import { useCurrency } from '@/Context/CurrencyContext';
 import {
     Boxes,
     Clock,
@@ -20,6 +21,7 @@ import {
 
 export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [], transfersCount = 0, stats = {} }) {
     const { errors } = usePage().props;
+    const { formatAdminPrice, defaultCurrency } = useCurrency();
     const [showStats, setShowStats] = useState(false);
 
     const [warehouseEdits, setWarehouseEdits] = useState(() => {
@@ -189,7 +191,7 @@ export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [
                     <div className="stat-card">
                         <div className="stat-info">
                             <span>Warehouse Cost Value</span>
-                            <strong>₹{Number(stats.warehouse_value || 0).toLocaleString('en-IN')}</strong>
+                            <strong>{formatAdminPrice(stats.warehouse_value || 0)}</strong>
                         </div>
                         <div className="stat-icon stat-icon--primary">
                             <DollarSign size={24} />
@@ -233,14 +235,14 @@ export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [
                     {
                         key: 'supplier_price',
                         label: 'Supplier Price',
-                        render: (p) => `₹${Number(p.supplier_price || p.cost_price || 0).toLocaleString('en-IN')}`,
+                        render: (p) => formatAdminPrice(p.supplier_price || p.cost_price || 0),
                     },
                     {
                         key: 'base_price',
                         label: 'Website Price',
                         render: (p) => (
                             <>
-                                <strong>₹{Number(p.base_price).toLocaleString('en-IN')}</strong>
+                                <strong>{formatAdminPrice(p.base_price)}</strong>
                                 <small
                                     style={{
                                         display: 'block',
@@ -360,7 +362,7 @@ export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [
                         <p style={{ fontSize: '13px', color: '#64748B', marginBottom: '16px' }}>
                             <strong>{pushProduct.name}</strong> — Warehouse Stock:{' '}
                             <strong>{pushProduct.warehouse_stock} units</strong> | Supplier Cost:{' '}
-                            <strong>₹{Number(pushProduct.supplier_price || pushProduct.cost_price || 0).toLocaleString('en-IN')}</strong>
+                            <strong>{formatAdminPrice(pushProduct.supplier_price || pushProduct.cost_price || 0)}</strong>
                         </p>
                         <form onSubmit={handlePushSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             <div className="form-group">
@@ -381,7 +383,7 @@ export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div className="form-group">
                                     <label className="form-label">
-                                        New Selling Price (₹ MRP) <span className="required">*</span>
+                                        New Selling Price ({defaultCurrency.code}) <span className="required">*</span>
                                     </label>
                                     <input
                                         type="number"
@@ -394,7 +396,7 @@ export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label">Sale / Offer Price (₹ Optional)</label>
+                                    <label className="form-label">Sale / Offer Price ({defaultCurrency.code} Optional)</label>
                                     <input
                                         type="number"
                                         step="0.01"

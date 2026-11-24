@@ -2,9 +2,11 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import { Store, X, Trash2, ArrowRight, Boxes } from 'lucide-react';
 import SearchableMultiSelect from '@/Components/SearchableMultiSelect';
+import { useCurrency } from '@/Context/CurrencyContext';
 
 export default function BulkCatalogueTransferModal({ isOpen, onClose, products = [] }) {
     const { errors } = usePage().props;
+    const { formatAdminPrice, defaultCurrency } = useCurrency();
 
     const warehouseProducts = useMemo(
         () => products.filter((p) => Number(p.warehouse_stock) > 0),
@@ -46,7 +48,7 @@ export default function BulkCatalogueTransferModal({ isOpen, onClose, products =
             label: p.name,
             sublabel: p.sku,
             badge: `${p.warehouse_stock} in warehouse`,
-            meta: cost > 0 ? `Cost ₹${cost.toLocaleString('en-IN')}` : null,
+            meta: cost > 0 ? `Cost ${formatAdminPrice(cost)}` : null,
             searchText: `${p.name} ${p.sku} ${p.brand?.name || ''} ${p.category?.name || ''}`,
         };
     });
@@ -287,8 +289,8 @@ export default function BulkCatalogueTransferModal({ isOpen, onClose, products =
                                             <th>Product</th>
                                             <th>Warehouse Avail.</th>
                                             <th>Transfer Qty</th>
-                                            <th>Selling Price (₹)</th>
-                                            <th>Sale Price (₹ Opt.)</th>
+                                            <th>Selling Price ({defaultCurrency.code})</th>
+                                            <th>Sale Price ({defaultCurrency.code} Opt.)</th>
                                             <th>Unit Margin</th>
                                             <th style={{ width: '44px' }}></th>
                                         </tr>
@@ -307,7 +309,7 @@ export default function BulkCatalogueTransferModal({ isOpen, onClose, products =
                                                     <td>
                                                         <div style={{ fontWeight: 600 }}>{p.name}</div>
                                                         <div style={{ fontSize: '11px', color: '#64748B' }}>
-                                                            {p.sku} • Cost ₹{costPrice.toLocaleString('en-IN')}
+                                                            {p.sku} • Cost {formatAdminPrice(costPrice)}
                                                         </div>
                                                     </td>
                                                     <td>
@@ -354,7 +356,7 @@ export default function BulkCatalogueTransferModal({ isOpen, onClose, products =
                                                                 color: unitMargin >= 0 ? '#059669' : '#DC2626',
                                                             }}
                                                         >
-                                                            {unitMargin >= 0 ? '+' : ''}₹{unitMargin.toLocaleString('en-IN')}
+                                                            {unitMargin >= 0 ? '+' : '-'}{formatAdminPrice(Math.abs(unitMargin))}
                                                         </span>
                                                     </td>
                                                     <td>

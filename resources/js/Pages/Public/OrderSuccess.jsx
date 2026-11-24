@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
-import { CheckCircle, Package, ArrowRight, Home, Truck, Printer } from 'lucide-react';
+import { useCart } from '@/Context/CartContext';
+import { useCurrency } from '@/Context/CurrencyContext';
+import { CheckCircle, ArrowRight, Truck, Printer } from 'lucide-react';
 
 export default function OrderSuccess({ order }) {
+    const { clearCart } = useCart();
+    const { formatPrice } = useCurrency();
+
+    useEffect(() => {
+        if (order?.order_number) {
+            clearCart();
+        }
+    }, [order?.order_number]);
+
     if (!order) return null;
 
     return (
@@ -53,7 +64,7 @@ export default function OrderSuccess({ order }) {
                         }}>
                             <span>Order Number: <strong>{order.order_number}</strong></span>
                             <span>Payment: <strong style={{ textTransform: 'uppercase', color: '#168A35' }}>{order.payment_status}</strong> ({order.payment_method})</span>
-                            <span>Total: <strong style={{ color: '#F36B16' }}>₹{Number(order.total_amount).toLocaleString('en-IN')}</strong></span>
+                            <span>Total: <strong style={{ color: '#F36B16' }}>{formatPrice(order.total_amount)}</strong></span>
                         </div>
                     </div>
 
@@ -97,8 +108,8 @@ export default function OrderSuccess({ order }) {
                                         </div>
                                     </div>
                                     <div style={{ textAlign: 'right' }}>
-                                        <span style={{ fontSize: '13px', color: '#666' }}>Qty: {item.quantity} × ₹{Number(item.unit_price).toLocaleString('en-IN')}</span>
-                                        <strong style={{ display: 'block', fontSize: '15px', color: '#151515' }}>₹{Number(item.total).toLocaleString('en-IN')}</strong>
+                                        <span style={{ fontSize: '13px', color: '#666' }}>Qty: {item.quantity} × {formatPrice(item.unit_price)}</span>
+                                        <strong style={{ display: 'block', fontSize: '15px', color: '#151515' }}>{formatPrice(item.total)}</strong>
                                     </div>
                                 </div>
                             ))}

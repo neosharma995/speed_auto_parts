@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { 
     DollarSign, 
     ShoppingCart, 
@@ -23,6 +24,8 @@ export default function AdminDashboard({
     pendingOrders = [],
     pendingLots = []
 }) {
+    const { formatAdminPrice, defaultCurrency } = useCurrency();
+
     return (
         <AdminLayout title="Operations Overview">
             {/* Top Stats Cards */}
@@ -30,7 +33,7 @@ export default function AdminDashboard({
                 <div className="stat-card">
                     <div className="stat-info">
                         <span>Total Revenue</span>
-                        <strong>₹{Number(stats.total_sales || 0).toLocaleString('en-IN')}</strong>
+                        <strong>{formatAdminPrice(stats.total_sales || 0)}</strong>
                     </div>
                     <div className="stat-icon stat-icon--primary">
                         <DollarSign size={24} />
@@ -107,7 +110,7 @@ export default function AdminDashboard({
                                         <td>{lot.supplier?.company_name || lot.supplier?.name || 'Supplier'}</td>
                                         <td><strong>{lot.product?.name}</strong></td>
                                         <td><span className="badge badge-warning">{lot.quantity} units</span></td>
-                                        <td>₹{Number(lot.unit_price || 0).toLocaleString('en-IN')}</td>
+                                        <td>{formatAdminPrice(lot.unit_price || 0)}</td>
                                         <td>
                                             <Link href="/admin/suppliers?tab=incoming" className="btn btn-primary btn-sm">
                                                 Review in Warehouse
@@ -203,7 +206,7 @@ export default function AdminDashboard({
                                         <tr key={order.id}>
                                             <td><strong>{order.order_number}</strong></td>
                                             <td>{order.customer_name}</td>
-                                            <td>₹{Number(order.total_amount).toLocaleString('en-IN')}</td>
+                                            <td>{formatAdminPrice(order.total_amount)}</td>
                                             <td>
                                                 <Link href={`/admin/orders/${order.id}`} className="btn btn-primary btn-sm">
                                                     Process
@@ -238,7 +241,7 @@ export default function AdminDashboard({
                                     <th>Order #</th>
                                     <th>Customer</th>
                                     <th>Date</th>
-                                    <th>Total (INR)</th>
+                                    <th>Total ({defaultCurrency.code})</th>
                                     <th>Payment</th>
                                     <th>Fulfillment</th>
                                     <th>Action</th>
@@ -253,7 +256,7 @@ export default function AdminDashboard({
                                             <small style={{ display: 'block', color: '#888', fontSize: '11px' }}>{order.customer_email}</small>
                                         </td>
                                         <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                                        <td><strong>₹{Number(order.total_amount).toLocaleString('en-IN')}</strong></td>
+                                        <td><strong>{formatAdminPrice(order.total_amount)}</strong></td>
                                         <td>
                                             <span className={`badge ${order.payment_status === 'paid' ? 'badge-success' : 'badge-warning'}`}>
                                                 {order.payment_status}

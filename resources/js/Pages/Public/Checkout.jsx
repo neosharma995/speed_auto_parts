@@ -1,46 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Link, router, usePage } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { useCart } from '@/Context/CartContext';
-import { 
-    CreditCard, 
-    Truck, 
-    ShieldCheck, 
-    Lock, 
-    ArrowRight, 
-    AlertCircle, 
-    Check, 
-    MapPin, 
-    User, 
-    FileText 
-} from 'lucide-react';
+import { useCurrency } from '@/Context/CurrencyContext';
+import { Lock, AlertCircle } from 'lucide-react';
 import axios from 'axios';
+
+const UAE_EMIRATES = [
+    'Dubai',
+    'Abu Dhabi',
+    'Sharjah',
+    'Ajman',
+    'Umm Al Quwain',
+    'Ras Al Khaimah',
+    'Fujairah',
+];
 
 export default function Checkout({ savedAddresses = [], user = null }) {
     const { cartItems, subtotal, clearCart } = useCart();
+    const { formatPrice, defaultCurrency } = useCurrency();
 
-    const defaultAddr = savedAddresses.find(a => a.is_default) || savedAddresses[0] || null;
+    const defaultAddr = savedAddresses.find((a) => a.is_default) || savedAddresses[0] || null;
 
-    // Customer & Shipping Info
+    // Customer & Shipping Info (Dubai / UAE)
     const [name, setName] = useState(user?.name || defaultAddr?.full_name || '');
     const [email, setEmail] = useState(user?.email || '');
     const [phone, setPhone] = useState(user?.phone || defaultAddr?.phone || '');
     const [address, setAddress] = useState(defaultAddr?.address_line1 || '');
     const [apartment, setApartment] = useState(defaultAddr?.address_line2 || '');
-    const [city, setCity] = useState(defaultAddr?.city || 'New Delhi');
-    const [state, setState] = useState(defaultAddr?.state || 'Delhi');
-    const [pincode, setPincode] = useState(defaultAddr?.pincode || '110001');
+    const [city, setCity] = useState(defaultAddr?.city || 'Dubai');
+    const [state, setState] = useState(defaultAddr?.state || 'Dubai');
+    const [pincode, setPincode] = useState(defaultAddr?.pincode || '00000');
 
     // Billing
-    const [billingSame, setBillingSame] = useState(true);
-    const [billingAddress, setBillingAddress] = useState('');
-    const [billingCity, setBillingCity] = useState('');
-    const [billingState, setBillingState] = useState('');
-    const [billingPincode, setBillingPincode] = useState('');
+    const [billingSame] = useState(true);
+    const [billingAddress] = useState('');
+    const [billingCity] = useState('');
+    const [billingState] = useState('');
+    const [billingPincode] = useState('');
 
     // Shipping Method
-    const [shippingCost, setShippingCost] = useState(0);
-    const [shippingMethodTitle, setShippingMethodTitle] = useState('Standard Ground Freight (Free over ₹10k)');
+    const [shippingCost] = useState(0);
+    const shippingMethodTitle = `UAE Express Courier (Free over ${formatPrice(500)})`;
 
     // Coupon
     const [couponCode, setCouponCode] = useState('');
@@ -48,64 +49,53 @@ export default function Checkout({ savedAddresses = [], user = null }) {
     const [couponSuccessMsg, setCouponSuccessMsg] = useState('');
     const [couponErrorMsg, setCouponErrorMsg] = useState('');
 
-    // Payment Method: 'razorpay' or 'cod'
-    const [paymentMethod, setPaymentMethod] = useState('razorpay');
+    // Payment Method: 'stripe' or 'cod'
+    const [paymentMethod, setPaymentMethod] = useState('stripe');
     const [orderNotes, setOrderNotes] = useState('');
 
-    useEffect(() => {
-        if (typeof window !== 'undefined' && !window.Razorpay) {
-            const script = document.createElement('script');
-            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-            script.async = true;
-            document.body.appendChild(script);
-        }
-    }, []);
-
-    // Dynamic Tax Calculation state
+    // Dynamic UAE VAT Calculation state
     const [taxData, setTaxData] = useState({
         tax_amount: 0,
-        cgst_amount: 0,
-        sgst_amount: 0,
-        igst_amount: 0,
-        is_interstate: false,
+        vat_amount: 0,
+        tax_rate_percent: 5,
     });
-    const [loadingTax, setLoadingTax] = useState(false);
     const [processingOrder, setProcessingOrder] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Fetch dynamic GST tax calculation whenever items or shipping state changes
     useEffect(() => {
         if (cartItems.length === 0) return;
 
-        setLoadingTax(true);
-        axios.post('/api/checkout/calculate-tax', {
-            items: cartItems,
-            customer_state: state,
-        }).then(res => {
-            if (res.data.success) {
-                setTaxData(res.data);
-            }
-        }).catch(err => {
-            console.error('Tax calculation error', err);
-        }).finally(() => {
-            setLoadingTax(false);
-        });
+        axios
+            .post('/api/checkout/calculate-tax', {
+                items: cartItems,
+                customer_state: state,
+            })
+            .then((res) => {
+                if (res.data.success) {
+                    setTaxData(res.data);
+                }
+            })
+            .catch((err) => {
+                console.error('VAT calculation error', err);
+            });
     }, [cartItems, state]);
 
     const handleApplyCoupon = async (e) => {
         e.preventDefault();
         setCouponErrorMsg('');
+        setCouponSuccessMsg('');
         if (!couponCode.trim()) return;
 
         try {
             const res = await axios.post('/api/coupons/validate', {
                 code: couponCode.trim(),
-                subtotal: subtotal,
+                subtotal,
             });
 
             if (res.data.success) {
-                setDiscountAmount(res.data.discount_amount);
-                setCouponSuccessMsg(`Coupon applied: -₹${res.data.discount_amount.toLocaleString('en-IN')}`);
+                const disc = Number(res.data.discount_amount ?? res.data.discount ?? 0);
+                setDiscountAmount(disc);
+                setCouponSuccessMsg(`Coupon applied: -${formatPrice(disc)}`);
             } else {
                 setCouponErrorMsg(res.data.message || 'Invalid coupon');
             }
@@ -115,14 +105,14 @@ export default function Checkout({ savedAddresses = [], user = null }) {
     };
 
     const finalSubtotal = Math.max(0, subtotal - discountAmount);
-    const grandTotal = finalSubtotal + taxData.tax_amount + shippingCost;
+    const grandTotal = finalSubtotal + Number(taxData.tax_amount || 0) + shippingCost;
 
     const handlePlaceOrder = async (e) => {
         e.preventDefault();
         setErrorMessage('');
 
         if (!name || !email || !phone || !address || !city || !state || !pincode) {
-            setErrorMessage('Please complete all required customer and shipping address fields.');
+            setErrorMessage('Please complete all required customer and UAE shipping address fields.');
             return;
         }
 
@@ -152,9 +142,6 @@ export default function Checkout({ savedAddresses = [], user = null }) {
             coupon_code: discountAmount > 0 ? couponCode : null,
             discount_amount: discountAmount,
             tax_amount: taxData.tax_amount,
-            cgst_amount: taxData.cgst_amount,
-            sgst_amount: taxData.sgst_amount,
-            igst_amount: taxData.igst_amount,
             subtotal,
             total_amount: grandTotal,
             order_notes: orderNotes,
@@ -163,7 +150,6 @@ export default function Checkout({ savedAddresses = [], user = null }) {
         };
 
         if (paymentMethod === 'cod') {
-            // Cash on delivery
             try {
                 const res = await axios.post('/checkout/cod', orderPayload);
                 if (res.data.success) {
@@ -178,81 +164,17 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                 setProcessingOrder(false);
             }
         } else {
-            // Razorpay payment-first flow
+            // Stripe Checkout Sessions flow
             try {
-                const rzpOrderRes = await axios.post('/checkout/razorpay-init', orderPayload);
-                if (!rzpOrderRes.data.success) {
-                    setErrorMessage(rzpOrderRes.data.message || 'Failed to initialize payment gateway.');
-                    setProcessingOrder(false);
-                    return;
-                }
-
-                const rzpData = rzpOrderRes.data;
-
-                // Check if Razorpay modal is available in browser
-                if (typeof window.Razorpay !== 'undefined' && !rzpData.razorpay_order_id.startsWith('order_sim_') && !rzpData.razorpay_order_id.startsWith('order_mock_')) {
-                    const options = {
-                        key: rzpData.key,
-                        amount: rzpData.amount,
-                        currency: rzpData.currency || 'INR',
-                        name: 'SPEED AUTOS PARTS',
-                        description: `Order ${rzpData.order_number}`,
-                        order_id: rzpData.razorpay_order_id,
-                        prefill: {
-                            name: name,
-                            email: email,
-                            contact: phone,
-                        },
-                        theme: {
-                            color: '#F36B16',
-                        },
-                        handler: async function (response) {
-                            try {
-                                const verifyRes = await axios.post('/checkout/verify-payment', {
-                                    razorpay_order_id: response.razorpay_order_id,
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    razorpay_signature: response.razorpay_signature,
-                                });
-
-                                if (verifyRes.data.success) {
-                                    clearCart();
-                                    router.visit(`/order-success/${verifyRes.data.order_number}`);
-                                } else {
-                                    setErrorMessage('Payment verification failed.');
-                                }
-                            } catch (e) {
-                                setErrorMessage('Error verifying payment.');
-                            } finally {
-                                setProcessingOrder(false);
-                            }
-                        },
-                        modal: {
-                            ondismiss: function () {
-                                setProcessingOrder(false);
-                            }
-                        }
-                    };
-
-                    const rzp = new window.Razorpay(options);
-                    rzp.open();
+                const stripeRes = await axios.post('/checkout/stripe-session', orderPayload);
+                if (stripeRes.data.success && stripeRes.data.checkout_url) {
+                    window.location.href = stripeRes.data.checkout_url;
                 } else {
-                    // Simulated / test verification fallback for local environments
-                    const simVerifyRes = await axios.post('/checkout/verify-payment', {
-                        razorpay_order_id: rzpData.razorpay_order_id,
-                        razorpay_payment_id: 'pay_sim_' + Math.random().toString(36).substring(7),
-                        razorpay_signature: 'simulated_success_signature',
-                    });
-
-                    if (simVerifyRes.data.success) {
-                        clearCart();
-                        router.visit(`/order-success/${simVerifyRes.data.order_number}`);
-                    } else {
-                        setErrorMessage('Simulation failed.');
-                    }
+                    setErrorMessage(stripeRes.data.message || 'Failed to initialize Stripe checkout.');
                     setProcessingOrder(false);
                 }
             } catch (err) {
-                setErrorMessage(err.response?.data?.message || 'Error connecting to payment gateway.');
+                setErrorMessage(err.response?.data?.message || 'Error connecting to Stripe payment gateway.');
                 setProcessingOrder(false);
             }
         }
@@ -281,19 +203,21 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                     </h1>
 
                     {errorMessage && (
-                        <div style={{
-                            backgroundColor: '#FFF1F2',
-                            color: '#D93025',
-                            border: '1px solid #FECDD3',
-                            borderRadius: '4px',
-                            padding: '12px 16px',
-                            marginBottom: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            fontSize: '13px',
-                            fontWeight: 600
-                        }}>
+                        <div
+                            style={{
+                                backgroundColor: '#FFF1F2',
+                                color: '#D93025',
+                                border: '1px solid #FECDD3',
+                                borderRadius: '4px',
+                                padding: '12px 16px',
+                                marginBottom: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                fontSize: '13px',
+                                fontWeight: 600,
+                            }}
+                        >
                             <AlertCircle size={16} />
                             <span>{errorMessage}</span>
                         </div>
@@ -311,112 +235,121 @@ export default function Checkout({ savedAddresses = [], user = null }) {
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
                                     <div className="form-group">
-                                        <label className="form-label">Full Name <span className="required">*</span></label>
-                                        <input 
-                                            type="text" 
-                                            className="form-input" 
+                                        <label className="form-label">
+                                            Full Name <span className="required">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
                                             required
-                                            value={name} 
-                                            onChange={(e) => setName(e.target.value)} 
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
                                         />
                                     </div>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                                         <div className="form-group">
-                                            <label className="form-label">Email Address <span className="required">*</span></label>
-                                            <input 
-                                                type="email" 
-                                                className="form-input" 
+                                            <label className="form-label">
+                                                Email Address <span className="required">*</span>
+                                            </label>
+                                            <input
+                                                type="email"
+                                                className="form-input"
                                                 required
-                                                value={email} 
-                                                onChange={(e) => setEmail(e.target.value)} 
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
                                             />
                                         </div>
                                         <div className="form-group">
-                                            <label className="form-label">Phone Number <span className="required">*</span></label>
-                                            <input 
-                                                type="tel" 
-                                                className="form-input" 
+                                            <label className="form-label">
+                                                UAE Phone Number <span className="required">*</span>
+                                            </label>
+                                            <input
+                                                type="tel"
+                                                className="form-input"
+                                                placeholder="+971 50 123 4567"
                                                 required
-                                                value={phone} 
-                                                onChange={(e) => setPhone(e.target.value)} 
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
                                             />
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Step 2: Shipping Address */}
+                            {/* Step 2: Shipping Address (UAE) */}
                             <div className="checkout-page-form-section">
                                 <h2 className="section-title">
                                     <span className="step-num">2</span>
-                                    <span>Shipping Address (India)</span>
+                                    <span>Shipping Address (United Arab Emirates)</span>
                                 </h2>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
                                     <div className="form-group">
-                                        <label className="form-label">Street Address & House/Plot No. <span className="required">*</span></label>
-                                        <input 
-                                            type="text" 
-                                            className="form-input" 
-                                            placeholder="e.g. 402 Speedline Towers, Outer Ring Road"
+                                        <label className="form-label">
+                                            Street / Building / Villa &amp; Area <span className="required">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            placeholder="e.g. Villa 18, Al Wasl Road, Jumeirah 1"
                                             required
-                                            value={address} 
-                                            onChange={(e) => setAddress(e.target.value)} 
+                                            value={address}
+                                            onChange={(e) => setAddress(e.target.value)}
                                         />
                                     </div>
 
                                     <div className="form-group">
-                                        <label className="form-label">Apartment, Suite, Unit (Optional)</label>
-                                        <input 
-                                            type="text" 
-                                            className="form-input" 
-                                            placeholder="Apartment, building floor, or landmark"
-                                            value={apartment} 
-                                            onChange={(e) => setApartment(e.target.value)} 
+                                        <label className="form-label">Apartment, Office, or Landmark (Optional)</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            placeholder="Apartment, floor, or nearby landmark"
+                                            value={apartment}
+                                            onChange={(e) => setApartment(e.target.value)}
                                         />
                                     </div>
 
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px' }}>
                                         <div className="form-group">
-                                            <label className="form-label">City <span className="required">*</span></label>
-                                            <input 
-                                                type="text" 
-                                                className="form-input" 
+                                            <label className="form-label">
+                                                City / District <span className="required">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
                                                 required
-                                                value={city} 
-                                                onChange={(e) => setCity(e.target.value)} 
+                                                value={city}
+                                                onChange={(e) => setCity(e.target.value)}
                                             />
                                         </div>
 
                                         <div className="form-group">
-                                            <label className="form-label">State <span className="required">*</span></label>
-                                            <select 
+                                            <label className="form-label">
+                                                Emirate <span className="required">*</span>
+                                            </label>
+                                            <select
                                                 className="form-select"
                                                 value={state}
                                                 onChange={(e) => setState(e.target.value)}
                                             >
-                                                <option value="Delhi">Delhi</option>
-                                                <option value="Maharashtra">Maharashtra</option>
-                                                <option value="Karnataka">Karnataka</option>
-                                                <option value="Tamil Nadu">Tamil Nadu</option>
-                                                <option value="Haryana">Haryana</option>
-                                                <option value="Uttar Pradesh">Uttar Pradesh</option>
-                                                <option value="Punjab">Punjab</option>
-                                                <option value="Gujarat">Gujarat</option>
-                                                <option value="Rajasthan">Rajasthan</option>
-                                                <option value="Telangana">Telangana</option>
-                                                <option value="West Bengal">West Bengal</option>
+                                                {UAE_EMIRATES.map((em) => (
+                                                    <option key={em} value={em}>
+                                                        {em}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
 
                                         <div className="form-group">
-                                            <label className="form-label">Pincode <span className="required">*</span></label>
-                                            <input 
-                                                type="text" 
-                                                className="form-input" 
+                                            <label className="form-label">
+                                                PO Box / Postal Code <span className="required">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
                                                 required
-                                                value={pincode} 
-                                                onChange={(e) => setPincode(e.target.value)} 
+                                                value={pincode}
+                                                onChange={(e) => setPincode(e.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -431,38 +364,44 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                 </h2>
 
                                 <div className="payment-options">
-                                    <label className={`payment-option-card ${paymentMethod === 'razorpay' ? 'payment-option-card--active' : ''}`}>
-                                        <input 
-                                            type="radio" 
+                                    <label
+                                        className={`payment-option-card ${paymentMethod === 'stripe' ? 'payment-option-card--active' : ''}`}
+                                    >
+                                        <input
+                                            type="radio"
                                             name="payment_choice"
-                                            checked={paymentMethod === 'razorpay'}
-                                            onChange={() => setPaymentMethod('razorpay')}
+                                            checked={paymentMethod === 'stripe'}
+                                            onChange={() => setPaymentMethod('stripe')}
                                         />
                                         <div className="payment-desc">
-                                            <strong>Online Payment via Razorpay</strong>
-                                            <span>Pay instantly via UPI (Google Pay, PhonePe, Paytm), Credit/Debit Card, or Netbanking.</span>
+                                            <strong>Online Card Payment via Stripe</strong>
+                                            <span>
+                                                Pay securely in {defaultCurrency.code} with Visa, Mastercard, American Express, Apple Pay, or Google Pay via Stripe Checkout.
+                                            </span>
                                         </div>
                                     </label>
 
-                                    <label className={`payment-option-card ${paymentMethod === 'cod' ? 'payment-option-card--active' : ''}`}>
-                                        <input 
-                                            type="radio" 
+                                    <label
+                                        className={`payment-option-card ${paymentMethod === 'cod' ? 'payment-option-card--active' : ''}`}
+                                    >
+                                        <input
+                                            type="radio"
                                             name="payment_choice"
                                             checked={paymentMethod === 'cod'}
                                             onChange={() => setPaymentMethod('cod')}
                                         />
                                         <div className="payment-desc">
                                             <strong>Cash on Delivery (COD)</strong>
-                                            <span>Pay upon physical delivery of automotive spare parts at your doorstep.</span>
+                                            <span>Pay in {defaultCurrency.code} upon delivery anywhere in Dubai and across the UAE.</span>
                                         </div>
                                     </label>
                                 </div>
 
                                 <div className="form-group" style={{ marginTop: '20px' }}>
                                     <label className="form-label">Order Notes / Delivery Instructions (Optional)</label>
-                                    <textarea 
+                                    <textarea
                                         className="form-textarea"
-                                        placeholder="Special handling instructions, garage gate entry codes, etc."
+                                        placeholder="Special handling instructions, villa gate code, workshop bay details..."
                                         value={orderNotes}
                                         onChange={(e) => setOrderNotes(e.target.value)}
                                         style={{ minHeight: '60px' }}
@@ -483,11 +422,11 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                             <h4>{item.name}</h4>
                                             {item.variationLabel && <span>{item.variationLabel}</span>}
                                             <span style={{ display: 'block', fontSize: '11px', color: '#888' }}>
-                                                Qty: {item.quantity} × ₹{Number(item.price).toLocaleString('en-IN')}
+                                                Qty: {item.quantity} × {formatPrice(item.price)}
                                             </span>
                                         </div>
                                         <span className="summary-item-price">
-                                            ₹{(Number(item.price) * item.quantity).toLocaleString('en-IN')}
+                                            {formatPrice(Number(item.price) * item.quantity)}
                                         </span>
                                     </div>
                                 ))}
@@ -495,8 +434,8 @@ export default function Checkout({ savedAddresses = [], user = null }) {
 
                             {/* Promo Code Form */}
                             <form onSubmit={handleApplyCoupon} className="coupon-box">
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     placeholder="COUPON (e.g. SPEED10)"
                                     value={couponCode}
                                     onChange={(e) => setCouponCode(e.target.value)}
@@ -507,7 +446,15 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                             </form>
 
                             {couponSuccessMsg && (
-                                <span style={{ fontSize: '12px', color: '#168A35', fontWeight: 700, marginBottom: '12px', display: 'block' }}>
+                                <span
+                                    style={{
+                                        fontSize: '12px',
+                                        color: '#168A35',
+                                        fontWeight: 700,
+                                        marginBottom: '12px',
+                                        display: 'block',
+                                    }}
+                                >
                                     {couponSuccessMsg}
                                 </span>
                             )}
@@ -517,63 +464,63 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                 </span>
                             )}
 
-                            {/* Financial Breakdown with Centralized GST */}
+                            {/* Financial Breakdown with UAE VAT 5% */}
                             <div className="totals-breakdown">
                                 <div className="total-row">
                                     <span>Subtotal</span>
-                                    <strong>₹{subtotal.toLocaleString('en-IN')}</strong>
+                                    <strong>{formatPrice(subtotal)}</strong>
                                 </div>
 
                                 {discountAmount > 0 && (
                                     <div className="total-row total-row--discount">
                                         <span>Coupon Savings</span>
-                                        <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
+                                        <span>-{formatPrice(discountAmount)}</span>
                                     </div>
                                 )}
 
                                 <div className="total-row">
                                     <span>Shipping</span>
-                                    <span>{shippingCost === 0 ? 'FREE Ground Shipping' : `₹${shippingCost}`}</span>
+                                    <span>{shippingCost === 0 ? 'FREE UAE Delivery' : formatPrice(shippingCost)}</span>
                                 </div>
 
-                                {/* Detailed GST breakdown */}
-                                {taxData.is_interstate ? (
-                                    <div className="total-row">
-                                        <span>IGST (Integrated Tax)</span>
-                                        <span>₹{taxData.igst_amount.toLocaleString('en-IN')}</span>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="total-row">
-                                            <span>CGST (Central GST)</span>
-                                            <span>₹{taxData.cgst_amount.toLocaleString('en-IN')}</span>
-                                        </div>
-                                        <div className="total-row">
-                                            <span>SGST (State GST)</span>
-                                            <span>₹{taxData.sgst_amount.toLocaleString('en-IN')}</span>
-                                        </div>
-                                    </>
-                                )}
+                                <div className="total-row">
+                                    <span>UAE VAT ({taxData.tax_rate_percent ?? 5}%)</span>
+                                    <span>{formatPrice(taxData.tax_amount || 0)}</span>
+                                </div>
 
                                 <div className="total-row total-row--grand">
                                     <span>Total Payable</span>
-                                    <span style={{ color: '#F36B16' }}>₹{grandTotal.toLocaleString('en-IN')}</span>
+                                    <span style={{ color: '#F36B16' }}>{formatPrice(grandTotal)}</span>
                                 </div>
                             </div>
 
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 className="btn btn-primary btn-lg btn-full"
                                 style={{ marginTop: '24px' }}
                                 onClick={handlePlaceOrder}
                                 disabled={processingOrder}
                             >
-                                {processingOrder ? 'Processing Order...' : `Pay ₹${grandTotal.toLocaleString('en-IN')} Now`}
+                                {processingOrder
+                                    ? 'Processing Order...'
+                                    : paymentMethod === 'stripe'
+                                        ? `Pay ${formatPrice(grandTotal)} with Stripe`
+                                        : `Place COD Order (${formatPrice(grandTotal)})`}
                             </button>
 
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '11px', color: '#888', marginTop: '12px' }}>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '8px',
+                                    fontSize: '11px',
+                                    color: '#888',
+                                    marginTop: '12px',
+                                }}
+                            >
                                 <Lock size={12} />
-                                <span>256-Bit SSL Encrypted Razorpay Checkout</span>
+                                <span>256-Bit SSL Encrypted Stripe Checkout (Dubai, UAE)</span>
                             </div>
                         </div>
                     </div>

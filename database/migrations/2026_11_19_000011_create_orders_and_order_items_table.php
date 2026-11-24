@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('city');
             $table->string('state');
             $table->string('pincode', 20);
-            $table->string('country', 50)->default('India');
+            $table->string('country', 50)->default('United Arab Emirates');
 
             // Billing Info
             $table->boolean('billing_same_as_shipping')->default(true);
@@ -46,17 +46,16 @@ return new class extends Migration
             $table->decimal('sgst_amount', 10, 2)->default(0.00);
             $table->decimal('igst_amount', 10, 2)->default(0.00);
             $table->decimal('total_amount', 10, 2);
-            $table->string('currency', 10)->default('INR');
+            $table->string('currency', 10)->default('AED');
 
             // Status & Payment
-            $table->string('payment_method')->default('razorpay'); // razorpay, cod
+            $table->string('payment_method')->default('stripe'); // stripe, cod
             $table->enum('payment_status', ['pending', 'paid', 'failed', 'refunded'])->default('pending')->index();
             $table->enum('delivery_status', ['pending', 'processing', 'shipped', 'delivered', 'cancelled'])->default('pending')->index();
 
-            // Gateways (Razorpay)
-            $table->string('razorpay_order_id')->nullable()->index();
-            $table->string('razorpay_payment_id')->nullable()->index();
-            $table->string('razorpay_signature')->nullable();
+            // Payment Gateway (Stripe)
+            $table->string('stripe_session_id')->nullable()->index();
+            $table->string('stripe_payment_intent_id')->nullable()->index();
 
             // Tracking & Notes
             $table->text('order_notes')->nullable();

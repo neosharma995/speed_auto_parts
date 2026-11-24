@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import SupplierLayout from '@/Layouts/SupplierLayout';
 import SearchableMultiSelect from '@/Components/SearchableMultiSelect';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { Truck, Plus, Package, Trash2, X } from 'lucide-react';
 
 const statusBadge = (status) => {
@@ -13,6 +14,7 @@ const statusBadge = (status) => {
 
 export default function SupplierLotsIndex({ products = [], lots = [] }) {
     const { flash, errors } = usePage().props;
+    const { formatAdminPrice, defaultCurrency } = useCurrency();
 
     const availableProducts = useMemo(
         () => products.filter((p) => Number(p.supplier_stock) > 0),
@@ -60,11 +62,11 @@ export default function SupplierLotsIndex({ products = [], lots = [] }) {
                     label: p.name,
                     sublabel: p.sku,
                     badge: `${p.supplier_stock} avail.`,
-                    meta: `₹${price.toLocaleString('en-IN')}`,
+                    meta: formatAdminPrice(price),
                     searchText: `${p.name} ${p.sku}`,
                 };
             }),
-        [availableProducts]
+        [availableProducts, formatAdminPrice]
     );
 
     const handleSelectionChange = (nextIds) => {
@@ -306,7 +308,7 @@ export default function SupplierLotsIndex({ products = [], lots = [] }) {
                                                 />
                                                 <strong>{group.items.length}</strong> items •{' '}
                                                 <strong>{group.total_qty}</strong> units • Total:{' '}
-                                                <strong>₹{group.total_value.toLocaleString('en-IN')}</strong>
+                                                <strong>{formatAdminPrice(group.total_value)}</strong>
                                             </span>
                                         </div>
                                         <div style={{ fontSize: '12px', color: '#64748B' }}>
@@ -336,9 +338,9 @@ export default function SupplierLotsIndex({ products = [], lots = [] }) {
                                                             </div>
                                                         </td>
                                                         <td style={{ fontWeight: 700 }}>{item.quantity} units</td>
-                                                        <td>₹{Number(item.unit_price).toLocaleString('en-IN')}</td>
+                                                        <td>{formatAdminPrice(item.unit_price)}</td>
                                                         <td style={{ fontWeight: 700 }}>
-                                                            ₹{(Number(item.quantity) * Number(item.unit_price)).toLocaleString('en-IN')}
+                                                            {formatAdminPrice(Number(item.quantity) * Number(item.unit_price))}
                                                         </td>
                                                         <td>
                                                             <span
@@ -504,8 +506,8 @@ export default function SupplierLotsIndex({ products = [], lots = [] }) {
                                                     <th>Product</th>
                                                     <th>Available Stock</th>
                                                     <th>Transfer Qty</th>
-                                                    <th>Unit Price (₹)</th>
-                                                    <th>Line Total (₹)</th>
+                                                    <th>Unit Price ({defaultCurrency.code})</th>
+                                                    <th>Line Total ({defaultCurrency.code})</th>
                                                     <th style={{ width: '44px' }}></th>
                                                 </tr>
                                             </thead>
@@ -562,7 +564,7 @@ export default function SupplierLotsIndex({ products = [], lots = [] }) {
                                                                 />
                                                             </td>
                                                             <td style={{ fontWeight: 700, whiteSpace: 'nowrap' }}>
-                                                                ₹{lineTotal.toLocaleString('en-IN')}
+                                                                {formatAdminPrice(lineTotal)}
                                                             </td>
                                                             <td>
                                                                 <button
@@ -607,7 +609,7 @@ export default function SupplierLotsIndex({ products = [], lots = [] }) {
                                         className="form-input"
                                         value={notes}
                                         onChange={(e) => setNotes(e.target.value)}
-                                        placeholder="e.g., Batch #42 via BlueDart Surface Cargo"
+                                        placeholder="e.g., Batch #42 via Aramex Express UAE"
                                     />
                                 </div>
                             </div>
@@ -629,7 +631,7 @@ export default function SupplierLotsIndex({ products = [], lots = [] }) {
                                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>
                                     Summary: <strong>{selectedProducts.length}</strong> items •{' '}
                                     <strong>{totalUnits}</strong> total units •{' '}
-                                    <strong>₹{totalValue.toLocaleString('en-IN')}</strong>
+                                    <strong>{formatAdminPrice(totalValue)}</strong>
                                 </div>
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

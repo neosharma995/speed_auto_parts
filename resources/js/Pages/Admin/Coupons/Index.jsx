@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminDataTable from '@/Components/Admin/AdminDataTable';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
 
 const EMPTY_FORM = {
@@ -25,6 +26,7 @@ function toDateInputValue(val) {
 export default function AdminCouponsIndex({ coupons, filters = {} }) {
     const safeFilters = filters && !Array.isArray(filters) ? filters : {};
     const { errors } = usePage().props;
+    const { formatAdminPrice, defaultCurrency } = useCurrency();
 
     const items = Array.isArray(coupons) ? coupons : (coupons?.data || []);
     const totalCount = coupons?.total ?? items.length;
@@ -150,10 +152,10 @@ export default function AdminCouponsIndex({ coupons, filters = {} }) {
             label: 'Discount',
             render: (c) => (
                 <>
-                    <strong>{c.type === 'percentage' ? `${c.value}%` : `₹${Number(c.value).toLocaleString('en-IN')}`}</strong>
+                    <strong>{c.type === 'percentage' ? `${c.value}%` : formatAdminPrice(c.value)}</strong>
                     {c.type === 'percentage' && c.max_discount && Number(c.max_discount) > 0 && (
                         <small style={{ display: 'block', color: '#64748B', fontSize: '11px' }}>
-                            Max cap: ₹{Number(c.max_discount).toLocaleString('en-IN')}
+                            Max cap: {formatAdminPrice(c.max_discount)}
                         </small>
                     )}
                 </>
@@ -162,7 +164,7 @@ export default function AdminCouponsIndex({ coupons, filters = {} }) {
         {
             key: 'min_spend',
             label: 'Min Spend',
-            render: (c) => `₹${Number(c.min_spend || 0).toLocaleString('en-IN')}`,
+            render: (c) => formatAdminPrice(c.min_spend || 0),
         },
         {
             key: 'usage',
@@ -249,7 +251,7 @@ export default function AdminCouponsIndex({ coupons, filters = {} }) {
                         placeholder: 'All Types',
                         options: [
                             { value: 'percentage', label: 'Percentage (%)' },
-                            { value: 'fixed', label: 'Fixed (₹)' },
+                            { value: 'fixed', label: `Fixed (${defaultCurrency.code})` },
                         ],
                     },
                     {
@@ -368,13 +370,13 @@ export default function AdminCouponsIndex({ coupons, filters = {} }) {
                                         onChange={(e) => setForm({ ...form, type: e.target.value })}
                                     >
                                         <option value="percentage">Percentage (%)</option>
-                                        <option value="fixed">Fixed Rupee (₹)</option>
+                                        <option value="fixed">Fixed Amount ({defaultCurrency.code})</option>
                                     </select>
                                 </div>
 
                                 <div className="form-group">
                                     <label className="form-label">
-                                        Discount Value ({form.type === 'percentage' ? '%' : '₹'}){' '}
+                                        Discount Value ({form.type === 'percentage' ? '%' : defaultCurrency.symbol}){' '}
                                         <span className="required">*</span>
                                     </label>
                                     <input
@@ -390,7 +392,7 @@ export default function AdminCouponsIndex({ coupons, filters = {} }) {
                                 </div>
 
                                 <div className="form-group">
-                                    <label className="form-label">Min Spend Required (₹)</label>
+                                    <label className="form-label">Min Spend Required ({defaultCurrency.code})</label>
                                     <input
                                         type="number"
                                         step="0.01"
@@ -403,7 +405,7 @@ export default function AdminCouponsIndex({ coupons, filters = {} }) {
 
                                 {form.type === 'percentage' && (
                                     <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                                        <label className="form-label">Max Discount Cap (₹ Optional)</label>
+                                        <label className="form-label">Max Discount Cap ({defaultCurrency.code} Optional)</label>
                                         <input
                                             type="number"
                                             step="0.01"

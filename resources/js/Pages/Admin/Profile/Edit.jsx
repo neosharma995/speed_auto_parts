@@ -193,7 +193,7 @@ export default function AdminProfileEdit({ profile = {} }) {
                                         type="text"
                                         className="form-input"
                                         style={{ paddingLeft: '36px' }}
-                                        placeholder="e.g. +91 98765 43210"
+                                        placeholder="e.g. +971 4 512 8900"
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
                                     />

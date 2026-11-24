@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminDataTable from '@/Components/Admin/AdminDataTable';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { ArrowLeft } from 'lucide-react';
 
 const DIRECTION_LABELS = {
@@ -43,6 +44,7 @@ export default function AdminTransfersLogs({
     baseUrl = '/admin/warehouse/logs',
     filters = {},
 }) {
+    const { formatAdminPrice } = useCurrency();
     const safeFilters = filters && !Array.isArray(filters) ? filters : {};
     const items = Array.isArray(transfers) ? transfers : (transfers?.data || []);
     const totalCount = transfers?.total ?? items.length;
@@ -117,7 +119,7 @@ export default function AdminTransfersLogs({
         {
             key: 'unit_price',
             label: 'Unit Price',
-            render: (t) => `₹${Number(t.unit_price || 0).toLocaleString('en-IN')}`,
+            render: (t) => formatAdminPrice(t.unit_price || 0),
         },
         {
             key: 'status',

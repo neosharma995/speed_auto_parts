@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('city');
             $table->string('state');
             $table->string('pincode', 20);
-            $table->string('country', 10)->default('India');
+            $table->string('country', 50)->default('United Arab Emirates');
             $table->boolean('is_default')->default(false);
             $table->timestamps();
         });

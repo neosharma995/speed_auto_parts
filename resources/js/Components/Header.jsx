@@ -20,18 +20,20 @@ import {
     Package
 } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { useWishlist } from '@/Context/WishlistContext';
 import SearchDropdown from './SearchDropdown';
 
 export default function Header() {
     const { auth, navBrands = [], settings = {}, activeVehicle } = usePage().props;
     const { itemCount, setIsCartOpen } = useCart();
+    const { activeCurrency, availableCurrencies, setSelectedCurrency } = useCurrency();
     const { wishlist = [] } = useWishlist();
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
     const [selectedLang, setSelectedLang] = useState('EN');
-    const [selectedCurrency, setSelectedCurrency] = useState('USD');
+    const selectedCurrency = activeCurrency.code;
     const [langOpen, setLangOpen] = useState(false);
     const [currencyOpen, setCurrencyOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -58,11 +60,7 @@ export default function Header() {
         { code: 'FR', name: 'Français' },
     ];
 
-    const currencyOptions = [
-        { code: 'USD', name: 'USD ($)' },
-        { code: 'EUR', name: 'EUR (€)' },
-        { code: 'AED', name: 'AED (د.إ)' },
-    ];
+    const currencyOptions = availableCurrencies;
 
     // Click outside listener for language and currency dropdowns
     useEffect(() => {
@@ -251,7 +249,7 @@ export default function Header() {
                 <div className="container site-header-utility-inner">
                     <div className="site-header-utility-left">
                         <CarFront size={17} strokeWidth={2.2} className="utility-car-icon" />
-                        <span>Free International Shipping on Orders Over $500</span>
+                        <span>Free UAE Delivery on Orders Over AED 500 — Dubai Express Dispatch</span>
                     </div>
 
                     <div className="site-header-utility-right">
@@ -754,11 +752,11 @@ export default function Header() {
 
                         {/* Right Side: Info / Contact */}
                         <div className="site-header-nav-right-info">
-                            <a href={`tel:${settings.store_phone || '+919876543210'}`} className="nav-contact-link">
+                            <a href={`tel:${settings.store_phone || '+97145128900'}`} className="nav-contact-link">
                                 <Phone size={14} strokeWidth={2.2} className="nav-contact-icon" />
                                 <span className="nav-contact-text">
-                                    <span className="nav-contact-label">Hotline:</span>
-                                    <strong className="nav-contact-val">{settings.store_phone || '+91 98765 43210'}</strong>
+                                    <span className="nav-contact-label">Dubai Hotline:</span>
+                                    <strong className="nav-contact-val">{settings.store_phone || '+971 4 512 8900'}</strong>
                                 </span>
                             </a>
                         </div>

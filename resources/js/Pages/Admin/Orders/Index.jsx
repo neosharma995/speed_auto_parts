@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminDataTable from '@/Components/Admin/AdminDataTable';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { Eye } from 'lucide-react';
 
 export default function AdminOrdersIndex({ orders, filters = {} }) {
+    const { formatAdminPrice } = useCurrency();
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedStatus, setSelectedStatus] = useState(filters.status || '');
     const [selectedPayment, setSelectedPayment] = useState(filters.payment || '');
@@ -54,7 +56,7 @@ export default function AdminOrdersIndex({ orders, filters = {} }) {
         {
             key: 'total_amount',
             label: 'Total',
-            render: (order) => <strong>₹{Number(order.total_amount).toLocaleString('en-IN')}</strong>,
+            render: (order) => <strong>{formatAdminPrice(order.total_amount)}</strong>,
         },
         {
             key: 'payment_status',
