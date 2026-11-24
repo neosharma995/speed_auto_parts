@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import ProductCard from '@/Components/ProductCard';
@@ -39,15 +39,74 @@ export default function ProductShow({
     const { addToCart } = useCart();
     const { toggleWishlist, isInWishlist } = useWishlist();
 
-    // Select default variation or first
     const defaultVar = variations.find(v => v.is_default) || variations[0] || null;
     const [selectedVariation, setSelectedVariation] = useState(defaultVar);
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState('specs');
-    const [activeImage, setActiveImage] = useState(product.main_image);
+    const [activeImage, setActiveImage] = useState(defaultVar?.image || product.main_image);
     const [addedToast, setAddedToast] = useState(false);
     const [isZoomOpen, setIsZoomOpen] = useState(false);
     const [isRotating, setIsRotating] = useState(false);
+
+    const attributeGroups = useMemo(() => {
+        if (!Array.isArray(variations) || variations.length === 0) return [];
+        const labelMap = {};
+        (product.attributes || []).forEach((attr) => {
+            if (attr?.slug) {
+                labelMap[attr.slug] = attr.name;
+            }
+        });
+
+        const groupsBySlug = {};
+        const orderedSlugs = [];
+
+        variations.forEach((v) => {
+            const attrs = v.attributes_json && typeof v.attributes_json === 'object' ? v.attributes_json : {};
+            Object.entries(attrs).forEach(([attrSlug, rawVal]) => {
+                const val = String(rawVal || '').trim();
+                if (!val) return;
+                if (!groupsBySlug[attrSlug]) {
+                    const fallbackLabel = attrSlug
+                        .split('-')
+                        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                        .join(' ');
+                    groupsBySlug[attrSlug] = {
+                        slug: attrSlug,
+                        label: labelMap[attrSlug] || fallbackLabel,
+                        values: [],
+                    };
+                    orderedSlugs.push(attrSlug);
+                }
+                if (!groupsBySlug[attrSlug].values.includes(val)) {
+                    groupsBySlug[attrSlug].values.push(val);
+                }
+            });
+        });
+
+        return orderedSlugs.map((s) => groupsBySlug[s]);
+    }, [variations, product.attributes]);
+
+    const handleSelectAttributeValue = (attrSlug, value) => {
+        const currentAttrs =
+            selectedVariation?.attributes_json && typeof selectedVariation.attributes_json === 'object'
+                ? selectedVariation.attributes_json
+                : {};
+        const desiredAttrs = { ...currentAttrs, [attrSlug]: value };
+
+        let matched = variations.find((v) => {
+            const vAttrs = v.attributes_json || {};
+            return Object.entries(desiredAttrs).every(([k, val]) => vAttrs[k] === val);
+        });
+
+        if (!matched) {
+            matched = variations.find((v) => (v.attributes_json || {})[attrSlug] === value);
+        }
+
+        if (matched) {
+            setSelectedVariation(matched);
+            setActiveImage(matched.image || product.main_image);
+        }
+    };
 
     const isFav = isInWishlist(product.id);
 
@@ -253,30 +312,60 @@ export default function ProductShow({
                                 </Link>
                             </div>
 
-                            {/* Product Variations / Specifications Selector */}
-                            {variations.length > 0 && (
-                                <div className="variations-selector-wrap">
-                                    <span className="selector-title">Select Specification / Size:</span>
-                                    <div className="selector-pills-row">
-                                        {variations.map(variation => (
-                                            <button
-                                                key={variation.id}
-                                                type="button"
-                                                className={`pill-option ${selectedVariation?.id === variation.id ? 'pill-option--active' : ''}`}
-                                                onClick={() => {
-                                                    setSelectedVariation(variation);
-                                                    if (variation.image) {
-                                                        setActiveImage(variation.image);
-                                                    } else {
-                                                        setActiveImage(product.main_image);
-                                                    }
-                                                }}
-                                            >
-                                                {variation.name}
-                                            </button>
-                                        ))}
-                                    </div>
+                            {/* Product Variations / Attribute Selectors */}
+                            {attributeGroups.length > 0 ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                    {attributeGroups.map((group) => {
+                                        const selectedValue = selectedVariation?.attributes_json?.[group.slug] || '';
+                                        return (
+                                            <div key={group.slug} className="variations-selector-wrap">
+                                                <span className="selector-title">
+                                                    {group.label}: {selectedValue && <strong>{selectedValue}</strong>}
+                                                </span>
+                                                <div className="selector-pills-row">
+                                                    {group.values.map((val) => {
+                                                        const isActive = selectedValue === val;
+                                                        return (
+                                                            <button
+                                                                key={val}
+                                                                type="button"
+                                                                className={`pill-option ${isActive ? 'pill-option--active' : ''}`}
+                                                                onClick={() => handleSelectAttributeValue(group.slug, val)}
+                                                            >
+                                                                {val}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
+                            ) : (
+                                variations.length > 0 && (
+                                    <div className="variations-selector-wrap">
+                                        <span className="selector-title">Select Specification / Size:</span>
+                                        <div className="selector-pills-row">
+                                            {variations.map(variation => (
+                                                <button
+                                                    key={variation.id}
+                                                    type="button"
+                                                    className={`pill-option ${selectedVariation?.id === variation.id ? 'pill-option--active' : ''}`}
+                                                    onClick={() => {
+                                                        setSelectedVariation(variation);
+                                                        if (variation.image) {
+                                                            setActiveImage(variation.image);
+                                                        } else {
+                                                            setActiveImage(product.main_image);
+                                                        }
+                                                    }}
+                                                >
+                                                    {variation.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )
                             )}
 
                             {/* Stock Indicator */}

@@ -163,6 +163,16 @@ export default function ProductForm({
         [productAttributes]
     );
 
+    const eligibleVariationAttributes = useMemo(
+        () => variationAttributes.filter((a) => a.values.length > 0 && a.slug),
+        [variationAttributes]
+    );
+
+    const plannedVariationCount = useMemo(() => {
+        if (!eligibleVariationAttributes.length) return 0;
+        return eligibleVariationAttributes.reduce((total, attr) => total * attr.values.length, 1);
+    }, [eligibleVariationAttributes]);
+
     const handleAddGalleryImage = () => {
         if (newGalleryUrl.trim()) {
             setGalleryImages([...galleryImages, newGalleryUrl.trim()]);
@@ -186,13 +196,16 @@ export default function ProductForm({
             name: globalAttr.name,
             slug: globalAttr.slug,
             values: (globalAttr.values || []).map((v) => v.value),
-            used_for_variations: productType === 'variable',
+            used_for_variations: true,
             expanded: true,
         };
 
         setProductAttributes((prev) =>
             prev.map((a) => ({ ...a, expanded: false })).concat(nextAttr)
         );
+        if (productType !== 'variable') {
+            setProductType('variable');
+        }
         setSelectedGlobalAttrId('');
     };
 
@@ -203,12 +216,15 @@ export default function ProductForm({
             name: '',
             slug: '',
             values: [],
-            used_for_variations: productType === 'variable',
+            used_for_variations: true,
             expanded: true,
         };
         setProductAttributes((prev) =>
             prev.map((a) => ({ ...a, expanded: false })).concat(nextAttr)
         );
+        if (productType !== 'variable') {
+            setProductType('variable');
+        }
     };
 
     const updateAttrField = (key, patch) => {
@@ -228,7 +244,7 @@ export default function ProductForm({
         const raw = (valueDrafts[key] || '').trim();
         if (!raw) return;
         const parts = raw
-            .split('|')
+            .split(/[|,]/)
             .map((p) => p.trim())
             .filter(Boolean);
         if (!parts.length) return;
@@ -966,7 +982,7 @@ export default function ProductForm({
                                                                     <input
                                                                         type="text"
                                                                         className="form-input"
-                                                                        placeholder="e.g. Rotor Diameter, Tire Size, Finish"
+                                                                        placeholder="e.g. Color, Size, Rotor Diameter"
                                                                         value={attr.name}
                                                                         readOnly={Boolean(attr.id)}
                                                                         onChange={(e) => updateAttrField(attr.key, { name: e.target.value })}
@@ -1053,7 +1069,7 @@ export default function ProductForm({
                                                                     <input
                                                                         type="text"
                                                                         className="form-input"
-                                                                        placeholder="Enter values separated by | (e.g. 330mm | 355mm)"
+                                                                        placeholder="Enter values separated by comma or | (e.g. Red, Green, Blue)"
                                                                         value={valueDrafts[attr.key] || ''}
                                                                         onChange={(e) =>
                                                                             setValueDrafts((prev) => ({ ...prev, [attr.key]: e.target.value }))
@@ -1081,42 +1097,75 @@ export default function ProductForm({
                                         })}
                                     </div>
                                 )}
+
+                                {eligibleVariationAttributes.length > 0 && (
+                                    <div className="wc-toolbar" style={{ marginTop: '16px', marginBottom: 0, backgroundColor: '#FFF7ED', borderColor: '#FDBA74' }}>
+                                        <div style={{ fontSize: '12px', color: '#9A3412' }}>
+                                            <strong>Ready to apply to variations:</strong>{' '}
+                                            {eligibleVariationAttributes.map((a) => `${a.name} (${a.values.join(', ')})`).join(' × ')}{' '}
+                                            → <strong>{plannedVariationCount}</strong> variation{plannedVariationCount === 1 ? '' : 's'}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="btn btn-primary btn-sm"
+                                            onClick={() => {
+                                                setProductType('variable');
+                                                handleGenerateVariationsFromAttributes();
+                                                setActiveTab('variations');
+                                            }}
+                                        >
+                                            <Wand2 size={14} /> Apply Attributes &amp; Generate Variations →
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
 
                         {/* SECTION 7: WordPress / WooCommerce-style Variations */}
                         {activeTab === 'variations' && (
                             <div>
-                                {productType !== 'variable' ? (
+                                {eligibleVariationAttributes.length === 0 ? (
                                     <div style={{ padding: '28px', backgroundColor: '#F8FAFC', border: '1px dashed #CBD5E1', borderRadius: '4px', textAlign: 'center' }}>
                                         <p style={{ fontSize: '14px', color: '#475569', marginBottom: '12px' }}>
-                                            To create product variations (such as multiple Rotor Diameters or Tire Sizes), switch Product Data type to <strong>Variable Product</strong> and add attributes marked <em>"Used for variations"</em>.
+                                            Variations are created from Product Attributes and their Values (for example: Attribute <strong>Color</strong> with values <strong>Red, Green, Blue</strong>). Add an attribute with values first, then apply it to create variations.
                                         </p>
                                         <button
                                             type="button"
                                             className="btn btn-primary btn-sm"
-                                            onClick={() => setProductType('variable')}
+                                            onClick={() => setActiveTab('attributes')}
                                         >
-                                            Switch to Variable Product
+                                            <Sliders size={14} /> Go to Attributes Tab
                                         </button>
                                     </div>
                                 ) : (
                                     <div>
+                                        <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '10px 14px', borderRadius: '4px', fontSize: '12px', color: '#334155', marginBottom: '12px' }}>
+                                            <strong>Active Variation Attributes:</strong>{' '}
+                                            {eligibleVariationAttributes.map((a) => `${a.name}: ${a.values.join(', ')}`).join(' | ')}{' '}
+                                            <span style={{ color: '#64748B' }}>({plannedVariationCount} total combinations)</span>
+                                        </div>
+
                                         <div className="wc-toolbar">
                                             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                                 <button
                                                     type="button"
                                                     className="btn btn-primary btn-sm"
-                                                    onClick={handleGenerateVariationsFromAttributes}
+                                                    onClick={() => {
+                                                        if (productType !== 'variable') setProductType('variable');
+                                                        handleGenerateVariationsFromAttributes();
+                                                    }}
                                                 >
-                                                    <Wand2 size={14} /> Generate variations from attributes
+                                                    <Wand2 size={14} /> Generate All Variations
                                                 </button>
                                                 <button
                                                     type="button"
                                                     className="btn btn-dark btn-sm"
-                                                    onClick={handleAddManualVariation}
+                                                    onClick={() => {
+                                                        if (productType !== 'variable') setProductType('variable');
+                                                        handleAddManualVariation();
+                                                    }}
                                                 >
-                                                    <Plus size={14} /> Add Variation Manually
+                                                    <Plus size={14} /> Add Variation
                                                 </button>
                                             </div>
 
@@ -1139,7 +1188,7 @@ export default function ProductForm({
 
                                         {variationsList.length === 0 ? (
                                             <div style={{ textAlign: 'center', padding: '32px 16px', border: '1px dashed #CBD5E1', borderRadius: '4px', color: '#64748B', fontSize: '13px' }}>
-                                                No variations added yet. Add attributes with values in the <strong>Attributes</strong> tab and click <strong>Generate variations from attributes</strong>, or click <strong>Add Variation Manually</strong>.
+                                                Click <strong>Generate All Variations</strong> above to create variations for your selected attribute values.
                                             </div>
                                         ) : (
                                             <div className="wc-accordion-list">
@@ -1148,10 +1197,10 @@ export default function ProductForm({
                                                         <div className={`wc-accordion-header ${v.expanded ? 'wc-accordion-header--open' : ''}`}>
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', flex: 1 }}>
                                                                 <span style={{ fontWeight: 800, fontSize: '12px', color: '#64748B' }}>#{i + 1}</span>
-                                                                {variationAttributes.length > 0 ? (
-                                                                    variationAttributes.map((va) => (
+                                                                {eligibleVariationAttributes.map((va) => (
+                                                                    <label key={va.key} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, color: '#334155' }}>
+                                                                        <span>{va.name}:</span>
                                                                         <select
-                                                                            key={va.key}
                                                                             className="form-select"
                                                                             style={{ width: 'auto', padding: '4px 8px', fontSize: '12px' }}
                                                                             value={(v.attributes_json && v.attributes_json[va.slug]) || ''}
@@ -1162,10 +1211,8 @@ export default function ProductForm({
                                                                                 <option key={val} value={val}>{val}</option>
                                                                             ))}
                                                                         </select>
-                                                                    ))
-                                                                ) : (
-                                                                    <strong>{v.name}</strong>
-                                                                )}
+                                                                    </label>
+                                                                ))}
                                                                 <span className="badge badge-neutral" style={{ fontSize: '11px' }}>
                                                                     ₹{Number(v.price || 0).toLocaleString('en-IN')}
                                                                 </span>
