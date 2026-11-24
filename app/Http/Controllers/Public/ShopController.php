@@ -9,6 +9,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Vehicle;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -102,6 +103,121 @@ class ShopController extends Controller
             'brands' => $brands,
             'filters' => (object) $request->only(['category', 'brand', 'sort', 'min_price', 'max_price', 'in_stock', 'part_number', 'vehicle_id', 'search']),
             'activeVehicle' => $activeVehicle,
+        ]);
+    }
+
+    public function suggestions(Request $request): JsonResponse
+    {
+        $query = trim((string) $request->input('q', ''));
+
+        if ($query === '') {
+            $popularCategories = Category::where('is_active', true)
+                ->orderBy('sort_order')
+                ->limit(5)
+                ->get(['id', 'name', 'slug']);
+
+            $featuredBrands = Brand::where('is_active', true)
+                ->where('is_featured', true)
+                ->limit(5)
+                ->get(['id', 'name', 'slug']);
+
+            return response()->json([
+                'query' => '',
+                'products' => [],
+                'categories' => $popularCategories,
+                'brands' => $featuredBrands,
+                'popularSearches' => [
+                    'Brembo Big Brake Kit',
+                    'Michelin Pilot Sport 5',
+                    'Performance Cat-Back Exhaust',
+                    'Cold Air Intake System',
+                    'Bilstein Coilovers',
+                    'AP-12345',
+                ],
+            ]);
+        }
+
+        // 1. Search products by name, part_number, sku, brand, category
+        $products = Product::published()
+            ->with(['brand:id,name,slug', 'category:id,name,slug'])
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                  ->orWhere('part_number', 'like', "%{$query}%")
+                  ->orWhere('sku', 'like', "%{$query}%")
+                  ->orWhereHas('brand', fn($b) => $b->where('name', 'like', "%{$query}%"))
+                  ->orWhereHas('category', fn($c) => $c->where('name', 'like', "%{$query}%"));
+            })
+            ->select([
+                'id', 'name', 'slug', 'sku', 'part_number', 'brand_id', 'category_id',
+                'main_image', 'base_price', 'sale_price', 'stock_quantity', 'stock_status'
+            ])
+            ->limit(5)
+            ->get()
+            ->map(function ($product) {
+                $basePrice = (float) $product->base_price;
+                $effectivePrice = (float) $product->effective_price;
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'sku' => $product->sku,
+                    'part_number' => $product->part_number,
+                    'brand_name' => $product->brand?->name,
+                    'category_name' => $product->category?->name,
+                    'main_image' => $product->main_image,
+                    'effective_price' => $effectivePrice,
+                    'base_price' => $basePrice,
+                    'sale_price' => $product->sale_price ? (float) $product->sale_price : null,
+                    'discount_percentage' => $product->discount_percentage,
+                    'is_in_stock' => $product->is_in_stock,
+                    'url' => route('products.show', $product->slug),
+                ];
+            });
+
+        // 2. Matching Categories
+        $categories = Category::where('is_active', true)
+            ->where('name', 'like', "%{$query}%")
+            ->select(['id', 'name', 'slug'])
+            ->limit(3)
+            ->get()
+            ->map(fn($cat) => [
+                'id' => $cat->id,
+                'name' => $cat->name,
+                'slug' => $cat->slug,
+                'url' => route('shop', ['category' => $cat->slug]),
+            ]);
+
+        // 3. Matching Brands
+        $brands = Brand::where('is_active', true)
+            ->where('name', 'like', "%{$query}%")
+            ->select(['id', 'name', 'slug', 'logo'])
+            ->limit(3)
+            ->get()
+            ->map(fn($b) => [
+                'id' => $b->id,
+                'name' => $b->name,
+                'slug' => $b->slug,
+                'logo' => $b->logo,
+                'url' => route('shop', ['brand' => $b->slug]),
+            ]);
+
+        // Total count for "View all X results"
+        $totalCount = Product::published()
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                  ->orWhere('part_number', 'like', "%{$query}%")
+                  ->orWhere('sku', 'like', "%{$query}%")
+                  ->orWhereHas('brand', fn($b) => $b->where('name', 'like', "%{$query}%"))
+                  ->orWhereHas('category', fn($c) => $c->where('name', 'like', "%{$query}%"));
+            })
+            ->count();
+
+        return response()->json([
+            'query' => $query,
+            'products' => $products,
+            'categories' => $categories,
+            'brands' => $brands,
+            'total_count' => $totalCount,
         ]);
     }
 }
