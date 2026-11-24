@@ -9,7 +9,10 @@ const STORAGE_KEY = 'sap_selected_currency';
 function normalizeSettings(rawSettings = {}) {
     const code = String(rawSettings?.currency_code || 'AED').toUpperCase();
     const meta = getCurrencyMeta(code);
-    const symbol = String(rawSettings?.currency_symbol || meta.symbol || code);
+    let symbol = String(rawSettings?.currency_symbol || meta.symbol || code);
+    if (code === 'AED' && symbol === 'AED') {
+        symbol = 'د.إ';
+    }
     const locale = String(rawSettings?.currency_locale || meta.locale || 'en-AE');
     const rateNum = Number(rawSettings?.currency_rate ?? 1);
     const rate = Number.isFinite(rateNum) && rateNum > 0 ? rateNum : 1;
@@ -160,19 +163,19 @@ export function useCurrency() {
     const ctx = useContext(CurrencyContext);
     if (!ctx) {
         return {
-            defaultCurrency: { code: 'AED', symbol: 'AED', locale: 'en-AE', rate: 1 },
-            activeCurrency: { code: 'AED', symbol: 'AED', locale: 'en-AE', rate: 1 },
+            defaultCurrency: { code: 'AED', symbol: 'د.إ', locale: 'en-AE', rate: 1 },
+            activeCurrency: { code: 'AED', symbol: 'د.إ', locale: 'en-AE', rate: 1 },
             availableCurrencies: [
-                { code: 'AED', symbol: 'AED', name: 'AED (AED)', rate: 1 },
+                { code: 'AED', symbol: 'د.إ', name: 'AED (د.إ)', rate: 1 },
                 { code: 'USD', symbol: '$', name: 'USD ($)', rate: 0.2723 },
                 { code: 'EUR', symbol: '€', name: 'EUR (€)', rate: 0.251 },
             ],
             currencyCatalog: CURRENCY_CATALOG,
-            setSelectedCurrency: () => {},
+            setSelectedCurrency: () => { },
             convertToDefault: (v) => Number(v || 0),
             convertForDisplay: (v) => Number(v || 0),
-            formatAdminPrice: (v, opts) => formatWithSymbol(v, 'AED', 'en-AE', opts),
-            formatPrice: (v, opts) => formatWithSymbol(v, 'AED', 'en-AE', opts),
+            formatAdminPrice: (v, opts) => formatWithSymbol(v, 'د.إ', 'en-AE', opts),
+            formatPrice: (v, opts) => formatWithSymbol(v, 'د.إ', 'en-AE', opts),
         };
     }
     return ctx;
