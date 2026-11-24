@@ -143,12 +143,18 @@ class AutomotiveCatalogSeeder extends Seeder
         }
 
         // 5. Attributes
+        $attrColor = ProductAttribute::firstOrCreate(['slug' => 'color'], ['name' => 'Color', 'description' => 'Component exterior or anodized finish color']);
         $attrRim = ProductAttribute::firstOrCreate(['slug' => 'rim-diameter'], ['name' => 'Rim Diameter', 'description' => 'Wheel diameter in inches']);
         $attrWidth = ProductAttribute::firstOrCreate(['slug' => 'tire-width'], ['name' => 'Tire Width', 'description' => 'Section width in millimeters']);
         $attrPosition = ProductAttribute::firstOrCreate(['slug' => 'position'], ['name' => 'Axle Position', 'description' => 'Vehicle axle installation position']);
         $attrRotorDia = ProductAttribute::firstOrCreate(['slug' => 'rotor-diameter'], ['name' => 'Rotor Diameter', 'description' => 'Disc rotor diameter in millimeters']);
         $attrMaterial = ProductAttribute::firstOrCreate(['slug' => 'material'], ['name' => 'Construction Material', 'description' => 'Manufacturing material composition']);
 
+        ProductAttributeValue::firstOrCreate(['attribute_id' => $attrColor->id, 'slug' => 'red'], ['value' => 'Red']);
+        ProductAttributeValue::firstOrCreate(['attribute_id' => $attrColor->id, 'slug' => 'green'], ['value' => 'Green']);
+        ProductAttributeValue::firstOrCreate(['attribute_id' => $attrColor->id, 'slug' => 'blue'], ['value' => 'Blue']);
+        ProductAttributeValue::firstOrCreate(['attribute_id' => $attrColor->id, 'slug' => 'matte-black'], ['value' => 'Matte Black']);
+        ProductAttributeValue::firstOrCreate(['attribute_id' => $attrColor->id, 'slug' => 'silver'], ['value' => 'Silver']);
         ProductAttributeValue::firstOrCreate(['attribute_id' => $attrRim->id, 'slug' => '18-inch'], ['value' => '18 Inch']);
         ProductAttributeValue::firstOrCreate(['attribute_id' => $attrRim->id, 'slug' => '19-inch'], ['value' => '19 Inch']);
         ProductAttributeValue::firstOrCreate(['attribute_id' => $attrWidth->id, 'slug' => '245mm'], ['value' => '245 mm']);
