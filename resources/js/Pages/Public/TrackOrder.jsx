@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
-import { Truck, Search, CheckCircle, Clock, PackageCheck } from 'lucide-react';
+import { ChevronRight, Truck, Search, CheckCircle, PackageCheck } from 'lucide-react';
 import axios from 'axios';
 
 export default function TrackOrder() {
@@ -33,28 +33,29 @@ export default function TrackOrder() {
 
     return (
         <AppLayout title="Track Your Shipment">
-            <div className="section bg-light" style={{ minHeight: '75vh', padding: '56px 0' }}>
-                <div className="container-narrow">
-                    <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-                        <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(243, 107, 22, 0.1)', color: '#F36B16', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                            <Truck size={30} />
-                        </div>
-                        <h1 style={{ fontSize: '32px', fontWeight: 900, color: '#151515', textTransform: 'uppercase' }}>
-                            TRACK YOUR SHIPMENT
-                        </h1>
-                        <p style={{ color: '#666', fontSize: '14px', maxWidth: '500px', margin: '8px auto 0' }}>
-                            Enter your SPEED AUTOS PARTS order reference number to view live courier status, freight tracking, and delivery timeline.
-                        </p>
+            <div className="support-page">
+                <div className="container">
+                    {/* Breadcrumbs matching Shop, Brands, Categories */}
+                    <div className="breadcrumb-nav">
+                        <Link href="/" className="breadcrumb-link">Home</Link>
+                        <ChevronRight size={12} className="breadcrumb-arrow" />
+                        <Link href="/contact-us" className="breadcrumb-link">Support</Link>
+                        <ChevronRight size={12} className="breadcrumb-arrow" />
+                        <span className="breadcrumb-current">Track Shipment</span>
                     </div>
 
-                    <div style={{
-                        backgroundColor: '#FFFFFF',
-                        border: '1px solid #DCDCDC',
-                        borderRadius: '8px',
-                        padding: '32px',
-                        marginBottom: '32px'
-                    }}>
-                        <form onSubmit={handleTrack} style={{ display: 'flex', gap: '10px' }}>
+                    {/* Left-Aligned Header matching Shop, Brands, Categories */}
+                    <div className="support-page-header">
+                        <h1>
+                            <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                            Track Your Shipment
+                        </h1>
+                        <p>Enter your SPEED AUTOS PARTS order reference number to view live courier status, freight tracking, and delivery timeline.</p>
+                    </div>
+
+                    {/* Search Form Card */}
+                    <div className="track-order-card">
+                        <form onSubmit={handleTrack} className="track-order-form">
                             <input 
                                 type="text" 
                                 className="form-input"
@@ -62,73 +63,68 @@ export default function TrackOrder() {
                                 value={orderNumber}
                                 onChange={e => setOrderNumber(e.target.value)}
                                 required
-                                style={{ fontSize: '15px', padding: '12px 16px' }}
                             />
-                            <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
-                                <Search size={18} /> {loading ? 'Searching...' : 'Track'}
+                            <button type="submit" className="btn-track" disabled={loading}>
+                                <Search size={16} />
+                                <span>{loading ? 'Searching...' : 'Track'}</span>
                             </button>
                         </form>
 
                         {errorMsg && (
-                            <div style={{ color: '#D93025', fontSize: '13px', marginTop: '12px', fontWeight: 600 }}>
+                            <div className="track-order-error">
                                 ⚠ {errorMsg}
                             </div>
                         )}
                     </div>
 
                     {orderResult && (
-                        <div style={{
-                            backgroundColor: '#FFFFFF',
-                            border: '1px solid #DCDCDC',
-                            borderRadius: '8px',
-                            padding: '32px'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #EEE', paddingBottom: '16px', marginBottom: '24px' }}>
+                        <div className="track-result-card">
+                            <div className="result-header">
                                 <div>
-                                    <span style={{ fontSize: '11px', fontWeight: 800, color: '#F36B16', textTransform: 'uppercase' }}>Shipment Details</span>
-                                    <h3 style={{ fontSize: '20px', fontWeight: 900 }}>Order #{orderResult.order_number}</h3>
+                                    <span className="result-title-tag">Shipment Details</span>
+                                    <h3>Order #{orderResult.order_number}</h3>
                                 </div>
-                                <span className="badge badge-primary" style={{ fontSize: '12px', padding: '6px 12px' }}>
+                                <span className="result-status-badge">
                                     {orderResult.delivery_status}
                                 </span>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '24px' }}>
-                                <div>
-                                    <span style={{ fontSize: '12px', color: '#888' }}>Carrier</span>
-                                    <p style={{ fontWeight: 700, fontSize: '14px' }}>{orderResult.tracking_carrier || 'Blue Dart Express'}</p>
+                            <div className="result-grid">
+                                <div className="grid-item">
+                                    <span>Carrier</span>
+                                    <p>{orderResult.tracking_carrier || 'Blue Dart Express'}</p>
                                 </div>
-                                <div>
-                                    <span style={{ fontSize: '12px', color: '#888' }}>Tracking / AWB #</span>
-                                    <p style={{ fontWeight: 700, fontSize: '14px', fontFamily: 'monospace' }}>{orderResult.tracking_number || 'Pending Dispatch Assignment'}</p>
+                                <div className="grid-item">
+                                    <span>Tracking / AWB #</span>
+                                    <p className="mono">{orderResult.tracking_number || 'Pending Dispatch Assignment'}</p>
                                 </div>
-                                <div>
-                                    <span style={{ fontSize: '12px', color: '#888' }}>Delivery Destination</span>
-                                    <p style={{ fontWeight: 700, fontSize: '14px' }}>{orderResult.city}, {orderResult.state} ({orderResult.pincode})</p>
+                                <div className="grid-item">
+                                    <span>Delivery Destination</span>
+                                    <p>{orderResult.shipping_city}, {orderResult.shipping_state}</p>
                                 </div>
                             </div>
 
                             {/* Tracking Milestones */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '24px 0', borderTop: '1px solid #EEE', borderBottom: '1px solid #EEE', textAlign: 'center' }}>
-                                <div>
-                                    <CheckCircle size={24} color="#168A35" style={{ margin: '0 auto 6px' }} />
-                                    <strong style={{ fontSize: '13px', display: 'block' }}>Order Confirmed</strong>
-                                    <span style={{ fontSize: '11px', color: '#888' }}>Verified & Paid</span>
+                            <div className="result-milestones">
+                                <div className="milestone-step">
+                                    <CheckCircle size={22} color="#168A35" className="milestone-icon" />
+                                    <strong>Order Confirmed</strong>
+                                    <span>Verified & Paid</span>
                                 </div>
-                                <div>
-                                    <PackageCheck size={24} color={orderResult.delivery_status !== 'pending' ? '#168A35' : '#BBB'} style={{ margin: '0 auto 6px' }} />
-                                    <strong style={{ fontSize: '13px', display: 'block' }}>Packed & Dispatched</strong>
-                                    <span style={{ fontSize: '11px', color: '#888' }}>Central Warehouse</span>
+                                <div className="milestone-step">
+                                    <PackageCheck size={22} color={orderResult.delivery_status !== 'pending' ? '#168A35' : '#BBB'} className="milestone-icon" />
+                                    <strong>Packed & Dispatched</strong>
+                                    <span>Central Warehouse</span>
                                 </div>
-                                <div>
-                                    <Truck size={24} color={['shipped', 'delivered'].includes(orderResult.delivery_status) ? '#168A35' : '#BBB'} style={{ margin: '0 auto 6px' }} />
-                                    <strong style={{ fontSize: '13px', display: 'block' }}>Out for Delivery</strong>
-                                    <span style={{ fontSize: '11px', color: '#888' }}>Local Hub</span>
+                                <div className="milestone-step">
+                                    <Truck size={22} color={['shipped', 'delivered'].includes(orderResult.delivery_status) ? '#168A35' : '#BBB'} className="milestone-icon" />
+                                    <strong>Out for Delivery</strong>
+                                    <span>Local Hub</span>
                                 </div>
-                                <div>
-                                    <CheckCircle size={24} color={orderResult.delivery_status === 'delivered' ? '#168A35' : '#BBB'} style={{ margin: '0 auto 6px' }} />
-                                    <strong style={{ fontSize: '13px', display: 'block' }}>Delivered</strong>
-                                    <span style={{ fontSize: '11px', color: '#888' }}>Doorstep</span>
+                                <div className="milestone-step">
+                                    <CheckCircle size={22} color={orderResult.delivery_status === 'delivered' ? '#168A35' : '#BBB'} className="milestone-icon" />
+                                    <strong>Delivered</strong>
+                                    <span>Doorstep</span>
                                 </div>
                             </div>
                         </div>

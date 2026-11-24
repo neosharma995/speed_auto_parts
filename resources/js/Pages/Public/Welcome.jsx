@@ -65,7 +65,6 @@ export default function Welcome({
     brands = []
 }) {
     const [activeTab, setActiveTab] = useState('All');
-    const [topPickTab, setTopPickTab] = useState('Performance');
     const [countersVisible, setCountersVisible] = useState(false);
     const resultsSectionRef = useRef(null);
 
@@ -483,29 +482,22 @@ export default function Welcome({
                             </h2>
                         </div>
                         <div className="top-picks-header-right">
-                            <div className="filter-tabs">
-                                {['Performance', 'Interior', 'Exterior', 'Engine', 'Wheels'].map(tab => (
-                                    <button
-                                        key={tab}
-                                        type="button"
-                                        className={`tab-pill ${topPickTab === tab ? 'active' : ''}`}
-                                        onClick={() => setTopPickTab(tab)}
-                                    >
-                                        {tab}
-                                    </button>
-                                ))}
-                            </div>
-                            <Link href="/shop" className="section-header-link" style={{ marginLeft: '12px' }}>
+                            <Link href="/shop" className="section-header-link">
                                 View All <ArrowRight size={15} />
                             </Link>
+
+                            <div className="slider-nav-arrows">
+                                <button type="button" className="slider-arrow-btn prev" aria-label="Previous">
+                                    <ChevronLeft size={16} />
+                                </button>
+                                <button type="button" className="slider-arrow-btn next" aria-label="Next">
+                                    <ChevronRight size={16} />
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <div className="top-picks-slider-wrap">
-                        <button type="button" className="slider-arrow-btn prev" aria-label="Previous">
-                            <ChevronLeft size={16} />
-                        </button>
-
                         <div className="top-picks-grid">
                             {topPicks.map((pick, idx) => (
                                 <Link
@@ -530,10 +522,6 @@ export default function Welcome({
                                 </Link>
                             ))}
                         </div>
-
-                        <button type="button" className="slider-arrow-btn next" aria-label="Next">
-                            <ChevronRight size={16} />
-                        </button>
                     </div>
                 </div>
             </section>
