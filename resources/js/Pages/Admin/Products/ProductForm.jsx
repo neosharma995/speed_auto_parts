@@ -4,12 +4,10 @@ import {
     Info,
     Image,
     DollarSign,
-    Boxes,
     Layers,
     Sliders,
     GitMerge,
     Car,
-    Receipt,
     Search,
     Save,
     ArrowLeft,
@@ -520,14 +518,12 @@ export default function ProductForm({
 
     const tabs = [
         { id: 'general', label: 'General', icon: Info },
-        { id: 'pricing', label: 'Pricing', icon: DollarSign },
-        { id: 'inventory', label: 'Inventory', icon: Boxes },
+        { id: 'pricing_inventory_tax', label: 'Pricing, Inventory & Tax', icon: DollarSign },
         { id: 'images', label: 'Images & Media', icon: Image },
         { id: 'categories', label: 'Category & Brand', icon: Layers },
         { id: 'attributes', label: 'Attributes', icon: Sliders, count: productAttributes.length },
         { id: 'variations', label: 'Variations', icon: GitMerge, count: productType === 'variable' ? variationsList.length : null },
         { id: 'fitment', label: 'Vehicle Fitment', icon: Car, count: selectedVehicleIds.length || null },
-        { id: 'tax', label: 'GST & Tax', icon: Receipt },
         { id: 'seo', label: 'SEO Metadata', icon: Search },
     ];
 
@@ -712,93 +708,122 @@ export default function ProductForm({
                             </div>
                         )}
 
-                        {/* SECTION 2: Pricing */}
-                        {activeTab === 'pricing' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                {productType === 'variable' && (
-                                    <div style={{ backgroundColor: '#FFF7ED', border: '1px solid #FDBA74', padding: '10px 14px', borderRadius: '4px', fontSize: '12px', color: '#9A3412' }}>
-                                        Base pricing serves as the default for newly generated variations. You can override individual prices in the <strong>Variations</strong> tab.
-                                    </div>
-                                )}
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-                                    <div className="form-group">
-                                        <label className="form-label">Base Retail Price (₹) <span className="required">*</span></label>
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            className="form-input"
-                                            required
-                                            value={basePrice}
-                                            onChange={(e) => setBasePrice(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Special Sale Price (₹ Optional)</label>
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            className="form-input"
-                                            value={salePrice}
-                                            onChange={(e) => setSalePrice(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Cost Price (₹ Internal)</label>
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            className="form-input"
-                                            value={costPrice}
-                                            onChange={(e) => setCostPrice(e.target.value)}
-                                        />
+                        {/* SECTION 2: Pricing, Inventory & Tax */}
+                        {activeTab === 'pricing_inventory_tax' && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                {/* Pricing */}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                    <h4 style={{ fontSize: '14px', fontWeight: 800, color: '#151515', margin: 0, borderBottom: '1px solid #E2E8F0', paddingBottom: '8px' }}>
+                                        Pricing
+                                    </h4>
+                                    {productType === 'variable' && (
+                                        <div style={{ backgroundColor: '#FFF7ED', border: '1px solid #FDBA74', padding: '10px 14px', borderRadius: '4px', fontSize: '12px', color: '#9A3412' }}>
+                                            Base pricing serves as the default for newly generated variations. You can override individual prices in the <strong>Variations</strong> tab.
+                                        </div>
+                                    )}
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+                                        <div className="form-group">
+                                            <label className="form-label">Base Retail Price (₹) <span className="required">*</span></label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                className="form-input"
+                                                required
+                                                value={basePrice}
+                                                onChange={(e) => setBasePrice(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Special Sale Price (₹ Optional)</label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                className="form-input"
+                                                value={salePrice}
+                                                onChange={(e) => setSalePrice(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Cost Price (₹ Internal)</label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                className="form-input"
+                                                value={costPrice}
+                                                onChange={(e) => setCostPrice(e.target.value)}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
 
-                        {/* SECTION 3: Inventory */}
-                        {activeTab === 'inventory' && (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-                                <div className="form-group">
-                                    <label className="form-label">Catalogue Stock Quantity</label>
-                                    <input
-                                        type="number"
-                                        className="form-input"
-                                        value={stockQuantity}
-                                        onChange={(e) => setStockQuantity(e.target.value)}
-                                    />
+                                {/* Inventory & Shipping */}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                    <h4 style={{ fontSize: '14px', fontWeight: 800, color: '#151515', margin: 0, borderBottom: '1px solid #E2E8F0', paddingBottom: '8px' }}>
+                                        Inventory &amp; Shipping Weight
+                                    </h4>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+                                        <div className="form-group">
+                                            <label className="form-label">Catalogue Stock Quantity</label>
+                                            <input
+                                                type="number"
+                                                className="form-input"
+                                                value={stockQuantity}
+                                                onChange={(e) => setStockQuantity(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Stock Status</label>
+                                            <select
+                                                className="form-select"
+                                                value={stockStatus}
+                                                onChange={(e) => setStockStatus(e.target.value)}
+                                            >
+                                                <option value="in_stock">In Stock</option>
+                                                <option value="out_of_stock">Out of Stock</option>
+                                                <option value="on_backorder">On Backorder</option>
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Weight ({weightUnit})</label>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    className="form-input"
+                                                    value={weight}
+                                                    onChange={(e) => setWeight(e.target.value)}
+                                                />
+                                                <select
+                                                    className="form-select"
+                                                    style={{ width: '90px' }}
+                                                    value={weightUnit}
+                                                    onChange={(e) => setWeightUnit(e.target.value)}
+                                                >
+                                                    <option value="kg">kg</option>
+                                                    <option value="g">g</option>
+                                                    <option value="lbs">lbs</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Stock Status</label>
-                                    <select
-                                        className="form-select"
-                                        value={stockStatus}
-                                        onChange={(e) => setStockStatus(e.target.value)}
-                                    >
-                                        <option value="in_stock">In Stock</option>
-                                        <option value="out_of_stock">Out of Stock</option>
-                                        <option value="on_backorder">On Backorder</option>
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Weight ({weightUnit})</label>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            className="form-input"
-                                            value={weight}
-                                            onChange={(e) => setWeight(e.target.value)}
-                                        />
+
+                                {/* GST & Tax */}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                    <h4 style={{ fontSize: '14px', fontWeight: 800, color: '#151515', margin: 0, borderBottom: '1px solid #E2E8F0', paddingBottom: '8px' }}>
+                                        GST &amp; Tax Class
+                                    </h4>
+                                    <div className="form-group" style={{ maxWidth: '420px' }}>
+                                        <label className="form-label">Applicable GST Tax Class</label>
                                         <select
                                             className="form-select"
-                                            style={{ width: '90px' }}
-                                            value={weightUnit}
-                                            onChange={(e) => setWeightUnit(e.target.value)}
+                                            value={taxClassId}
+                                            onChange={(e) => setTaxClassId(e.target.value)}
                                         >
-                                            <option value="kg">kg</option>
-                                            <option value="g">g</option>
-                                            <option value="lbs">lbs</option>
+                                            <option value="">Default GST (18%)</option>
+                                            {taxClasses.map((t) => (
+                                                <option key={t.id} value={t.id}>{t.name} ({t.slug})</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
@@ -1390,24 +1415,7 @@ export default function ProductForm({
                             </div>
                         )}
 
-                        {/* SECTION 9: Tax */}
-                        {activeTab === 'tax' && (
-                            <div className="form-group">
-                                <label className="form-label">Applicable GST Tax Class</label>
-                                <select
-                                    className="form-select"
-                                    value={taxClassId}
-                                    onChange={(e) => setTaxClassId(e.target.value)}
-                                >
-                                    <option value="">Default GST (18%)</option>
-                                    {taxClasses.map((t) => (
-                                        <option key={t.id} value={t.id}>{t.name} ({t.slug})</option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
-
-                        {/* SECTION 10: SEO */}
+                        {/* SECTION 8: SEO */}
                         {activeTab === 'seo' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                 <div className="form-group">
