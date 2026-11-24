@@ -112,14 +112,10 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                         <span>Reviews</span>
                     </Link>
 
-                    <span className="nav-group-title">Finance & Store</span>
-                    <Link href="/admin/taxes" className={isCurrent('/admin/taxes') ? 'active' : ''}>
-                        <Receipt size={18} />
-                        <span>Tax Management</span>
-                    </Link>
-                    <Link href="/admin/settings" className={isCurrent('/admin/settings') ? 'active' : ''}>
+                    <span className="nav-group-title">Settings</span>
+                    <Link href="/admin/settings" className={isCurrent('/admin/settings') || isCurrent('/admin/taxes') ? 'active' : ''}>
                         <Settings size={18} />
-                        <span>Store Settings</span>
+                        <span>Settings</span>
                     </Link>
                 </nav>
 

@@ -10,21 +10,12 @@ use App\Models\TaxRate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
-use Inertia\Response;
 
 class TaxController extends Controller
 {
-    public function index(): Response
+    public function index(): RedirectResponse
     {
-        $taxClasses = TaxClass::query()
-            ->with(['rates'])
-            ->withCount('products')
-            ->get();
-
-        return Inertia::render('Admin/Taxes/Index', [
-            'taxClasses' => $taxClasses,
-        ]);
+        return redirect()->route('admin.settings.index', ['tab' => 'tax']);
     }
 
     public function store(Request $request): RedirectResponse
@@ -59,6 +50,7 @@ class TaxController extends Controller
             'is_active' => true,
         ]);
 
-        return back()->with('success', "Tax class '{$validated['name']}' created successfully.");
+        return redirect()->route('admin.settings.index', ['tab' => 'tax'])
+            ->with('success', "Tax class '{$validated['name']}' created successfully.");
     }
 }
