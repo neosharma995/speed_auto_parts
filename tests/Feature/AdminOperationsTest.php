@@ -105,13 +105,13 @@ class AdminOperationsTest extends TestCase
         if (!$order) {
             $order = Order::create([
                 'order_number' => 'ORD-TEST-' . rand(1000, 9999),
-                'shipping_name' => 'Test Customer',
-                'shipping_email' => 'customer@autosparts.com',
-                'shipping_phone' => '+91 98765 43210',
-                'shipping_address_line1' => 'Test St',
-                'shipping_city' => 'Delhi',
-                'shipping_state' => 'Delhi',
-                'shipping_pincode' => '110001',
+                'customer_name' => 'Test Customer',
+                'customer_email' => 'customer@autosparts.com',
+                'customer_phone' => '+91 98765 43210',
+                'shipping_address' => 'Test St',
+                'city' => 'Delhi',
+                'state' => 'Delhi',
+                'pincode' => '110001',
                 'subtotal' => 5000.00,
                 'total_amount' => 5900.00,
                 'payment_method' => 'cod',
@@ -119,6 +119,10 @@ class AdminOperationsTest extends TestCase
                 'delivery_status' => 'pending',
             ]);
         }
+
+        $this->get('/admin/orders')->assertStatus(200);
+        $this->get('/admin/orders?search=AP-')->assertStatus(200);
+        $this->get("/admin/orders/{$order->id}")->assertStatus(200);
 
         $response = $this->put("/admin/orders/{$order->id}", [
             'delivery_status' => 'shipped',
@@ -134,5 +138,6 @@ class AdminOperationsTest extends TestCase
         $this->assertEquals('shipped', $order->delivery_status);
         $this->assertEquals('paid', $order->payment_status);
         $this->assertEquals('BLUEDART-987654321', $order->tracking_number);
+        $this->assertEquals('Blue Dart Aviation', $order->tracking_carrier);
     }
 }

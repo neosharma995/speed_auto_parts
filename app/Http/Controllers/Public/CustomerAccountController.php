@@ -158,7 +158,7 @@ class CustomerAccountController extends Controller
 
         $wishlistItems = Wishlist::query()
             ->where('user_id', $user->id)
-            ->with(['product.brand', 'product.category', 'product.images', 'variation'])
+            ->with(['product.brand', 'product.category', 'variation'])
             ->latest()
             ->get();
 
