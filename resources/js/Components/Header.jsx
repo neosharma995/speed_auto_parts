@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useWishlist } from '@/Context/WishlistContext';
+import SearchDropdown from './SearchDropdown';
 
 export default function Header() {
     const { auth, navBrands = [], settings = {} } = usePage().props;
@@ -30,9 +31,131 @@ export default function Header() {
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [searchResults, setSearchResults] = useState(null);
+    const [searchSelectedIndex, setSearchSelectedIndex] = useState(-1);
     const [isScrolled, setIsScrolled] = useState(false);
     const [expandedSubmenu, setExpandedSubmenu] = useState(null);
+
     const accountRef = useRef(null);
+    const desktopSearchRef = useRef(null);
+    const mobileSearchRef = useRef(null);
+    const debounceTimerRef = useRef(null);
+    const abortControllerRef = useRef(null);
+
+    // Fetch search suggestions (empty query returns popular & categories/brands)
+    const fetchSuggestions = (query = '') => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        abortControllerRef.current = new AbortController();
+
+        setSearchLoading(true);
+        const url = query.trim()
+            ? `/api/search/suggestions?q=${encodeURIComponent(query.trim())}`
+            : `/api/search/suggestions`;
+
+        fetch(url, { signal: abortControllerRef.current.signal })
+            .then((res) => {
+                if (!res.ok) throw new Error('Search suggestions failed');
+                return res.json();
+            })
+            .then((data) => {
+                setSearchResults(data);
+                setSearchLoading(false);
+            })
+            .catch((err) => {
+                if (err.name !== 'AbortError') {
+                    setSearchLoading(false);
+                }
+            });
+    };
+
+    // Handle input change with debounce
+    const handleSearchChange = (value) => {
+        setSearchQuery(value);
+        setSearchSelectedIndex(-1);
+        setIsSearchOpen(true);
+
+        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(() => {
+            fetchSuggestions(value);
+        }, 220);
+    };
+
+    // Handle input focus
+    const handleSearchFocus = () => {
+        setIsSearchOpen(true);
+        if (!searchResults) {
+            fetchSuggestions(searchQuery);
+        }
+    };
+
+    // Handle popular search tag click
+    const handleSelectPopular = (term) => {
+        setSearchQuery(term);
+        setIsSearchOpen(true);
+        fetchSuggestions(term);
+    };
+
+    // Handle clear search
+    const handleClearSearch = () => {
+        setSearchQuery('');
+        setSearchSelectedIndex(-1);
+        fetchSuggestions('');
+    };
+
+    // Handle keyboard navigation (ArrowUp, ArrowDown, Enter, Escape)
+    const handleSearchKeyDown = (e) => {
+        if (!isSearchOpen) {
+            if (e.key === 'ArrowDown') {
+                setIsSearchOpen(true);
+                if (!searchResults) fetchSuggestions(searchQuery);
+            }
+            return;
+        }
+
+        const products = searchResults?.products || [];
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (products.length > 0) {
+                setSearchSelectedIndex((prev) => (prev < products.length - 1 ? prev + 1 : 0));
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (products.length > 0) {
+                setSearchSelectedIndex((prev) => (prev > 0 ? prev - 1 : products.length - 1));
+            }
+        } else if (e.key === 'Enter') {
+            if (searchSelectedIndex >= 0 && products[searchSelectedIndex]) {
+                e.preventDefault();
+                setIsSearchOpen(false);
+                window.location.href = `/products/${products[searchSelectedIndex].slug}`;
+            }
+        } else if (e.key === 'Escape') {
+            setIsSearchOpen(false);
+        }
+    };
+
+    // Click outside listener for search dropdown (desktop & mobile)
+    useEffect(() => {
+        if (!isSearchOpen) return;
+        const handleSearchClickOutside = (e) => {
+            const inDesktop = desktopSearchRef.current && desktopSearchRef.current.contains(e.target);
+            const inMobile = mobileSearchRef.current && mobileSearchRef.current.contains(e.target);
+            if (!inDesktop && !inMobile) {
+                setIsSearchOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleSearchClickOutside, true);
+        document.addEventListener('touchstart', handleSearchClickOutside, true);
+        return () => {
+            document.removeEventListener('mousedown', handleSearchClickOutside, true);
+            document.removeEventListener('touchstart', handleSearchClickOutside, true);
+        };
+    }, [isSearchOpen]);
 
     // Click outside listener for user account dropdown (using capture to intercept reliably)
     useEffect(() => {
@@ -72,13 +195,16 @@ export default function Header() {
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();
+        setIsSearchOpen(false);
         if (searchQuery.trim()) {
             window.location.href = `/shop?search=${encodeURIComponent(searchQuery.trim())}`;
+        } else {
+            window.location.href = '/shop';
         }
     };
 
     return (
-        <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`}>
+        <header className={`site-header ${isScrolled ? 'is-scrolled' : ''} ${isSearchOpen ? 'is-search-open' : ''}`}>
             {/* ============================================================ */}
             {/* ROW 1: TOP UTILITY BAR (Dark #0B0B0E)                         */}
             {/* ============================================================ */}
@@ -133,18 +259,46 @@ export default function Header() {
                             />
                         </Link>
 
-                        {/* Centered White Pill Search Bar */}
-                        <form onSubmit={handleSearchSubmit} className="site-header-search">
+                        {/* Centered White Pill Search Bar with Autocomplete Dropdown */}
+                        <form
+                            onSubmit={handleSearchSubmit}
+                            className="site-header-search"
+                            ref={desktopSearchRef}
+                            autoComplete="off"
+                        >
                             <input
                                 type="text"
                                 placeholder="Search by part number, product, brand..."
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={(e) => handleSearchChange(e.target.value)}
+                                onFocus={handleSearchFocus}
+                                onKeyDown={handleSearchKeyDown}
                                 aria-label="Search by part number, product, brand"
                             />
+                            {searchQuery && (
+                                <button
+                                    type="button"
+                                    className="search-clear-btn"
+                                    onClick={handleClearSearch}
+                                    aria-label="Clear search query"
+                                >
+                                    <X size={15} />
+                                </button>
+                            )}
                             <button type="submit" aria-label="Search" className="search-submit-btn">
                                 <Search size={15} strokeWidth={2.4} />
                             </button>
+
+                            <SearchDropdown
+                                isOpen={isSearchOpen}
+                                loading={searchLoading}
+                                results={searchResults}
+                                searchQuery={searchQuery}
+                                selectedIndex={searchSelectedIndex}
+                                onSelectPopular={handleSelectPopular}
+                                onClose={() => setIsSearchOpen(false)}
+                                isMobile={false}
+                            />
                         </form>
 
                         {/* Right: Actions (Account, Wishlist, Cart) */}
@@ -330,21 +484,44 @@ export default function Header() {
                         </div>
                     </div>
 
-                    {/* Expandable Mobile Search Field */}
+                    {/* Expandable Mobile Search Field with Autocomplete Dropdown */}
                     {mobileSearchOpen && (
-                        <div className="mobile-search-expand-wrap">
-                            <form onSubmit={handleSearchSubmit} className="mobile-search-form">
+                        <div className="mobile-search-expand-wrap" ref={mobileSearchRef}>
+                            <form onSubmit={handleSearchSubmit} className="mobile-search-form" autoComplete="off">
                                 <input
                                     type="text"
                                     placeholder="Search by part number, product, brand..."
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) => handleSearchChange(e.target.value)}
+                                    onFocus={handleSearchFocus}
+                                    onKeyDown={handleSearchKeyDown}
                                     autoFocus
                                 />
+                                {searchQuery && (
+                                    <button
+                                        type="button"
+                                        className="mobile-search-clear"
+                                        onClick={handleClearSearch}
+                                        aria-label="Clear search query"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                )}
                                 <button type="submit" className="mobile-search-submit" aria-label="Search">
                                     <Search size={16} />
                                 </button>
                             </form>
+
+                            <SearchDropdown
+                                isOpen={isSearchOpen}
+                                loading={searchLoading}
+                                results={searchResults}
+                                searchQuery={searchQuery}
+                                selectedIndex={searchSelectedIndex}
+                                onSelectPopular={handleSelectPopular}
+                                onClose={() => setIsSearchOpen(false)}
+                                isMobile={true}
+                            />
                         </div>
                     )}
                 </div>
