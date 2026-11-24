@@ -360,6 +360,57 @@
     }
   }
 
+  .admin-data-table-header {
+    flex-wrap: wrap;
+
+    h3 {
+      margin: 0;
+      white-space: nowrap;
+    }
+  }
+
+  .admin-table-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-left: auto;
+  }
+
+  .admin-table-filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .admin-table-search-field {
+    flex: 1 1 220px;
+  }
+
+  .admin-table-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .admin-data-table-footer {
+    padding: 16px 20px;
+    border-top: 1px solid $color-border;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .admin-data-table-summary {
+    font-size: 13px;
+    color: #64748B;
+  }
+
   .admin-table {
     width: 100%;
 

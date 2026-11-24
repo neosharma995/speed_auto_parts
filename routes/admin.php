@@ -90,6 +90,8 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
 
     // Supply Chain: Admin Warehouse (Receive/Reject Supplier Lots & Stock)
     Route::get('/warehouse', [WarehouseController::class, 'index'])->name('warehouse.index');
+    Route::get('/warehouse/incoming', [WarehouseController::class, 'incoming'])->name('warehouse.incoming');
+    Route::get('/warehouse/logs', [WarehouseController::class, 'logs'])->name('warehouse.logs');
     Route::post('/warehouse/lots/{transfer}/receive', [WarehouseController::class, 'receiveLot'])->name('warehouse.lots.receive');
     Route::post('/warehouse/lots/{transfer}/reject', [WarehouseController::class, 'rejectLot'])->name('warehouse.lots.reject');
     Route::post('/warehouse/lot-number/{lotNumber}/receive', [WarehouseController::class, 'receiveLotBatch'])->name('warehouse.lot-batch.receive');
@@ -98,6 +100,7 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
 
     // Supply Chain: Website Catalogue (Transfer from Warehouse & Set Selling Price)
     Route::get('/catalogue', [CatalogueController::class, 'index'])->name('catalogue.index');
+    Route::get('/catalogue/logs', [CatalogueController::class, 'logs'])->name('catalogue.logs');
     Route::post('/catalogue/bulk-transfer', [CatalogueController::class, 'bulkTransferFromWarehouse'])->name('catalogue.bulk-transfer');
     Route::post('/catalogue/{product}/transfer', [CatalogueController::class, 'transferFromWarehouse'])->name('catalogue.transfer');
     Route::post('/catalogue/{product}/return', [CatalogueController::class, 'returnToWarehouse'])->name('catalogue.return');
