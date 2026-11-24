@@ -126,7 +126,9 @@ export default function AdminProductsIndex({ products, categories = [], brands =
                                         </td>
                                         <td>
                                             <span className="badge badge-neutral" style={{ textTransform: 'capitalize' }}>
-                                                {product.product_type}
+                                                {product.product_type === 'variable'
+                                                    ? `Variable (${product.variations_count || 0} vars)`
+                                                    : product.product_type}
                                             </span>
                                         </td>
                                         <td>

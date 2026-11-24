@@ -93,10 +93,6 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                         <Tag size={18} />
                         <span>Brands</span>
                     </Link>
-                    <Link href="/admin/attributes" className={isCurrent('/admin/attributes') ? 'active' : ''}>
-                        <Sliders size={18} />
-                        <span>Attributes</span>
-                    </Link>
                     <Link href="/admin/vehicles" className={isCurrent('/admin/vehicles') ? 'active' : ''}>
                         <Car size={18} />
                         <span>Vehicles & Fitment</span>
