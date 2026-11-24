@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import axios from 'axios';
-import { Car, Search, RotateCcw, Check, AlertCircle, ArrowRight } from 'lucide-react';
+import { CarFront, Search, RotateCcw, Check, AlertCircle, ArrowRight } from 'lucide-react';
 
 export default function VehicleFinder() {
     const { activeVehicle } = usePage().props;
@@ -87,18 +87,15 @@ export default function VehicleFinder() {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        if (!selectedYear || !selectedMake || !selectedModel || !selectedEngineId) {
-            setErrorMessage('Please select Year, Make, Model, and Engine to find verified compatible parts.');
-            return;
+        if (selectedEngineId) {
+            router.post('/vehicles/select', {
+                vehicle_id: selectedEngineId,
+            }, {
+                onSuccess: () => {
+                    router.visit(`/shop?vehicle_id=${selectedEngineId}`);
+                }
+            });
         }
-
-        router.post('/vehicles/select', {
-            vehicle_id: selectedEngineId,
-        }, {
-            onSuccess: () => {
-                router.visit(`/shop?vehicle_id=${selectedEngineId}`);
-            }
-        });
     };
 
     const handleClearVehicle = () => {
@@ -116,10 +113,10 @@ export default function VehicleFinder() {
         <div className="hero-vehicle-finder" aria-label="Vehicle Fitment Filter">
             <div className="container">
                 <div className="hero-vehicle-finder-inner">
-                    {/* Left Title: Car outline icon + Stacked Text */}
+                    {/* Left Title: CarFront icon + Stacked Text */}
                     <div className="hvf-title">
                         <div className="hvf-icon-wrap">
-                            <Car size={26} strokeWidth={2} />
+                            <CarFront size={32} strokeWidth={2.2} className="hvf-car-icon" />
                         </div>
                         <div className="hvf-text">
                             <span className="hvf-sub">Find Parts For</span>
@@ -207,6 +204,7 @@ export default function VehicleFinder() {
                             <button 
                                 type="submit" 
                                 className="btn btn-primary hvf-submit-btn"
+                                disabled={!selectedEngineId}
                             >
                                 <Search size={15} />
                                 <span>Find Parts</span>
@@ -226,28 +224,6 @@ export default function VehicleFinder() {
                         </div>
                     </form>
                 </div>
-
-                {errorMessage && (
-                    <div style={{ color: '#F87171', fontSize: '12px', marginTop: '8px', padding: '0 28px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <AlertCircle size={14} /> {errorMessage}
-                    </div>
-                )}
-
-                {activeVehicle && (
-                    <div className="hvf-active-vehicle">
-                        <div className="vehicle-info">
-                            <Check size={18} />
-                            <span>Filtering: <strong>{activeVehicle.year} {activeVehicle.make} {activeVehicle.model} ({activeVehicle.engine})</strong></span>
-                        </div>
-                        <button 
-                            type="button" 
-                            className="vehicle-clear"
-                            onClick={handleClearVehicle}
-                        >
-                            Change Vehicle
-                        </button>
-                    </div>
-                )}
             </div>
         </div>
     );

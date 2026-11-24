@@ -4,19 +4,32 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\UserPermission;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\StockTransfer;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response|RedirectResponse
     {
+        $user = $request->user();
+
+        if ($user && ! $user->isAdmin() && ! $user->can(UserPermission::ViewDashboard->value)) {
+            foreach (UserPermission::sidebarPermissions() as $item) {
+                if ($item['name'] !== UserPermission::ViewDashboard->value && $user->can($item['name'])) {
+                    return redirect($item['route']);
+                }
+            }
+            abort(403, 'You do not have permission to access any administrative module.');
+        }
         $totalSales = Order::query()
             ->where('payment_status', 'paid')
             ->sum('total_amount');
