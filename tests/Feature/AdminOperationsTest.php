@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\User;
+use App\Models\Vehicle;
 use Tests\TestCase;
 
 class AdminOperationsTest extends TestCase
@@ -281,5 +282,78 @@ class AdminOperationsTest extends TestCase
         // 4. Clean up test product & custom attribute
         $this->delete("/admin/products/{$product->id}")->assertRedirect('/admin/products');
         $customAttr->delete();
+    }
+
+    public function test_admin_can_crud_vehicles_with_pagination(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->first();
+        $this->actingAs($admin);
+
+        // 1. Index returns paginated vehicles (8 per page across 10+ seeded vehicles)
+        $indexResponse = $this->get('/admin/vehicles');
+        $indexResponse->assertStatus(200);
+        $indexResponse->assertInertia(fn ($page) => $page
+            ->component('Admin/Vehicles/Index')
+            ->has('vehicles.data', 8)
+            ->where('vehicles.total', fn ($total) => $total >= 10)
+            ->has('makes')
+            ->has('years')
+        );
+
+        // 2. Page 2 & search filter work cleanly
+        $this->get('/admin/vehicles?page=2')->assertStatus(200);
+        $this->get('/admin/vehicles?search=Mustang')->assertStatus(200);
+
+        // 3. Create vehicle with all spec fields
+        $uniqueModel = 'GT-R Nismo ' . random_int(100, 999);
+        $createResponse = $this->post('/admin/vehicles', [
+            'year' => 2024,
+            'make' => 'Nissan',
+            'model' => $uniqueModel,
+            'submodel' => 'Track Edition',
+            'engine' => '3.8L Twin-Turbo V6 VR38DETT',
+            'engine_size' => '3.8L',
+            'fuel_type' => 'Petrol',
+            'transmission' => '6-Speed Dual-Clutch',
+            'body_type' => 'Coupe',
+        ]);
+        $createResponse->assertRedirect();
+
+        $vehicle = Vehicle::where('make', 'Nissan')->where('model', $uniqueModel)->first();
+        $this->assertNotNull($vehicle);
+        $this->assertEquals(2024, $vehicle->year);
+        $this->assertEquals('Track Edition', $vehicle->submodel);
+        $this->assertEquals('3.8L', $vehicle->engine_size);
+        $this->assertEquals('Petrol', $vehicle->fuel_type);
+        $this->assertEquals('6-Speed Dual-Clutch', $vehicle->transmission);
+        $this->assertEquals('Coupe', $vehicle->body_type);
+
+        // 4. Update vehicle (empty fuel_type should normalize back to 'Petrol')
+        $updateResponse = $this->put("/admin/vehicles/{$vehicle->id}", [
+            'year' => 2025,
+            'make' => 'Nissan',
+            'model' => $uniqueModel,
+            'submodel' => 'Special Edition',
+            'engine' => '3.8L Twin-Turbo V6 Revised',
+            'engine_size' => '3.8L V6',
+            'fuel_type' => '',
+            'transmission' => '7-Speed DCT',
+            'body_type' => 'Sport Coupe',
+        ]);
+        $updateResponse->assertRedirect();
+
+        $vehicle->refresh();
+        $this->assertEquals(2025, $vehicle->year);
+        $this->assertEquals('Special Edition', $vehicle->submodel);
+        $this->assertEquals('3.8L Twin-Turbo V6 Revised', $vehicle->engine);
+        $this->assertEquals('3.8L V6', $vehicle->engine_size);
+        $this->assertEquals('Petrol', $vehicle->fuel_type);
+        $this->assertEquals('7-Speed DCT', $vehicle->transmission);
+        $this->assertEquals('Sport Coupe', $vehicle->body_type);
+
+        // 5. Delete vehicle
+        $deleteResponse = $this->delete("/admin/vehicles/{$vehicle->id}");
+        $deleteResponse->assertRedirect();
+        $this->assertDatabaseMissing('vehicles', ['id' => $vehicle->id]);
     }
 }
