@@ -18,8 +18,7 @@ import {
     X,
     Wrench,
     Store,
-    Truck,
-    Inbox
+    Truck
 } from 'lucide-react';
 
 export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
@@ -67,17 +66,13 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                     <Link href="/admin/suppliers" className={isCurrent('/admin/suppliers') ? 'active' : ''}>
                         <Truck size={18} />
                         <span>Suppliers</span>
+                        {pendingLotsCount > 0 && (
+                            <span className="badge-count">{pendingLotsCount}</span>
+                        )}
                     </Link>
                     <Link href="/admin/warehouse" className={url === '/admin/warehouse' || isCurrent('/admin/warehouse/logs') ? 'active' : ''}>
                         <Boxes size={18} />
                         <span>Warehouse</span>
-                    </Link>
-                    <Link href="/admin/warehouse/incoming" className={isCurrent('/admin/warehouse/incoming') ? 'active' : ''}>
-                        <Inbox size={18} />
-                        <span>Incoming Lots</span>
-                        {pendingLotsCount > 0 && (
-                            <span className="badge-count">{pendingLotsCount}</span>
-                        )}
                     </Link>
                     <Link href="/admin/catalogue" className={isCurrent('/admin/catalogue') ? 'active' : ''}>
                         <Store size={18} />

@@ -332,12 +332,23 @@ class SupplierWarehouseCatalogueTest extends TestCase
                 ->has('pendingLotsCount')
             );
 
-        $this->get('/admin/warehouse/incoming')
+        $this->get('/admin/suppliers')
             ->assertStatus(200)
             ->assertInertia(fn ($page) => $page
-                ->component('Admin/Warehouse/Incoming')
+                ->component('Admin/Suppliers/Index')
                 ->has('pendingLots')
+                ->where('activeTab', 'suppliers')
             );
+
+        $this->get('/admin/suppliers?tab=incoming')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Suppliers/Index')
+                ->has('pendingLots')
+                ->where('activeTab', 'incoming')
+            );
+
+        $this->get('/admin/warehouse/incoming')->assertRedirect('/admin/suppliers?tab=incoming');
 
         $this->get('/admin/catalogue/logs')
             ->assertStatus(200)

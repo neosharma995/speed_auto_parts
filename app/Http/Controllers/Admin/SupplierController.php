@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Models\StockTransfer;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,8 +42,18 @@ class SupplierController extends Controller
 
         $suppliers = $query->latest()->paginate(15)->withQueryString();
 
+        $pendingLots = StockTransfer::query()
+            ->where('direction', 'supplier_to_warehouse')
+            ->where('status', 'pending')
+            ->with(['product.brand', 'product.category', 'supplier'])
+            ->latest()
+            ->get();
+
         return Inertia::render('Admin/Suppliers/Index', [
             'suppliers' => $suppliers,
+            'pendingLots' => $pendingLots,
+            'transfersCount' => StockTransfer::query()->count(),
+            'activeTab' => $request->query('tab') === 'incoming' ? 'incoming' : 'suppliers',
             'filters' => (object) $request->only(['search']),
         ]);
     }

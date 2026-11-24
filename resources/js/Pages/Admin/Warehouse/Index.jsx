@@ -136,7 +136,7 @@ export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [
                 </button>
 
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    <Link href="/admin/warehouse/incoming" className="btn btn-outline btn-sm">
+                    <Link href="/admin/suppliers?tab=incoming" className="btn btn-outline btn-sm">
                         <Inbox size={15} />
                         <span>Incoming Lots ({pendingLotsCount})</span>
                     </Link>

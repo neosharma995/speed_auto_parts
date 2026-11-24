@@ -57,19 +57,9 @@ class WarehouseController extends Controller
         ]);
     }
 
-    public function incoming(): Response
+    public function incoming(): RedirectResponse
     {
-        $pendingLots = StockTransfer::query()
-            ->where('direction', 'supplier_to_warehouse')
-            ->where('status', 'pending')
-            ->with(['product.brand', 'product.category', 'supplier'])
-            ->latest()
-            ->get();
-
-        return Inertia::render('Admin/Warehouse/Incoming', [
-            'pendingLots' => $pendingLots,
-            'transfersCount' => StockTransfer::query()->count(),
-        ]);
+        return redirect('/admin/suppliers?tab=incoming');
     }
 
     public function logs(Request $request): Response
