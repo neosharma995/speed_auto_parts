@@ -4,7 +4,6 @@ import {
     LayoutDashboard,
     Package,
     Truck,
-    LogOut,
     Wrench,
     X
 } from 'lucide-react';
@@ -53,12 +52,6 @@ export default function SupplierSidebar({ sidebarOpen, onCloseSidebar }) {
                         <span>Send Lot to Admin</span>
                     </Link>
                 </nav>
-
-                <div className="admin-shell-sidebar-footer">
-                    <Link href="/logout" method="post" as="button" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#EF4444', fontSize: '13px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
-                        <LogOut size={16} /> Sign Out
-                    </Link>
-                </div>
             </aside>
         </>
     );
