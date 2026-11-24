@@ -319,4 +319,228 @@
       }
     }
   }
+
+  // WordPress / WooCommerce-style Product Data Box
+  .wc-product-data {
+    background-color: $color-white;
+    border: 1px solid $color-border;
+    border-radius: $border-radius-sm;
+    overflow: hidden;
+    margin-bottom: 24px;
+
+    &-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid $color-border;
+      background-color: #F8FAFC;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+
+      .wc-title-group {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+
+        h3 {
+          font-size: 15px;
+          font-weight: 800;
+          color: $color-dark;
+          margin: 0;
+        }
+      }
+
+      .wc-status-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+    }
+
+    &-layout {
+      display: flex;
+      min-height: 460px;
+
+      @include respond-below('md') {
+        flex-direction: column;
+        min-height: auto;
+      }
+    }
+
+    &-tabs {
+      width: 220px;
+      flex-shrink: 0;
+      background-color: #F8FAFC;
+      border-right: 1px solid $color-border;
+      display: flex;
+      flex-direction: column;
+
+      @include respond-below('md') {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid $color-border;
+      }
+
+      button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        padding: 13px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+        text-align: left;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid $color-border-light;
+        border-left: 3px solid transparent;
+        cursor: pointer;
+        transition: background-color $transition-default, color $transition-default, border-color $transition-default;
+
+        @include respond-below('md') {
+          width: auto;
+          white-space: nowrap;
+          border-bottom: 2px solid transparent;
+          border-left: none;
+        }
+
+        .wc-tab-label {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .wc-tab-count {
+          background-color: #E2E8F0;
+          color: #334155;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 1px 7px;
+          border-radius: 999px;
+        }
+
+        &:hover {
+          background-color: #F1F5F9;
+          color: $color-dark;
+        }
+
+        &.active {
+          background-color: $color-white;
+          color: $color-primary;
+          border-left-color: $color-primary;
+
+          @include respond-below('md') {
+            border-left-color: transparent;
+            border-bottom-color: $color-primary;
+          }
+
+          .wc-tab-count {
+            background-color: $color-primary-subtle;
+            color: $color-primary;
+          }
+        }
+      }
+    }
+
+    &-panel {
+      flex: 1;
+      min-width: 0;
+      padding: 24px;
+      background-color: $color-white;
+    }
+  }
+
+  .wc-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 16px;
+    background-color: #F8FAFC;
+    border: 1px solid $color-border;
+    border-radius: $border-radius-sm;
+    margin-bottom: 16px;
+  }
+
+  .wc-accordion-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .wc-accordion-item {
+    border: 1px solid $color-border;
+    border-radius: $border-radius-sm;
+    background-color: $color-white;
+    overflow: hidden;
+  }
+
+  .wc-accordion-header {
+    padding: 12px 16px;
+    background-color: #F8FAFC;
+    border-bottom: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    &--open {
+      border-bottom-color: $color-border;
+    }
+  }
+
+  .wc-accordion-body {
+    padding: 16px;
+    background-color: $color-white;
+  }
+
+  .wc-chips-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .wc-value-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background-color: #FFF7ED;
+    color: #C2410C;
+    border: 1px solid #FDBA74;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: inherit;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    &--available {
+      background-color: #F1F5F9;
+      color: #475569;
+      border-color: #CBD5E1;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #E2E8F0;
+        color: $color-dark;
+      }
+    }
+  }
 }

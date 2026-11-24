@@ -8,6 +8,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductAttribute;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -139,5 +140,143 @@ class AdminOperationsTest extends TestCase
         $this->assertEquals('paid', $order->payment_status);
         $this->assertEquals('BLUEDART-987654321', $order->tracking_number);
         $this->assertEquals('Blue Dart Aviation', $order->tracking_carrier);
+    }
+
+    public function test_admin_can_manage_product_attributes_and_variations_inline(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->first();
+        $this->actingAs($admin);
+
+        $existingAttr = ProductAttribute::first();
+        $rand = rand(10000, 99999);
+        $sku = 'VAR-TEST-' . $rand;
+        $part = 'PN-VAR-' . $rand;
+        $customAttrName = "Piston Count {$rand}";
+        $customAttrSlug = "piston-count-{$rand}";
+
+        // 1. Create variable product with inline existing + custom attribute & variations
+        $createResponse = $this->post('/admin/products', [
+            'name' => "Modular Caliper Kit {$rand}",
+            'slug' => "modular-caliper-kit-{$rand}",
+            'sku' => $sku,
+            'part_number' => $part,
+            'product_type' => 'variable',
+            'status' => 'published',
+            'base_price' => 24000.00,
+            'stock_quantity' => 20,
+            'stock_status' => 'in_stock',
+            'product_attributes' => [
+                [
+                    'id' => $existingAttr?->id,
+                    'name' => $existingAttr?->name ?? 'Finish',
+                    'slug' => $existingAttr?->slug ?? 'finish',
+                    'values' => ['Red Anodized'],
+                    'used_for_variations' => true,
+                ],
+                [
+                    'id' => null,
+                    'name' => $customAttrName,
+                    'slug' => $customAttrSlug,
+                    'values' => ['4-Piston', '6-Piston'],
+                    'used_for_variations' => true,
+                ],
+            ],
+            'variations' => [
+                [
+                    'name' => 'Red Anodized / 4-Piston',
+                    'sku' => "{$sku}-4P",
+                    'part_number' => "{$part}-4P",
+                    'attributes_json' => [
+                        ($existingAttr?->slug ?? 'finish') => 'Red Anodized',
+                        $customAttrSlug => '4-Piston',
+                    ],
+                    'price' => 24000.00,
+                    'sale_price' => 22000.00,
+                    'stock_quantity' => 12,
+                    'stock_status' => 'in_stock',
+                    'is_default' => false,
+                ],
+                [
+                    'name' => 'Red Anodized / 6-Piston',
+                    'sku' => "{$sku}-6P",
+                    'part_number' => "{$part}-6P",
+                    'attributes_json' => [
+                        ($existingAttr?->slug ?? 'finish') => 'Red Anodized',
+                        $customAttrSlug => '6-Piston',
+                    ],
+                    'price' => 32000.00,
+                    'sale_price' => null,
+                    'stock_quantity' => 8,
+                    'stock_status' => 'in_stock',
+                    'is_default' => true,
+                ],
+            ],
+        ]);
+
+        $createResponse->assertRedirect('/admin/products');
+
+        $product = Product::where('sku', $sku)->with(['attributes.values', 'variations'])->first();
+        $this->assertNotNull($product);
+        $this->assertEquals('variable', $product->product_type);
+        $this->assertCount(2, $product->variations);
+
+        $customAttr = ProductAttribute::where('slug', $customAttrSlug)->with('values')->first();
+        $this->assertNotNull($customAttr);
+        $this->assertCount(2, $customAttr->values);
+        $this->assertTrue($product->attributes->contains('id', $customAttr->id));
+
+        $sixPiston = $product->variations->firstWhere('sku', "{$sku}-6P");
+        $this->assertNotNull($sixPiston);
+        $this->assertTrue($sixPiston->is_default);
+        $this->assertEquals('6-Piston', $sixPiston->attributes_json[$customAttrSlug]);
+
+        // 2. Edit page loads cleanly
+        $this->get("/admin/products/{$product->id}/edit")->assertStatus(200);
+
+        // 3. Update product keeping 1 variation and removing the other
+        $updateResponse = $this->put("/admin/products/{$product->id}", [
+            'name' => "Modular Caliper Kit {$rand}",
+            'slug' => "modular-caliper-kit-{$rand}",
+            'sku' => $sku,
+            'part_number' => $part,
+            'product_type' => 'variable',
+            'status' => 'published',
+            'base_price' => 33000.00,
+            'stock_quantity' => 8,
+            'stock_status' => 'in_stock',
+            'product_attributes' => [
+                [
+                    'id' => $customAttr->id,
+                    'name' => $customAttrName,
+                    'slug' => $customAttrSlug,
+                    'values' => ['6-Piston'],
+                    'used_for_variations' => true,
+                ],
+            ],
+            'variations' => [
+                [
+                    'id' => $sixPiston->id,
+                    'name' => '6-Piston Pro',
+                    'sku' => "{$sku}-6P",
+                    'part_number' => "{$part}-6P",
+                    'attributes_json' => [$customAttrSlug => '6-Piston'],
+                    'price' => 33500.00,
+                    'sale_price' => 31000.00,
+                    'stock_quantity' => 5,
+                    'stock_status' => 'in_stock',
+                    'is_default' => true,
+                ],
+            ],
+        ]);
+        $updateResponse->assertRedirect('/admin/products');
+
+        $product->refresh();
+        $this->assertCount(1, $product->variations);
+        $this->assertEquals('6-Piston Pro', $product->variations->first()->name);
+        $this->assertEquals(33500.00, (float) $product->variations->first()->price);
+
+        // 4. Clean up test product & custom attribute
+        $this->delete("/admin/products/{$product->id}")->assertRedirect('/admin/products');
+        $customAttr->delete();
     }
 }
