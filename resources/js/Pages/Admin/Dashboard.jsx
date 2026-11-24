@@ -128,10 +128,10 @@ export default function AdminDashboard({
                     <div className="admin-card-header">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#D93025' }}>
                             <AlertTriangle size={18} />
-                            <h3 style={{ color: '#D93025' }}>Inventory Alerts (≤ 15 units)</h3>
+                            <h3 style={{ color: '#D93025' }}>Warehouse & Inventory Alerts (≤ 15 units)</h3>
                         </div>
-                        <Link href="/admin/inventory" className="btn btn-outline btn-sm">
-                            Manage Stock
+                        <Link href="/admin/warehouse" className="btn btn-outline btn-sm">
+                            Manage in Warehouse
                         </Link>
                     </div>
                     <div className="admin-card-body" style={{ padding: 0 }}>
@@ -160,8 +160,8 @@ export default function AdminDashboard({
                                                 </span>
                                             </td>
                                             <td>
-                                                <Link href={`/admin/products/${p.id}/edit`} className="btn btn-outline btn-sm">
-                                                    Restock
+                                                <Link href="/admin/warehouse" className="btn btn-outline btn-sm">
+                                                    Restock in Warehouse
                                                 </Link>
                                             </td>
                                         </tr>

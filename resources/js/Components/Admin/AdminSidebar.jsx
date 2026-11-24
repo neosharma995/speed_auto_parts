@@ -62,10 +62,6 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                         <ShoppingCart size={18} />
                         <span>Orders</span>
                     </Link>
-                    <Link href="/admin/inventory" className={isCurrent('/admin/inventory') ? 'active' : ''}>
-                        <Boxes size={18} />
-                        <span>Inventory</span>
-                    </Link>
 
                     <span className="nav-group-title">Supply Chain</span>
                     <Link href="/admin/suppliers" className={isCurrent('/admin/suppliers') ? 'active' : ''}>
