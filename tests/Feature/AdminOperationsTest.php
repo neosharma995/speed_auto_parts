@@ -30,6 +30,9 @@ class AdminOperationsTest extends TestCase
 
         $response = $this->get('/admin/dashboard');
         $response->assertStatus(200);
+
+        $this->get('/admin/settings')->assertStatus(200);
+        $this->get('/admin/taxes')->assertRedirect('/admin/settings?tab=tax');
     }
 
     public function test_admin_can_manage_products(): void
