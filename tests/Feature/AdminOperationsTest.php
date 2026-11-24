@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\User;
 use App\Models\Vehicle;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AdminOperationsTest extends TestCase
@@ -355,5 +356,54 @@ class AdminOperationsTest extends TestCase
         $deleteResponse = $this->delete("/admin/vehicles/{$vehicle->id}");
         $deleteResponse->assertRedirect();
         $this->assertDatabaseMissing('vehicles', ['id' => $vehicle->id]);
+    }
+
+    public function test_admin_can_view_and_update_profile_and_password(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->first();
+        $originalName = $admin->name;
+        $this->actingAs($admin);
+
+        // 1. Profile page renders
+        $this->get('/admin/profile')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Profile/Edit')
+                ->where('profile.email', 'admin@autosparts.com')
+            );
+
+        // 2. Update profile details
+        $this->put('/admin/profile', [
+            'name' => 'Autos Parts Master Admin',
+            'email' => $admin->email,
+            'phone' => '+91 99999 88888',
+        ])->assertRedirect();
+
+        $admin->refresh();
+        $this->assertEquals('Autos Parts Master Admin', $admin->name);
+        $this->assertEquals('+91 99999 88888', $admin->phone);
+
+        // 3. Update password
+        $this->put('/admin/profile/password', [
+            'current_password' => 'password',
+            'password' => 'new-secret-123',
+            'password_confirmation' => 'new-secret-123',
+        ])->assertRedirect();
+
+        $admin->refresh();
+        $this->assertTrue(Hash::check('new-secret-123', $admin->password));
+
+        // 4. Restore original name and password
+        $this->put('/admin/profile', [
+            'name' => $originalName,
+            'email' => $admin->email,
+            'phone' => null,
+        ])->assertRedirect();
+
+        $this->put('/admin/profile/password', [
+            'current_password' => 'new-secret-123',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertRedirect();
     }
 }
