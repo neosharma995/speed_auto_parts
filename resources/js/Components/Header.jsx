@@ -30,6 +30,10 @@ export default function Header() {
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
+    const [selectedLang, setSelectedLang] = useState('EN');
+    const [selectedCurrency, setSelectedCurrency] = useState('USD');
+    const [langOpen, setLangOpen] = useState(false);
+    const [currencyOpen, setCurrencyOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
@@ -39,10 +43,45 @@ export default function Header() {
     const [expandedSubmenu, setExpandedSubmenu] = useState(null);
 
     const accountRef = useRef(null);
+    const langRef = useRef(null);
+    const currencyRef = useRef(null);
     const desktopSearchRef = useRef(null);
     const mobileSearchRef = useRef(null);
     const debounceTimerRef = useRef(null);
     const abortControllerRef = useRef(null);
+
+    // Language & Currency available options
+    const languageOptions = [
+        { code: 'EN', name: 'English' },
+        { code: 'AR', name: 'العربية' },
+        { code: 'DE', name: 'Deutsch' },
+        { code: 'FR', name: 'Français' },
+    ];
+
+    const currencyOptions = [
+        { code: 'USD', name: 'USD ($)' },
+        { code: 'EUR', name: 'EUR (€)' },
+        { code: 'AED', name: 'AED (د.إ)' },
+    ];
+
+    // Click outside listener for language and currency dropdowns
+    useEffect(() => {
+        if (!langOpen && !currencyOpen) return;
+        const handleClickOutside = (e) => {
+            if (langRef.current && !langRef.current.contains(e.target)) {
+                setLangOpen(false);
+            }
+            if (currencyRef.current && !currencyRef.current.contains(e.target)) {
+                setCurrencyOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, [langOpen, currencyOpen]);
 
     // Fetch search suggestions (empty query returns popular & categories/brands)
     const fetchSuggestions = (query = '') => {
@@ -216,14 +255,106 @@ export default function Header() {
                     </div>
 
                     <div className="site-header-utility-right">
-                        <div className="utility-select">
-                            <span>EN</span>
-                            <ChevronDown size={11} strokeWidth={2.2} />
+                        {/* Language Selector (Hover & Click) */}
+                        <div
+                            className={`utility-select-dropdown ${langOpen ? 'is-open' : ''}`}
+                            ref={langRef}
+                            onMouseEnter={() => {
+                                setLangOpen(true);
+                                setCurrencyOpen(false);
+                            }}
+                            onMouseLeave={() => setLangOpen(false)}
+                        >
+                            <button
+                                type="button"
+                                className="utility-select-trigger"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setLangOpen((prev) => {
+                                        if (!prev) setCurrencyOpen(false);
+                                        return !prev;
+                                    });
+                                }}
+                                aria-expanded={langOpen}
+                                aria-label="Select Language"
+                            >
+                                <span>{selectedLang}</span>
+                                <ChevronDown
+                                    size={11}
+                                    strokeWidth={2.2}
+                                    className={`utility-chevron ${langOpen ? 'is-rotated' : ''}`}
+                                />
+                            </button>
+
+                            <div className="utility-dropdown-menu">
+                                {languageOptions.map((lang) => (
+                                    <button
+                                        key={lang.code}
+                                        type="button"
+                                        className={`utility-dropdown-item ${selectedLang === lang.code ? 'is-active' : ''}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedLang(lang.code);
+                                            setLangOpen(false);
+                                        }}
+                                    >
+                                        <span className="item-code">{lang.code}</span>
+                                        <span className="item-name">{lang.name}</span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                        <div className="utility-select">
-                            <span>USD</span>
-                            <ChevronDown size={11} strokeWidth={2.2} />
+
+                        {/* Currency Selector (Hover & Click) */}
+                        <div
+                            className={`utility-select-dropdown ${currencyOpen ? 'is-open' : ''}`}
+                            ref={currencyRef}
+                            onMouseEnter={() => {
+                                setCurrencyOpen(true);
+                                setLangOpen(false);
+                            }}
+                            onMouseLeave={() => setCurrencyOpen(false)}
+                        >
+                            <button
+                                type="button"
+                                className="utility-select-trigger"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCurrencyOpen((prev) => {
+                                        if (!prev) setLangOpen(false);
+                                        return !prev;
+                                    });
+                                }}
+                                aria-expanded={currencyOpen}
+                                aria-label="Select Currency"
+                            >
+                                <span>{selectedCurrency}</span>
+                                <ChevronDown
+                                    size={11}
+                                    strokeWidth={2.2}
+                                    className={`utility-chevron ${currencyOpen ? 'is-rotated' : ''}`}
+                                />
+                            </button>
+
+                            <div className="utility-dropdown-menu">
+                                {currencyOptions.map((curr) => (
+                                    <button
+                                        key={curr.code}
+                                        type="button"
+                                        className={`utility-dropdown-item ${selectedCurrency === curr.code ? 'is-active' : ''}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedCurrency(curr.code);
+                                            setCurrencyOpen(false);
+                                        }}
+                                    >
+                                        <span className="item-code">{curr.code}</span>
+                                        <span className="item-name">{curr.name}</span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
+
                         <Link href="/track-order" className="utility-link">Track Order</Link>
                         <Link href="/contact-us" className="utility-link">Help & Support</Link>
 
