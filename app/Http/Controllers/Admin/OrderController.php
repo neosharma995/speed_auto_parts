@@ -20,9 +20,9 @@ class OrderController extends Controller
         if ($search = $request->query('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
-                    ->orWhere('shipping_name', 'like', "%{$search}%")
-                    ->orWhere('shipping_email', 'like', "%{$search}%")
-                    ->orWhere('shipping_phone', 'like', "%{$search}%");
+                    ->orWhere('customer_name', 'like', "%{$search}%")
+                    ->orWhere('customer_email', 'like', "%{$search}%")
+                    ->orWhere('customer_phone', 'like', "%{$search}%");
             });
         }
 
@@ -44,7 +44,7 @@ class OrderController extends Controller
 
     public function show(Order $order): Response
     {
-        $order->load(['items', 'user', 'coupon']);
+        $order->load(['items', 'user']);
 
         return Inertia::render('Admin/Orders/Show', [
             'order' => $order,
@@ -65,7 +65,7 @@ class OrderController extends Controller
             'delivery_status' => $validated['delivery_status'],
             'payment_status' => $validated['payment_status'],
             'tracking_number' => $validated['tracking_number'],
-            'carrier' => $validated['tracking_carrier'],
+            'tracking_carrier' => $validated['tracking_carrier'],
             'tracking_url' => $validated['tracking_url'],
         ]);
 

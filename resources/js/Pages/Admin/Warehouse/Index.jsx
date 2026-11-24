@@ -13,6 +13,12 @@ export default function AdminWarehouseIndex({ pendingLots = [], products = [], r
         return map;
     });
 
+    const [catalogueEdits, setCatalogueEdits] = useState(() => {
+        const map = {};
+        products.forEach(p => { map[p.id] = p.stock_quantity; });
+        return map;
+    });
+
     // Reject single item or whole lot modal
     const [rejectTarget, setRejectTarget] = useState(null); // { type: 'item' | 'batch', id?, lot_number, label, qty }
     const [rejectReason, setRejectReason] = useState('');
@@ -86,6 +92,7 @@ export default function AdminWarehouseIndex({ pendingLots = [], products = [], r
     const handleAdjustWarehouse = (productId) => {
         router.post(`/admin/warehouse/products/${productId}/adjust`, {
             warehouse_stock: warehouseEdits[productId] ?? 0,
+            stock_quantity: catalogueEdits[productId] ?? 0,
         });
     };
 
@@ -301,7 +308,7 @@ export default function AdminWarehouseIndex({ pendingLots = [], products = [], r
             {/* Warehouse Stock Pipeline */}
             <div className="admin-card">
                 <div className="admin-card-header">
-                    <h3>Warehouse Inventory & Stock Pipeline (Single Products Table)</h3>
+                    <h3>Warehouse Inventory & Stock Management</h3>
                     <button
                         type="button"
                         className="btn btn-primary btn-sm"
@@ -319,8 +326,8 @@ export default function AdminWarehouseIndex({ pendingLots = [], products = [], r
                                 <th>Supplier</th>
                                 <th>Supplier Price</th>
                                 <th>Website Price</th>
-                                <th>Supplier / Warehouse / Catalogue</th>
-                                <th>Adjust Warehouse</th>
+                                <th>Stock Breakdown (Sup / Whs / Cat)</th>
+                                <th>Quick Inventory Adjust (Whs / Cat)</th>
                                 <th>Transfer</th>
                             </tr>
                         </thead>
@@ -345,7 +352,9 @@ export default function AdminWarehouseIndex({ pendingLots = [], products = [], r
                                         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                                             <span className="badge badge-neutral">Sup: {p.supplier_stock}</span>
                                             <span className={`badge ${p.warehouse_stock > 0 ? 'badge-warning' : 'badge-neutral'}`}>Whs: {p.warehouse_stock}</span>
-                                            <span className={`badge ${p.stock_quantity > 0 ? 'badge-success' : 'badge-danger'}`}>Cat: {p.stock_quantity}</span>
+                                            <span className={`badge ${p.stock_quantity <= 5 ? 'badge-danger' : (p.stock_quantity <= 15 ? 'badge-warning' : 'badge-success')}`}>
+                                                Cat: {p.stock_quantity} ({p.stock_status})
+                                            </span>
                                         </div>
                                     </td>
                                     <td>
@@ -353,13 +362,25 @@ export default function AdminWarehouseIndex({ pendingLots = [], products = [], r
                                             <input
                                                 type="number"
                                                 min="0"
+                                                title="Warehouse Stock"
+                                                placeholder="Whs"
                                                 className="form-input"
-                                                style={{ width: '72px', padding: '5px 8px' }}
+                                                style={{ width: '68px', padding: '5px 8px' }}
                                                 value={warehouseEdits[p.id] ?? p.warehouse_stock}
                                                 onChange={e => setWarehouseEdits({ ...warehouseEdits, [p.id]: parseInt(e.target.value) || 0 })}
                                             />
-                                            <button type="button" className="btn btn-outline btn-sm" onClick={() => handleAdjustWarehouse(p.id)}>
-                                                <Save size={13} />
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                title="Catalogue Stock"
+                                                placeholder="Cat"
+                                                className="form-input"
+                                                style={{ width: '68px', padding: '5px 8px' }}
+                                                value={catalogueEdits[p.id] ?? p.stock_quantity}
+                                                onChange={e => setCatalogueEdits({ ...catalogueEdits, [p.id]: parseInt(e.target.value) || 0 })}
+                                            />
+                                            <button type="button" className="btn btn-outline btn-sm" onClick={() => handleAdjustWarehouse(p.id)} title="Save Warehouse & Catalogue Stock">
+                                                <Save size={13} /> Update
                                             </button>
                                         </div>
                                     </td>

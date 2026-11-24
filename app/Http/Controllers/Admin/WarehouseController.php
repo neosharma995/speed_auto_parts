@@ -111,12 +111,21 @@ class WarehouseController extends Controller
     {
         $validated = $request->validate([
             'warehouse_stock' => ['required', 'integer', 'min:0'],
+            'stock_quantity' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        $product->update([
+        $updates = [
             'warehouse_stock' => (int) $validated['warehouse_stock'],
-        ]);
+        ];
 
-        return back()->with('success', "Warehouse stock for '{$product->name}' updated to {$product->warehouse_stock} units.");
+        if (array_key_exists('stock_quantity', $validated) && $validated['stock_quantity'] !== null) {
+            $catQty = (int) $validated['stock_quantity'];
+            $updates['stock_quantity'] = $catQty;
+            $updates['stock_status'] = $catQty > 0 ? 'in_stock' : 'out_of_stock';
+        }
+
+        $product->update($updates);
+
+        return back()->with('success', "Warehouse inventory for '{$product->name}' updated (Warehouse: {$product->warehouse_stock} units, Catalogue: {$product->stock_quantity} units).");
     }
 }
