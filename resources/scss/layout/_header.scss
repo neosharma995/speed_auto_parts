@@ -425,16 +425,17 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 16px;
+      gap: 14px;
       margin-left: auto;
     }
 
     .mobile-subbar-icon-btn {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: auto;
+      height: auto;
+      min-width: 0;
       color: #111111;
       background: transparent;
       border: none;
@@ -444,6 +445,14 @@
       padding: 0;
       transition: color $transition-default;
 
+      svg {
+        display: block;
+      }
+
+      &.mobile-subbar-cart-btn {
+        margin-right: 6px;
+      }
+
       &:hover {
         color: $color-primary;
       }
@@ -451,7 +460,7 @@
 
     .mobile-subbar-cart-badge {
       position: absolute;
-      top: -3px;
+      top: -6px;
       right: -6px;
       background-color: $color-primary;
       color: #FFFFFF;

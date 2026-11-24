@@ -1,0 +1,630 @@
+// ==========================================================================
+// SPEED AUTOS PARTS - Authentication Pages (Login, Register, Forgot Password)
+// Pixel-perfect implementation matching the high-performance automotive theme
+// STRICT RULES:
+// 1. px units for dimensions, spacing, borders, font sizes, breakpoints
+// 2. Strict usage of SCSS variables & mixins
+// 3. No translate hover animations
+// ==========================================================================
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+// --------------------------------------------------------------------------
+// 1. OUTER LAYOUT & BACKGROUND
+// --------------------------------------------------------------------------
+.auth-layout {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: $color-white;
+  background-image: url('/assets/images/auth/auth-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-family: $font-primary;
+}
+
+// --------------------------------------------------------------------------
+// 2. CAR CUTOUT VISUAL (Positioned outside inner container, bottom-left)
+// Exactly matching the mockup: front half visible inside, remainder hidden
+// --------------------------------------------------------------------------
+.auth-car-cutout {
+  position: absolute;
+  bottom: -150px;
+  left: -290px;
+  width: 940px;
+  max-width: 58vw;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.15));
+  }
+
+  @include respond-below('xl') {
+    left: -240px;
+    width: 780px;
+    max-width: 52vw;
+    bottom: -110px;
+  }
+
+  @include respond-below('lg') {
+    left: -180px;
+    width: 580px;
+    max-width: 48vw;
+    bottom: -70px;
+    opacity: 0.85;
+  }
+
+  @include respond-below('md') {
+    display: none;
+  }
+}
+
+// --------------------------------------------------------------------------
+// 3. AUTH TOP HEADER BAR
+// --------------------------------------------------------------------------
+.auth-top-bar {
+  position: relative;
+  z-index: 10;
+  padding: 24px 0 16px 0;
+
+  &-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &-logo {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+
+    img {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+  }
+
+  &-divider {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    margin: 0 48px;
+
+    @include respond-to('lg') {
+      display: flex;
+    }
+
+    .divider-line {
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(90deg, rgba(243, 107, 22, 0.4) 0%, rgba(220, 220, 220, 0.4) 100%);
+    }
+
+    .divider-slashes {
+      display: inline-flex;
+      gap: 3px;
+
+      span {
+        width: 4px;
+        height: 14px;
+        background-color: $color-primary;
+        transform: skewX(-24deg);
+        border-radius: 1px;
+      }
+    }
+  }
+
+  &-switch {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  &-text {
+    font-size: 14px;
+    color: $color-text-secondary;
+    font-weight: 500;
+    display: none;
+
+    @include respond-to('sm') {
+      display: inline;
+    }
+  }
+
+  &-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid $color-primary;
+    color: $color-primary;
+    background: transparent;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color $transition-default, color $transition-default;
+
+    &:hover {
+      background-color: $color-primary;
+      color: $color-white;
+    }
+  }
+}
+
+// --------------------------------------------------------------------------
+// 4. MAIN CONTENT AREA & TWO-COLUMN GRID
+// --------------------------------------------------------------------------
+.auth-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 5;
+  padding: 20px 0 60px 0;
+
+  .container {
+    max-width: 1400px;
+  }
+
+  &-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 60px;
+    align-items: flex-start;
+
+    @include respond-below('lg') {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+}
+
+// --------------------------------------------------------------------------
+// 5. LEFT SECTION: BRAND HERO & FEATURES
+// --------------------------------------------------------------------------
+.auth-hero {
+  position: relative;
+  z-index: 5;
+  padding-left: 0;
+  margin-top: 0;
+  padding-bottom: 60px;
+
+  @include respond-below('lg') {
+    padding-bottom: 40px;
+  }
+
+  &-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: $color-dark;
+    margin-bottom: 22px;
+
+    .title-stripe-icon {
+      height: 14px;
+      width: auto;
+      object-fit: contain;
+      display: inline-block;
+    }
+  }
+
+  &-title {
+    font-size: 70px;
+    font-weight: 900;
+    line-height: 1.06;
+    color: $color-dark;
+    letter-spacing: -0.03em;
+    margin: 0 0 20px 0;
+
+    .title-accent {
+      color: $color-primary;
+      font-style: italic;
+      font-weight: 900;
+      display: block;
+      margin-top: 4px;
+    }
+
+    @include respond-below('xl') {
+      font-size: 58px;
+    }
+
+    @include respond-below('md') {
+      font-size: 40px;
+    }
+  }
+
+  &-desc {
+    font-size: 16px;
+    line-height: 1.6;
+    color: $color-text-secondary;
+    max-width: 500px;
+    margin-bottom: 36px;
+
+    @include respond-below('md') {
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+  }
+
+  // 3 Feature Badges in pure outline orange matching mockup
+  &-features {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    flex-wrap: wrap;
+
+    @include respond-below('sm') {
+      gap: 20px;
+    }
+  }
+
+  &-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &-feature-icon {
+    color: $color-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &-feature-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: $color-dark;
+    line-height: 1.25;
+  }
+}
+
+// --------------------------------------------------------------------------
+// 6. RIGHT SECTION: FORM CARD
+// --------------------------------------------------------------------------
+.auth-form-card {
+  width: 100%;
+  max-width: 560px;
+  position: relative;
+  z-index: 5;
+
+  @include respond-to('lg') {
+    border-left: 1px solid rgba(0, 0, 0, 0.08);
+    padding-left: 90px;
+  }
+
+  @include respond-below('lg') {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &-header {
+    margin-bottom: 24px;
+  }
+
+  &-title {
+    font-size: 34px;
+    font-weight: 900;
+    color: $color-dark;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px 0;
+
+    @include respond-below('md') {
+      font-size: 28px;
+    }
+  }
+
+  &-subtitle {
+    font-size: 14px;
+    color: $color-text-secondary;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+// --------------------------------------------------------------------------
+// 7. DEMO CREDENTIAL CHIPS
+// --------------------------------------------------------------------------
+.auth-demo-box {
+  background-color: rgba(243, 107, 22, 0.04);
+  border: 1px dashed rgba(243, 107, 22, 0.35);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+
+  &-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: $color-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  &-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  &-chip {
+    border: 1px solid $color-border;
+    background: $color-white;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: $color-dark;
+    cursor: pointer;
+    transition: border-color $transition-default, color $transition-default, background-color $transition-default;
+
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+      background-color: rgba(243, 107, 22, 0.06);
+    }
+  }
+}
+
+// --------------------------------------------------------------------------
+// 8. FORM CONTROLS & ICONS
+// --------------------------------------------------------------------------
+.auth-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.auth-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.auth-form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $color-dark;
+}
+
+.auth-form-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: $color-primary;
+  text-decoration: none;
+  transition: color $transition-default;
+
+  &:hover {
+    color: $color-primary-hover;
+    text-decoration: underline;
+  }
+}
+
+.auth-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .auth-input-icon {
+    position: absolute;
+    left: 14px;
+    color: $color-text-muted;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .auth-input-action {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $color-text-muted;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color $transition-default;
+
+    &:hover {
+      color: $color-dark;
+    }
+  }
+}
+
+.auth-input {
+  width: 100%;
+  height: 48px;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 0 42px 0 42px;
+  font-size: 14px;
+  color: $color-text;
+  background-color: $color-white;
+  transition: border-color $transition-default, box-shadow $transition-default;
+  outline: none;
+
+  &--no-action {
+    padding-right: 14px;
+  }
+
+  &::placeholder {
+    color: $color-text-muted;
+  }
+
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba(243, 107, 22, 0.12);
+  }
+
+  &--error {
+    border-color: $color-danger;
+
+    &:focus {
+      border-color: $color-danger;
+      box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.12);
+    }
+  }
+}
+
+.auth-form-error {
+  font-size: 12px;
+  color: $color-danger;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+// --------------------------------------------------------------------------
+// 9. CHECKBOX & META ROW
+// --------------------------------------------------------------------------
+.auth-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.auth-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: $color-text;
+  cursor: pointer;
+  user-select: none;
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: $color-primary;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+}
+
+// --------------------------------------------------------------------------
+// 10. SUBMIT BUTTON & SOCIAL ACTIONS
+// --------------------------------------------------------------------------
+.auth-submit-btn {
+  width: 100%;
+  height: 50px;
+  background-color: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background-color $transition-default;
+
+  &:hover:not(:disabled) {
+    background-color: $color-primary-hover;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 22px 0;
+  text-align: center;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid $color-border-light;
+  }
+
+  span {
+    padding: 0 14px;
+    font-size: 13px;
+    color: $color-text-muted;
+    font-weight: 500;
+  }
+}
+
+.auth-social-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.auth-social-btn {
+  height: 46px;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  background-color: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-dark;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color $transition-default, background-color $transition-default;
+
+  &:hover {
+    border-color: #B5B5B5;
+    background-color: #FAFAFA;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.auth-footer-prompt {
+  text-align: center;
+  font-size: 14px;
+  color: $color-text-secondary;
+
+  a {
+    color: $color-primary;
+    font-weight: 700;
+    text-decoration: none;
+    margin-left: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: color $transition-default;
+
+    &:hover {
+      color: $color-primary-hover;
+      text-decoration: underline;
+    }
+  }
+}
