@@ -111,7 +111,7 @@ class CustomerAccountController extends Controller
 
         $validated['user_id'] = $user->id;
         $validated['type'] = 'shipping';
-        $validated['country'] = 'India';
+        $validated['country'] = 'United Arab Emirates';
 
         CustomerAddress::create($validated);
 

@@ -92,7 +92,7 @@ export default function TrackOrder() {
                             <div className="result-grid">
                                 <div className="grid-item">
                                     <span>Carrier</span>
-                                    <p>{orderResult.tracking_carrier || 'Blue Dart Express'}</p>
+                                    <p>{orderResult.tracking_carrier || 'Aramex Express UAE'}</p>
                                 </div>
                                 <div className="grid-item">
                                     <span>Tracking / AWB #</span>

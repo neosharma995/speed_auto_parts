@@ -24,9 +24,9 @@ class TaxController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:tax_classes,slug'],
             'rate' => ['required', 'numeric', 'min:0', 'max:100'],
-            'cgst_rate' => ['required', 'numeric', 'min:0', 'max:100'],
-            'sgst_rate' => ['required', 'numeric', 'min:0', 'max:100'],
-            'igst_rate' => ['required', 'numeric', 'min:0', 'max:100'],
+            'cgst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'sgst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'igst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
         if (empty($validated['slug'])) {
@@ -36,21 +36,21 @@ class TaxController extends Controller
         $taxClass = TaxClass::create([
             'name' => $validated['name'],
             'slug' => $validated['slug'],
-            'description' => "GST Rate {$validated['rate']}%",
+            'description' => "UAE VAT Rate {$validated['rate']}%",
         ]);
 
         TaxRate::create([
             'tax_class_id' => $taxClass->id,
             'name' => "{$validated['name']} Rate",
             'rate' => $validated['rate'],
-            'cgst_rate' => $validated['cgst_rate'],
-            'sgst_rate' => $validated['sgst_rate'],
-            'igst_rate' => $validated['igst_rate'],
-            'country_code' => 'IN',
+            'cgst_rate' => 0.00,
+            'sgst_rate' => 0.00,
+            'igst_rate' => 0.00,
+            'country_code' => 'AE',
             'is_active' => true,
         ]);
 
         return redirect()->route('admin.settings.index', ['tab' => 'tax'])
-            ->with('success', "Tax class '{$validated['name']}' created successfully.");
+            ->with('success', "VAT tax class '{$validated['name']}' created successfully.");
     }
 }

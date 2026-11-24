@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminDataTable from '@/Components/Admin/AdminDataTable';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 export default function AdminProductsIndex({ products, categories = [], brands = [], filters = {} }) {
+    const { formatAdminPrice } = useCurrency();
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedCat, setSelectedCat] = useState(filters.category || '');
     const [selectedBrand, setSelectedBrand] = useState(filters.brand || '');
@@ -97,10 +99,10 @@ export default function AdminProductsIndex({ products, categories = [], brands =
             label: 'Base Price',
             render: (product) => (
                 <>
-                    <strong>₹{Number(product.base_price).toLocaleString('en-IN')}</strong>
+                    <strong>{formatAdminPrice(product.base_price)}</strong>
                     {product.sale_price && (
                         <small style={{ display: 'block', color: '#168A35', fontSize: '11px' }}>
-                            Sale: ₹{Number(product.sale_price).toLocaleString('en-IN')}
+                            Sale: {formatAdminPrice(product.sale_price)}
                         </small>
                     )}
                 </>

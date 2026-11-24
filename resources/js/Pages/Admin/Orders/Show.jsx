@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { ArrowLeft, Save, Truck, CheckCircle2, AlertTriangle, Printer } from 'lucide-react';
 
 export default function AdminOrderShow({ order }) {
+    const { formatAdminPrice } = useCurrency();
     const [deliveryStatus, setDeliveryStatus] = useState(order.delivery_status);
     const [paymentStatus, setPaymentStatus] = useState(order.payment_status);
     const [trackingNumber, setTrackingNumber] = useState(order.tracking_number || '');
-    const [trackingCarrier, setTrackingCarrier] = useState(order.tracking_carrier || 'Blue Dart Express');
+    const [trackingCarrier, setTrackingCarrier] = useState(order.tracking_carrier || 'Aramex Express UAE');
     const [trackingUrl, setTrackingUrl] = useState(order.tracking_url || '');
     const [submitting, setSubmitting] = useState(false);
 
@@ -50,7 +52,7 @@ export default function AdminOrderShow({ order }) {
                                         <th>Part</th>
                                         <th>Price</th>
                                         <th>Qty</th>
-                                        <th>Tax (GST)</th>
+                                        <th>Tax (UAE VAT)</th>
                                         <th>Total</th>
                                     </tr>
                                 </thead>
@@ -66,10 +68,10 @@ export default function AdminOrderShow({ order }) {
                                                     <small style={{ display: 'block', color: '#888', fontFamily: 'monospace' }}>Part #: {item.part_number}</small>
                                                 )}
                                             </td>
-                                            <td>₹{Number(item.unit_price).toLocaleString('en-IN')}</td>
+                                            <td>{formatAdminPrice(item.unit_price)}</td>
                                             <td>{item.quantity}</td>
-                                            <td>₹{Number(item.tax_amount).toLocaleString('en-IN')}</td>
-                                            <td><strong>₹{Number(item.total).toLocaleString('en-IN')}</strong></td>
+                                            <td>{formatAdminPrice(item.tax_amount)}</td>
+                                            <td><strong>{formatAdminPrice(item.total)}</strong></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -154,7 +156,7 @@ export default function AdminOrderShow({ order }) {
                                         className="form-input" 
                                         value={trackingNumber} 
                                         onChange={e => setTrackingNumber(e.target.value)} 
-                                        placeholder="e.g. BLUEDART-1234567"
+                                        placeholder="e.g. ARAMEX-1234567AE"
                                     />
                                 </div>
 
@@ -172,46 +174,28 @@ export default function AdminOrderShow({ order }) {
                         <div className="admin-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <span>Subtotal</span>
-                                <strong>₹{Number(order.subtotal).toLocaleString('en-IN')}</strong>
+                                <strong>{formatAdminPrice(order.subtotal)}</strong>
                             </div>
                             {Number(order.discount_amount) > 0 && (
                                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#168A35' }}>
                                     <span>Discount ({order.coupon_code || 'Promo'})</span>
-                                    <span>-₹{Number(order.discount_amount).toLocaleString('en-IN')}</span>
+                                    <span>-{formatAdminPrice(order.discount_amount)}</span>
                                 </div>
                             )}
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <span>Shipping Fee</span>
-                                <span>₹{Number(order.shipping_cost).toLocaleString('en-IN')}</span>
+                                <span>{formatAdminPrice(order.shipping_cost)}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <span>GST Tax Total</span>
-                                <span>₹{Number(order.tax_amount).toLocaleString('en-IN')}</span>
+                                <span>UAE VAT (5%)</span>
+                                <span>{formatAdminPrice(order.tax_amount)}</span>
                             </div>
-                            {Number(order.cgst_amount) > 0 && (
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#888', paddingLeft: '8px' }}>
-                                    <span>CGST</span>
-                                    <span>₹{Number(order.cgst_amount).toLocaleString('en-IN')}</span>
-                                </div>
-                            )}
-                            {Number(order.sgst_amount) > 0 && (
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#888', paddingLeft: '8px' }}>
-                                    <span>SGST</span>
-                                    <span>₹{Number(order.sgst_amount).toLocaleString('en-IN')}</span>
-                                </div>
-                            )}
-                            {Number(order.igst_amount) > 0 && (
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#888', paddingLeft: '8px' }}>
-                                    <span>IGST</span>
-                                    <span>₹{Number(order.igst_amount).toLocaleString('en-IN')}</span>
-                                </div>
-                            )}
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 800, color: '#F36B16', paddingTop: '10px', borderTop: '1px solid #EEE' }}>
                                 <span>Grand Total</span>
-                                <span>₹{Number(order.total_amount).toLocaleString('en-IN')}</span>
+                                <span>{formatAdminPrice(order.total_amount)}</span>
                             </div>
                             <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
-                                Gateway: <strong>{order.payment_method}</strong> ({order.razorpay_payment_id || 'COD'})
+                                Gateway: <strong style={{ textTransform: 'uppercase' }}>{order.payment_method}</strong> ({order.stripe_payment_intent_id || order.stripe_session_id || 'COD'})
                             </div>
                         </div>
                     </div>

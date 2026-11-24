@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { useCart } from '@/Context/CartContext';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { Trash2, ShoppingBag, ArrowRight, ArrowLeft, ShieldCheck, Tag } from 'lucide-react';
 import axios from 'axios';
 
 export default function Cart() {
     const { cartItems, itemCount, subtotal, updateQuantity, removeFromCart, clearCart } = useCart();
+    const { formatPrice } = useCurrency();
     const [couponCode, setCouponCode] = useState('');
     const [couponDiscount, setCouponDiscount] = useState(0);
     const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -128,7 +130,7 @@ export default function Cart() {
                                                         </span>
                                                     )}
                                                     <span style={{ fontSize: '14px', fontWeight: 700, color: '#F36B16', display: 'block', marginTop: '4px' }}>
-                                                        ₹{Number(item.price).toLocaleString('en-IN')}
+                                                        {formatPrice(item.price)}
                                                     </span>
                                                 </div>
                                             </div>
@@ -155,7 +157,7 @@ export default function Cart() {
                                                 </div>
 
                                                 <span style={{ fontSize: '16px', fontWeight: 800, color: '#151515', minWidth: '100px', textAlign: 'right' }}>
-                                                    ₹{(Number(item.price) * item.quantity).toLocaleString('en-IN')}
+                                                    {formatPrice(Number(item.price) * item.quantity)}
                                                 </span>
 
                                                 <button 
@@ -223,24 +225,24 @@ export default function Cart() {
 
                                 {appliedCoupon && (
                                     <span style={{ fontSize: '12px', color: '#168A35', fontWeight: 700 }}>
-                                        ✓ Coupon {appliedCoupon} applied: -₹{couponDiscount.toLocaleString('en-IN')}
+                                        ✓ Coupon {appliedCoupon} applied: -{formatPrice(couponDiscount)}
                                     </span>
                                 )}
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '16px', borderTop: '1px solid #EEE' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#666' }}>
                                         <span>Estimated Item Subtotal</span>
-                                        <strong>₹{subtotal.toLocaleString('en-IN')}</strong>
+                                        <strong>{formatPrice(subtotal)}</strong>
                                     </div>
                                     {couponDiscount > 0 && (
                                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#168A35', fontWeight: 600 }}>
                                             <span>Coupon Discount</span>
-                                            <span>-₹{couponDiscount.toLocaleString('en-IN')}</span>
+                                            <span>-{formatPrice(couponDiscount)}</span>
                                         </div>
                                     )}
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: 900, color: '#151515', paddingTop: '12px', borderTop: '1px solid #DCDCDC' }}>
                                         <span>Order Total (Excl. Tax & Shipping)</span>
-                                        <span>₹{finalTotal.toLocaleString('en-IN')}</span>
+                                        <span>{formatPrice(finalTotal)}</span>
                                     </div>
                                 </div>
 

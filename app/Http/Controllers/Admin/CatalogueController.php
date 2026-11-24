@@ -117,7 +117,7 @@ class CatalogueController extends Controller
             $validated['notes'] ?? null
         );
 
-        return back()->with('success', "Transferred {$transfer->quantity} units of '{$product->name}' to Website Catalogue at ₹{$validated['base_price']}.");
+        return back()->with('success', "Transferred {$transfer->quantity} units of '{$product->name}' to Website Catalogue at AED {$validated['base_price']}.");
     }
 
     public function bulkTransferFromWarehouse(Request $request): RedirectResponse
@@ -187,6 +187,6 @@ class CatalogueController extends Controller
             'sale_price' => $salePrice,
         ]);
 
-        return back()->with('success', "Selling price for '{$product->name}' updated to ₹{$validated['base_price']}.");
+        return back()->with('success', "Selling price for '{$product->name}' updated to AED {$validated['base_price']}.");
     }
 }

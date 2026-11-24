@@ -28,23 +28,23 @@ class AutomotiveCatalogSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Taxes
+        // 1. UAE VAT Taxes
         $taxClassStandard = TaxClass::firstOrCreate(
-            ['slug' => 'gst-18'],
-            ['name' => 'Standard Autos Parts (GST 18%)', 'description' => 'Applicable to mechanical, intake & suspension parts', 'is_default' => true]
+            ['slug' => 'vat-5'],
+            ['name' => 'Standard Auto Parts (UAE VAT 5%)', 'description' => 'Standard 5% UAE Federal VAT applicable to automotive parts', 'is_default' => true]
         );
         TaxRate::firstOrCreate(
-            ['tax_class_id' => $taxClassStandard->id, 'country_code' => 'IN'],
-            ['name' => 'GST 18% (9% CGST + 9% SGST)', 'rate' => 18.00, 'cgst_rate' => 9.00, 'sgst_rate' => 9.00, 'igst_rate' => 18.00, 'is_active' => true]
+            ['tax_class_id' => $taxClassStandard->id, 'country_code' => 'AE'],
+            ['name' => 'UAE Federal VAT 5%', 'rate' => 5.00, 'cgst_rate' => 0.00, 'sgst_rate' => 0.00, 'igst_rate' => 0.00, 'is_active' => true]
         );
 
         $taxClassHigh = TaxClass::firstOrCreate(
-            ['slug' => 'gst-28'],
-            ['name' => 'High Performance & Luxury Spares (GST 28%)', 'description' => 'Applicable to big brake kits and performance exhausts', 'is_default' => false]
+            ['slug' => 'vat-0'],
+            ['name' => 'GCC Export / Zero-Rated (VAT 0%)', 'description' => 'Zero-rated export automotive components outside UAE', 'is_default' => false]
         );
         TaxRate::firstOrCreate(
-            ['tax_class_id' => $taxClassHigh->id, 'country_code' => 'IN'],
-            ['name' => 'GST 28% (14% CGST + 14% SGST)', 'rate' => 28.00, 'cgst_rate' => 14.00, 'sgst_rate' => 14.00, 'igst_rate' => 28.00, 'is_active' => true]
+            ['tax_class_id' => $taxClassHigh->id, 'country_code' => 'AE'],
+            ['name' => 'UAE Export Zero-Rated 0%', 'rate' => 0.00, 'cgst_rate' => 0.00, 'sgst_rate' => 0.00, 'igst_rate' => 0.00, 'is_active' => true]
         );
 
         // 2. Categories
@@ -501,14 +501,14 @@ class AutomotiveCatalogSeeder extends Seeder
             }
         }
 
-        // 8. Coupons
+        // 8. Coupons (AED)
         Coupon::updateOrCreate(
             ['code' => 'SPEED10'],
             [
                 'type' => 'percentage',
                 'value' => 10.00,
-                'min_spend' => 5000.00,
-                'max_discount' => 3000.00,
+                'min_spend' => 250.00,
+                'max_discount' => 150.00,
                 'usage_limit' => 1000,
                 'usage_per_user' => 3,
                 'is_active' => true,
@@ -519,68 +519,67 @@ class AutomotiveCatalogSeeder extends Seeder
             ['code' => 'TRACKDAY'],
             [
                 'type' => 'fixed',
-                'value' => 2000.00,
-                'min_spend' => 15000.00,
-                'max_discount' => 2000.00,
+                'value' => 100.00,
+                'min_spend' => 750.00,
+                'max_discount' => 100.00,
                 'usage_limit' => 500,
                 'usage_per_user' => 1,
                 'is_active' => true,
             ]
         );
 
-        // 9. Customer address for seed user
+        // 9. Customer address for seed user (Dubai, UAE)
         $customerUser = User::where('email', 'customer@autosparts.com')->first();
         if ($customerUser) {
             CustomerAddress::firstOrCreate(
-                ['user_id' => $customerUser->id, 'address_line1' => 'Flat 402, Speedline Towers, Outer Ring Road'],
+                ['user_id' => $customerUser->id, 'address_line1' => 'Villa 18, Al Wasl Road, Jumeirah 1'],
                 [
                     'type' => 'both',
-                    'full_name' => 'Vikram Singh',
-                    'phone' => '+91 98765 12345',
-                    'address_line2' => 'Near Formula 1 Circuit Track',
-                    'city' => 'Greater Noida',
-                    'state' => 'Uttar Pradesh',
-                    'pincode' => '201310',
-                    'country' => 'India',
+                    'full_name' => 'Tariq Al Mansoori',
+                    'phone' => '+971 50 512 3456',
+                    'address_line2' => 'Near City Walk Boulevard',
+                    'city' => 'Dubai',
+                    'state' => 'Dubai',
+                    'pincode' => '00000',
+                    'country' => 'United Arab Emirates',
                     'is_default' => true,
                 ]
             );
 
-            // Sample Order for customer
+            // Sample Order for customer (Dubai / Stripe / AED / 5% UAE VAT)
             $sampleOrder = Order::firstOrCreate(
                 ['order_number' => 'AP-20261119-DEMO1'],
                 [
                     'user_id' => $customerUser->id,
-                    'customer_name' => 'Vikram Singh',
+                    'customer_name' => 'Tariq Al Mansoori',
                     'customer_email' => 'customer@autosparts.com',
-                    'customer_phone' => '+91 98765 12345',
-                    'shipping_address' => 'Flat 402, Speedline Towers, Outer Ring Road',
-                    'apartment' => 'Tower B, 4th Floor',
-                    'city' => 'Greater Noida',
-                    'state' => 'Uttar Pradesh',
-                    'pincode' => '201310',
-                    'country' => 'India',
-                    'shipping_method_title' => 'Express Ground Freight',
-                    'shipping_cost' => 500.00,
-                    'subtotal' => 25998.00,
-                    'discount_amount' => 2000.00,
+                    'customer_phone' => '+971 50 512 3456',
+                    'shipping_address' => 'Villa 18, Al Wasl Road, Jumeirah 1',
+                    'apartment' => 'Gate 2, Villa 18',
+                    'city' => 'Dubai',
+                    'state' => 'Dubai',
+                    'pincode' => '00000',
+                    'country' => 'United Arab Emirates',
+                    'shipping_method_title' => 'Aramex Same-Day Dubai Express',
+                    'shipping_cost' => 35.00,
+                    'subtotal' => 1160.00,
+                    'discount_amount' => 100.00,
                     'coupon_code' => 'TRACKDAY',
-                    'tax_amount' => 4319.64,
+                    'tax_amount' => 58.00,
                     'cgst_amount' => 0.00,
                     'sgst_amount' => 0.00,
-                    'igst_amount' => 4319.64,
-                    'total_amount' => 28817.64,
-                    'currency' => 'INR',
-                    'payment_method' => 'razorpay',
+                    'igst_amount' => 0.00,
+                    'total_amount' => 1153.00,
+                    'currency' => 'AED',
+                    'payment_method' => 'stripe',
                     'payment_status' => 'paid',
                     'delivery_status' => 'processing',
-                    'razorpay_order_id' => 'order_sim_demo_01',
-                    'razorpay_payment_id' => 'pay_sim_demo_01',
-                    'razorpay_signature' => 'simulated_signature',
-                    'order_notes' => 'Please deliver during afternoon hours.',
-                    'tracking_number' => 'BLUEDART-88291039',
-                    'tracking_carrier' => 'Blue Dart Express',
-                    'tracking_url' => 'https://www.bluedart.com',
+                    'stripe_session_id' => 'cs_test_demo_01',
+                    'stripe_payment_intent_id' => 'pi_test_demo_01',
+                    'order_notes' => 'Please call 15 minutes before arrival.',
+                    'tracking_number' => 'ARAMEX-88291039AE',
+                    'tracking_carrier' => 'Aramex Express UAE',
+                    'tracking_url' => 'https://www.aramex.com/ae/en/track/shipments',
                     'paid_at' => now()->subDay(),
                 ]
             );
@@ -588,41 +587,41 @@ class AutomotiveCatalogSeeder extends Seeder
             OrderItem::firstOrCreate(
                 ['order_id' => $sampleOrder->id, 'product_id' => $pTire->id],
                 [
-                    'product_name' => 'Performance Summer Tire',
+                    'product_name' => 'Pilot Sport 5 Performance Tire',
                     'variation_name' => '245/40R18 97Y XL',
                     'sku' => 'AP-TIRE-992-245-18',
                     'part_number' => 'AP-12345-A',
-                    'unit_price' => 12999.00,
+                    'unit_price' => 580.00,
                     'quantity' => 2,
-                    'tax_rate_percent' => 18.00,
-                    'tax_amount' => 4319.64,
-                    'subtotal' => 25998.00,
-                    'total' => 30317.64,
-                    'product_image' => 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80',
+                    'tax_rate_percent' => 5.00,
+                    'tax_amount' => 58.00,
+                    'subtotal' => 1160.00,
+                    'total' => 1218.00,
+                    'product_image' => '/assets/images/products/performance-tire.webp',
                 ]
             );
         }
 
-        // 10. Product Reviews
+        // 10. Product Reviews (Dubai Motorsport)
         ProductReview::firstOrCreate(
-            ['product_id' => $pTire->id, 'reviewer_email' => 'driver@circuit.in'],
+            ['product_id' => $pTire->id, 'reviewer_email' => 'driver@dubaiautodrome.ae'],
             [
-                'reviewer_name' => 'Arjun Kapoor',
+                'reviewer_name' => 'Khalid Al Maktoum',
                 'rating' => 5,
-                'title' => 'Unbelievable dry grip on Buddh International Circuit',
-                'comment' => 'Installed a staggered set on my Mustang GT. Cornering speeds are noticeably higher and braking stability is rock solid.',
+                'title' => 'Unbelievable dry grip on Dubai Autodrome',
+                'comment' => 'Installed a staggered set on my Mustang GT. Cornering speeds are noticeably higher and braking stability is rock solid even in UAE summer heat.',
                 'is_verified_purchase' => true,
                 'is_approved' => true,
             ]
         );
 
         ProductReview::firstOrCreate(
-            ['product_id' => $pBrake->id, 'reviewer_email' => 'trackdayfan@gmail.com'],
+            ['product_id' => $pBrake->id, 'reviewer_email' => 'trackdayfan@yasmarina.ae'],
             [
-                'reviewer_name' => 'Rohan Mehta',
+                'reviewer_name' => 'Faisal Al Qasimi',
                 'rating' => 5,
-                'title' => 'Zero brake fade during hard track sessions',
-                'comment' => 'Rotors run much cooler than the stock blanks. The zinc coating keeps the hub bells looking brand new even after washings.',
+                'title' => 'Zero brake fade during Yas Marina track nights',
+                'comment' => 'Rotors run much cooler than the stock blanks. The zinc coating keeps the hub bells looking brand new.',
                 'is_verified_purchase' => true,
                 'is_approved' => true,
             ]

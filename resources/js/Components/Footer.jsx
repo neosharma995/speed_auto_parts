@@ -167,10 +167,10 @@ export default function Footer() {
                                     </div>
                                     <div className="help-text-group">
                                         <span className="help-label">Need Help?</span>
-                                        <strong className="help-phone">{settings.store_phone || '+91 98765 43210'}</strong>
+                                        <strong className="help-phone">{settings.store_phone || '+971 4 512 8900'}</strong>
                                     </div>
                                 </div>
-                                <span className="help-hours">Mon – Sat, 9:00 AM – 7:00 PM (IST)</span>
+                                <span className="help-hours">Mon – Sat, 9:00 AM – 7:00 PM (Dubai / GST)</span>
                                 <Link href="/contact-us" className="footer-contact-btn">
                                     Contact Support
                                 </Link>

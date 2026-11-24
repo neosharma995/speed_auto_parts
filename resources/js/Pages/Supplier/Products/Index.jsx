@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import SupplierLayout from '@/Layouts/SupplierLayout';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { Plus, Search, Edit, Truck, Boxes, X } from 'lucide-react';
 
 export default function SupplierProductsIndex({ products, categories = [], brands = [], filters = {} }) {
     const safeFilters = filters && !Array.isArray(filters) ? filters : {};
     const { errors } = usePage().props;
+    const { formatAdminPrice, defaultCurrency } = useCurrency();
 
     const [search, setSearch] = useState(safeFilters.search || '');
 
@@ -216,7 +218,7 @@ export default function SupplierProductsIndex({ products, categories = [], brand
                                             <span>{p.category?.name || '—'}</span>
                                             <small style={{ display: 'block', color: '#64748B', fontSize: '11px' }}>{p.brand?.name || '—'}</small>
                                         </td>
-                                        <td><strong>₹{Number(p.supplier_price || p.cost_price || 0).toLocaleString('en-IN')}</strong></td>
+                                        <td><strong>{formatAdminPrice(p.supplier_price || p.cost_price || 0)}</strong></td>
                                         <td>
                                             <span className={`badge ${p.supplier_stock > 10 ? 'badge-success' : (p.supplier_stock > 0 ? 'badge-warning' : 'badge-danger')}`}>
                                                 {p.supplier_stock} units
@@ -328,7 +330,7 @@ export default function SupplierProductsIndex({ products, categories = [], brand
 
                             <div style={{ display: 'grid', gridTemplateColumns: editingProduct ? '1fr' : '1fr 1fr', gap: '12px' }}>
                                 <div className="form-group">
-                                    <label className="form-label">Supplier Supply Price (₹ per unit) <span className="required">*</span></label>
+                                    <label className="form-label">Supplier Supply Price ({defaultCurrency.code} per unit) <span className="required">*</span></label>
                                     <input type="number" step="0.01" min="1" className="form-input" required value={supplierPrice} onChange={e => setSupplierPrice(e.target.value)} placeholder="5500" />
                                 </div>
                                 {!editingProduct && (
@@ -396,7 +398,7 @@ export default function SupplierProductsIndex({ products, categories = [], brand
                                 <input type="number" min="1" className="form-input" required value={addQty} onChange={e => setAddQty(e.target.value)} />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Supplier Price (₹)</label>
+                                <label className="form-label">Supplier Price ({defaultCurrency.code})</label>
                                 <input type="number" step="0.01" min="1" className="form-input" value={newSupplierPrice} onChange={e => setNewSupplierPrice(e.target.value)} />
                             </div>
                             <div style={{ display: 'flex', gap: '12px' }}>
@@ -423,7 +425,7 @@ export default function SupplierProductsIndex({ products, categories = [], brand
                                 <input type="number" min="1" max={lotProduct.supplier_stock} className="form-input" required value={sendQty} onChange={e => setSendQty(e.target.value)} />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Lot Unit Price (₹)</label>
+                                <label className="form-label">Lot Unit Price ({defaultCurrency.code})</label>
                                 <input type="number" step="0.01" min="1" className="form-input" required value={sendPrice} onChange={e => setSendPrice(e.target.value)} />
                             </div>
                             <div className="form-group">
@@ -432,7 +434,7 @@ export default function SupplierProductsIndex({ products, categories = [], brand
                             </div>
                             <div style={{ padding: '10px 12px', backgroundColor: '#F8FAFC', borderRadius: '4px', fontSize: '13px', display: 'flex', justifyContent: 'space-between' }}>
                                 <span>Total Lot Value:</span>
-                                <strong>₹{((parseInt(sendQty) || 0) * (parseFloat(sendPrice) || 0)).toLocaleString('en-IN')}</strong>
+                                <strong>{formatAdminPrice((parseInt(sendQty) || 0) * (parseFloat(sendPrice) || 0))}</strong>
                             </div>
                             <div style={{ display: 'flex', gap: '12px' }}>
                                 <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={() => setLotProduct(null)}>Cancel</button>

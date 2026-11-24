@@ -785,7 +785,7 @@ export default function AdminRolesIndex({
                                         className="form-input"
                                         value={staffPhone}
                                         onChange={(e) => setStaffPhone(e.target.value)}
-                                        placeholder="+91 98765 00010"
+                                        placeholder="+971 50 512 0010"
                                     />
                                 </div>
                             </div>

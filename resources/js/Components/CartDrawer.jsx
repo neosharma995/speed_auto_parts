@@ -2,8 +2,10 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import { X, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
+import { useCurrency } from '@/Context/CurrencyContext';
 
 export default function CartDrawer() {
+    const { formatPrice } = useCurrency();
     const { 
         cartItems, 
         itemCount, 
@@ -67,7 +69,7 @@ export default function CartDrawer() {
                                         </span>
                                     )}
                                     <span className="cart-drawer-item-price">
-                                        ₹{Number(item.price).toLocaleString('en-IN')}
+                                        {formatPrice(item.price)}
                                     </span>
                                     <div className="cart-drawer-item-controls">
                                         <div className="cart-drawer-item-qty">
@@ -103,7 +105,7 @@ export default function CartDrawer() {
                     <div className="cart-drawer-footer">
                         <div className="cart-subtotal">
                             <span>Estimated Subtotal</span>
-                            <strong>₹{subtotal.toLocaleString('en-IN')}</strong>
+                            <strong>{formatPrice(subtotal)}</strong>
                         </div>
                         <p style={{ fontSize: '11px', color: '#888', marginTop: '-4px' }}>
                             Taxes and shipping calculated at checkout.

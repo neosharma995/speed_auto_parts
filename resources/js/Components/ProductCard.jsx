@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Star, ShoppingCart, Heart, Check, ChevronDown } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { useWishlist } from '@/Context/WishlistContext';
 
 export default function ProductCard({ product }) {
     const { addToCart } = useCart();
+    const { formatPrice } = useCurrency();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const [quantity, setQuantity] = useState(1);
     const [added, setAdded] = useState(false);
@@ -103,11 +105,11 @@ export default function ProductCard({ product }) {
                 {/* Price */}
                 <div className="product-card-price-wrap">
                     <span className="product-card-price">
-                        ${sellingPrice.toFixed(2)}
+                        {formatPrice(sellingPrice)}
                     </span>
                     {hasDiscount && regularPrice > sellingPrice && (
                         <span className="product-card-original">
-                            ${regularPrice.toFixed(2)}
+                            {formatPrice(regularPrice)}
                         </span>
                     )}
                 </div>

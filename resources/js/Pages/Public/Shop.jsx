@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import ProductCard from '@/Components/ProductCard';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { 
     SlidersHorizontal, 
     ChevronRight, 
@@ -23,6 +24,7 @@ export default function Shop({
     filters = {}, 
     activeVehicle = null 
 }) {
+    const { activeCurrency } = useCurrency();
     const safeFilters = filters && !Array.isArray(filters) ? filters : {};
 
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -284,7 +286,7 @@ export default function Shop({
                                 </h4>
                                 <div className="filter-price-inputs">
                                     <div className="price-input-wrapper">
-                                        <span className="currency-prefix">₹</span>
+                                        <span className="currency-prefix">{activeCurrency.symbol}</span>
                                         <input 
                                             type="number" 
                                             className="price-field" 
@@ -295,7 +297,7 @@ export default function Shop({
                                     </div>
                                     <span className="price-separator">to</span>
                                     <div className="price-input-wrapper">
-                                        <span className="currency-prefix">₹</span>
+                                        <span className="currency-prefix">{activeCurrency.symbol}</span>
                                         <input 
                                             type="number" 
                                             className="price-field" 

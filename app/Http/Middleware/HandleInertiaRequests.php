@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Setting;
 use App\Models\StockTransfer;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
@@ -95,13 +96,54 @@ class HandleInertiaRequests extends Middleware
                     ->get(['id', 'name', 'slug', 'logo']);
             },
             'settings' => function () {
+                $db = Schema::hasTable('settings')
+                    ? Setting::query()->pluck('value', 'key')->toArray()
+                    : [];
+
+                $defaultRates = [
+                    'AED' => 1.0,
+                    'USD' => 0.2723,
+                    'EUR' => 0.2510,
+                ];
+
+                $storedRates = [];
+                if (! empty($db['currency_rates'])) {
+                    $decoded = json_decode((string) $db['currency_rates'], true);
+                    if (is_array($decoded)) {
+                        foreach ($decoded as $k => $v) {
+                            $upperKey = strtoupper((string) $k);
+                            $num = (float) $v;
+                            if ($num > 0 && array_key_exists($upperKey, $defaultRates)) {
+                                $storedRates[$upperKey] = $num;
+                            }
+                        }
+                    }
+                }
+
+                $currencyCode = strtoupper((string) ($db['currency_code'] ?? 'AED'));
+                $currencySymbol = (string) ($db['currency_symbol'] ?? ($currencyCode === 'AED' ? 'د.إ' : $currencyCode));
+                if ($currencyCode === 'AED' && ($currencySymbol === 'AED' || empty($currencySymbol))) {
+                    $currencySymbol = 'د.إ';
+                }
+                $currencyLocale = (string) ($db['currency_locale'] ?? ($currencyCode === 'AED' ? 'en-AE' : 'en-US'));
+                $currencyRate = (float) ($db['currency_rate'] ?? 1.0);
+                if ($currencyRate <= 0) {
+                    $currencyRate = 1.0;
+                }
+
+                $rates = array_merge($defaultRates, $storedRates);
+                $rates[$currencyCode] = 1.0;
+
                 return [
-                    'store_name' => config('app.name', 'SPEED AUTOS PARTS'),
-                    'store_phone' => '+91 98765 43210',
-                    'store_email' => 'support@speedautosparts.com',
-                    'store_address' => 'Speed Autos Parts HQ, Performance Drive, Industrial Area, Sector 5, New Delhi 110001',
-                    'currency_symbol' => '₹',
-                    'currency_code' => 'INR',
+                    'store_name' => $db['store_name'] ?? config('app.name', 'SPEED AUTOS PARTS'),
+                    'store_phone' => $db['store_phone'] ?? '+971 4 512 8900',
+                    'store_email' => $db['store_email'] ?? 'support@speedautosparts.ae',
+                    'store_address' => $db['store_address'] ?? 'Speed Autos Parts HQ, Al Quoz Industrial Area 3, Dubai, United Arab Emirates',
+                    'currency_symbol' => $currencySymbol,
+                    'currency_code' => $currencyCode,
+                    'currency_locale' => $currencyLocale,
+                    'currency_rate' => $currencyRate,
+                    'currency_rates' => $rates,
                 ];
             },
         ];

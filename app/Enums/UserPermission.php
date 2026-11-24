@@ -155,7 +155,7 @@ enum UserPermission: string
                 'label' => 'Settings',
                 'group' => 'Settings',
                 'route' => '/admin/settings',
-                'description' => 'Configure store identity, regional settings, and GST tax rates',
+                'description' => 'Configure store identity, regional settings, and UAE VAT tax rates',
             ],
         ];
     }

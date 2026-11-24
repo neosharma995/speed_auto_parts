@@ -3,6 +3,7 @@ import { Link, router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminDataTable from '@/Components/Admin/AdminDataTable';
 import BulkCatalogueTransferModal from '@/Components/Admin/BulkCatalogueTransferModal';
+import { useCurrency } from '@/Context/CurrencyContext';
 import {
     Store,
     Boxes,
@@ -20,6 +21,7 @@ import {
 export default function AdminCatalogueIndex({ products = [], transfersCount = 0, filters = {}, stats = {} }) {
     const safeFilters = filters && !Array.isArray(filters) ? filters : {};
     const { errors } = usePage().props;
+    const { formatAdminPrice, defaultCurrency } = useCurrency();
 
     const [showStats, setShowStats] = useState(false);
     const [search, setSearch] = useState(safeFilters.search || '');
@@ -181,7 +183,7 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
             label: 'Supplier Cost',
             render: (p) => {
                 const cost = Number(p.supplier_price || p.cost_price || 0);
-                return `₹${cost.toLocaleString('en-IN')}`;
+                return formatAdminPrice(cost);
             },
         },
         {
@@ -193,10 +195,10 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
                 const margin = sell - cost;
                 return (
                     <>
-                        <strong>₹{Number(p.base_price).toLocaleString('en-IN')}</strong>
+                        <strong>{formatAdminPrice(p.base_price)}</strong>
                         {p.sale_price && Number(p.sale_price) > 0 && (
                             <small style={{ display: 'block', color: '#168A35', fontWeight: 700 }}>
-                                Sale: ₹{Number(p.sale_price).toLocaleString('en-IN')}
+                                Sale: {formatAdminPrice(p.sale_price)}
                             </small>
                         )}
                         {cost > 0 && (
@@ -207,7 +209,7 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
                                     fontSize: '11px',
                                 }}
                             >
-                                Margin: {margin >= 0 ? '+' : ''}₹{margin.toLocaleString('en-IN')}
+                                Margin: {margin >= 0 ? '+' : '-'}{formatAdminPrice(Math.abs(margin))}
                             </small>
                         )}
                     </>
@@ -438,7 +440,7 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
                         <p style={{ fontSize: '13px', color: '#64748B', marginBottom: '16px' }}>
                             <strong>{transferProduct.name}</strong> — Warehouse:{' '}
                             <strong>{transferProduct.warehouse_stock} units</strong> | Supplier Cost:{' '}
-                            <strong>₹{modalSupplierCost.toLocaleString('en-IN')}</strong>
+                            <strong>{formatAdminPrice(modalSupplierCost)}</strong>
                         </p>
                         <form onSubmit={handleTransferSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             <div className="form-group">
@@ -458,7 +460,7 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div className="form-group">
                                     <label className="form-label">
-                                        Website Selling Price (₹) <span className="required">*</span>
+                                        Website Selling Price ({defaultCurrency.code}) <span className="required">*</span>
                                     </label>
                                     <input
                                         type="number"
@@ -471,7 +473,7 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label">Promotional Sale Price (₹ Optional)</label>
+                                    <label className="form-label">Promotional Sale Price ({defaultCurrency.code} Optional)</label>
                                     <input
                                         type="number"
                                         step="0.01"
@@ -494,7 +496,7 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
                             >
                                 <span>Estimated Unit Margin:</span>
                                 <strong style={{ color: modalMargin >= 0 ? '#168A35' : '#D93025' }}>
-                                    {modalMargin >= 0 ? '+' : ''}₹{modalMargin.toLocaleString('en-IN')} per unit
+                                    {modalMargin >= 0 ? '+' : '-'}{formatAdminPrice(Math.abs(modalMargin))} per unit
                                 </strong>
                             </div>
                             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 600 }}>
@@ -554,7 +556,7 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
                         <form onSubmit={handlePriceSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             <div className="form-group">
                                 <label className="form-label">
-                                    Selling Price (₹) <span className="required">*</span>
+                                    Selling Price ({defaultCurrency.code}) <span className="required">*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -567,7 +569,7 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Sale Price (₹ Optional)</label>
+                                <label className="form-label">Sale Price ({defaultCurrency.code} Optional)</label>
                                 <input
                                     type="number"
                                     step="0.01"

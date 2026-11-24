@@ -101,8 +101,8 @@ class StaticPageController extends Controller
     {
         return Inertia::render('Public/StaticPage', [
             'title' => 'Contact Engineering Support',
-            'subtitle' => 'Have questions regarding vehicle fitment or part numbers? Our technical specialists are here to assist.',
-            'content' => "Our team of certified automotive mechanics and performance specialists is available Monday through Saturday, 9:00 AM – 7:00 PM IST.\n\nDirect Inquiries:\n• Support Hotline: +91 11 4050 9000\n• Technical Fitment Desk: support@speedautosparts.com\n• Corporate Office: SPEED AUTOS PARTS Logistics Hub, Industrial Area Phase II, New Delhi - 110020\n\nFor part number verification, please include your 17-digit VIN (Vehicle Identification Number), Engine Code, and Year/Make/Model in your inquiry.",
+            'subtitle' => 'Have questions regarding vehicle fitment or part numbers? Our Dubai technical specialists are here to assist.',
+            'content' => "Our team of certified automotive mechanics and performance specialists is available Monday through Saturday, 9:00 AM – 7:00 PM GST (Dubai Time).\n\nDirect Inquiries:\n• Support Hotline: +971 4 512 8900\n• Technical Fitment Desk: support@speedautosparts.ae\n• Dubai HQ & Warehouse: SPEED AUTOS PARTS Logistics Hub, Al Quoz Industrial Area 3, Dubai, United Arab Emirates\n\nFor part number verification, please include your 17-digit VIN (Vehicle Identification Number), Engine Code, and Year/Make/Model in your inquiry.",
         ]);
     }
 
@@ -110,8 +110,8 @@ class StaticPageController extends Controller
     {
         return Inertia::render('Public/StaticPage', [
             'title' => 'Shipping & Dispatch Policy',
-            'subtitle' => 'Safe packaging and nationwide logistics for heavy automotive hardware.',
-            'content' => "Fast & Reliable Nationwide Dispatch:\n\n• Processing Time: In-stock components are inspected, packed with reinforced padding, and dispatched within 24 to 48 hours of order confirmation.\n• Standard Ground Shipping: 3 to 6 business days delivery across all tier-1 and tier-2 Indian pin codes.\n• Express Air Dispatch: 1 to 2 business days for select critical items (rotor kits, ECUs, sensors).\n• Freight Cargo for Heavy Items: Oversized items such as full cat-back exhaust systems, brake rotor assemblies, and coilover kits are shipped via verified ground freight partners (BlueDart / Delhivery Surface) with full transit insurance.\n• Tracking: Once shipped, real-time airway bill tracking details are dispatched via SMS and Email.",
+            'subtitle' => 'Fast UAE delivery and insured GCC freight for heavy automotive hardware.',
+            'content' => "Fast & Reliable Dubai & UAE Dispatch:\n\n• Processing Time: In-stock components are inspected, packed with reinforced padding, and dispatched within 24 hours from our Al Quoz, Dubai warehouse.\n• Same-Day & Next-Day Dubai Delivery: Same-day courier dispatch across Dubai for orders placed before 2:00 PM GST; next-day delivery across Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain.\n• GCC & International Air Express: 2 to 4 business days across Saudi Arabia, Qatar, Kuwait, Bahrain, and Oman.\n• Heavy Freight Cargo: Oversized items such as cat-back exhaust systems, brake rotor assemblies, and coilover kits ship via Aramex Express and DHL Express UAE with full transit insurance.\n• Tracking: Once shipped, real-time AWB tracking details are sent via SMS and Email.",
         ]);
     }
 
@@ -120,7 +120,7 @@ class StaticPageController extends Controller
         return Inertia::render('Public/StaticPage', [
             'title' => 'Return & Refund Policy',
             'subtitle' => 'Hassle-free 30-day returns on uninstalled, verified automotive spares.',
-            'content' => "Fitment Guarantee & Return Rules:\n\n• 30-Day Return Window: If a component is unopened, uninstalled, and in its original manufacturer packaging with all hardware intact, you may initiate a return within 30 days of delivery.\n• Fitment Guarantee: If an item verified through our Vehicle Parts Finder fails to fit your unmodified vehicle, we provide 100% free return pickup and replacement.\n• Non-Returnable Items: Electrical components (ECUs, wiring harnesses, opened sensors) and custom-drilled or mounted wheels/tires cannot be returned once test-fitted.\n• Refund Processing: Refunds are initiated within 48 hours of inspection at our central warehouse back to the original payment source.",
+            'content' => "Fitment Guarantee & Return Rules:\n\n• 30-Day Return Window: If a component is unopened, uninstalled, and in its original manufacturer packaging with all hardware intact, you may initiate a return within 30 days of delivery.\n• Fitment Guarantee: If an item verified through our Vehicle Parts Finder fails to fit your unmodified vehicle, we provide 100% free return pickup and replacement.\n• Non-Returnable Items: Electrical components (ECUs, wiring harnesses, opened sensors) and custom-drilled or mounted wheels/tires cannot be returned once test-fitted.\n• Refund Processing: Refunds are initiated within 48 hours of inspection at our Dubai warehouse back to your original Stripe payment card.",
         ]);
     }
 
@@ -129,7 +129,7 @@ class StaticPageController extends Controller
         return Inertia::render('Public/StaticPage', [
             'title' => 'Privacy Policy',
             'subtitle' => 'How SPEED AUTOS PARTS protects your vehicle details and account information.',
-            'content' => "We value your privacy. We only collect essential customer data required to fulfill parts orders, calculate accurate state GST, verify vehicle fitment compatibility, and coordinate courier delivery.\n\nWe never sell or rent your personal information to third-party marketing brokers. All financial transactions are securely processed via 256-bit SSL encrypted channels directly through RBI-compliant payment gateways (Razorpay). Your credit card and UPI credentials are never stored on our servers.",
+            'content' => "We value your privacy. We only collect essential customer data required to fulfill parts orders, calculate accurate UAE VAT (5%), verify vehicle fitment compatibility, and coordinate courier delivery.\n\nWe never sell or rent your personal information to third-party marketing brokers. All financial transactions are securely processed via 256-bit SSL encrypted channels directly through PCI-DSS Level 1 certified Stripe Checkout. Your credit card credentials are never stored on our servers.",
         ]);
     }
 
@@ -147,7 +147,7 @@ class StaticPageController extends Controller
         return Inertia::render('Public/StaticPage', [
             'title' => 'Help Center',
             'subtitle' => 'Frequently needed support, order assistance, and fitment guidelines.',
-            'content' => "Welcome to the Speed Autos Parts Help Center.\n\n• Ordering & Shipping: We deliver verified automotive hardware nationwide with real-time tracking.\n• Fitment Verification: Use our Vehicle Finder to confirm engine code, year, make, and model compatibility before placing orders.\n• Returns: Unopened and uninstalled parts can be returned within 30 days.\n• Technical Inquiries: Need advice on brake disc thickness, exhaust bore, or coilover spring rates? Reach our engineering team at support@speedautosparts.com or call +91 98765 43210.",
+            'content' => "Welcome to the Speed Autos Parts Dubai Help Center.\n\n• Ordering & Shipping: We deliver verified automotive hardware across Dubai, all UAE Emirates, and the GCC with real-time tracking.\n• Fitment Verification: Use our Vehicle Finder to confirm engine code, year, make, and model compatibility before placing orders.\n• Returns: Unopened and uninstalled parts can be returned within 30 days.\n• Technical Inquiries: Need advice on brake disc thickness, exhaust bore, or coilover spring rates? Reach our Dubai engineering team at support@speedautosparts.ae or call +971 4 512 8900.",
         ]);
     }
 

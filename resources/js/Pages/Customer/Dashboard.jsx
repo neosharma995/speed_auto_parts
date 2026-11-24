@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
+import { useCurrency } from '@/Context/CurrencyContext';
 import { 
     LayoutDashboard, 
     ShoppingBag, 
@@ -20,6 +21,8 @@ export default function CustomerDashboard({
     defaultAddress = null, 
     wishlistCount = 0 
 }) {
+    const { formatPrice } = useCurrency();
+
     return (
         <AppLayout title="Customer Dashboard">
             <div className="customer-portal">
@@ -117,7 +120,7 @@ export default function CustomerDashboard({
                                                     <td><strong>{order.order_number}</strong></td>
                                                     <td>{new Date(order.created_at).toLocaleDateString()}</td>
                                                     <td>{order.items_count || order.items?.length || 1} parts</td>
-                                                    <td><strong>₹{Number(order.total_amount).toLocaleString('en-IN')}</strong></td>
+                                                    <td><strong>{formatPrice(order.total_amount)}</strong></td>
                                                     <td>
                                                         <span className="badge badge-success" style={{ textTransform: 'uppercase' }}>
                                                             {order.payment_status}

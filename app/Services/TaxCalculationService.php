@@ -5,35 +5,31 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Product;
-use App\Models\TaxRate;
 
 class TaxCalculationService
 {
-    protected string $storeState = 'Delhi';
-    protected float $defaultRatePercent = 18.00;
+    protected string $storeEmirate = 'Dubai';
+    protected float $defaultRatePercent = 5.00;
 
     /**
-     * Calculate tax for an order based on items, subtotal, and customer shipping state.
+     * Calculate UAE VAT (5% standard rate) for an order based on items and product tax classes.
      *
      * @param  array<array{productId?: int|string, price: float|int, quantity: int}>  $items
-     * @param  string  $customerState
+     * @param  string  $customerEmirate
      * @return array{
      *     tax_amount: float,
+     *     vat_amount: float,
      *     cgst_amount: float,
      *     sgst_amount: float,
      *     igst_amount: float,
      *     tax_rate_percent: float,
+     *     is_interstate: bool,
      *     breakdown: array
      * }
      */
-    public function calculate(array $items, string $customerState = 'Delhi'): array
+    public function calculate(array $items, string $customerEmirate = 'Dubai'): array
     {
-        $isSameState = strcasecmp(trim($customerState), $this->storeState) === 0;
-
         $totalTax = 0.00;
-        $totalCgst = 0.00;
-        $totalSgst = 0.00;
-        $totalIgst = 0.00;
         $breakdown = [];
 
         foreach ($items as $item) {
@@ -54,17 +50,8 @@ class TaxCalculationService
                 }
             }
 
-            // Standard GST calculation (tax added to price)
             $itemTax = round(($lineTotal * $taxRatePercent) / 100, 2);
             $totalTax += $itemTax;
-
-            if ($isSameState) {
-                $halfTax = round($itemTax / 2, 2);
-                $totalCgst += $halfTax;
-                $totalSgst += ($itemTax - $halfTax);
-            } else {
-                $totalIgst += $itemTax;
-            }
 
             $breakdown[] = [
                 'name' => $item['name'] ?? 'Automotive Part',
@@ -74,13 +61,16 @@ class TaxCalculationService
             ];
         }
 
+        $roundedTax = round($totalTax, 2);
+
         return [
-            'tax_amount' => round($totalTax, 2),
-            'cgst_amount' => round($totalCgst, 2),
-            'sgst_amount' => round($totalSgst, 2),
-            'igst_amount' => round($totalIgst, 2),
+            'tax_amount' => $roundedTax,
+            'vat_amount' => $roundedTax,
+            'cgst_amount' => 0.00,
+            'sgst_amount' => 0.00,
+            'igst_amount' => 0.00,
             'tax_rate_percent' => $this->defaultRatePercent,
-            'is_interstate' => !$isSameState,
+            'is_interstate' => false,
             'breakdown' => $breakdown,
         ];
     }

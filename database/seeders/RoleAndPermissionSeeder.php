@@ -42,7 +42,7 @@ class RoleAndPermissionSeeder extends Seeder
             ['email' => 'admin@autosparts.com'],
             [
                 'name' => 'Autos Parts Admin',
-                'phone' => '+91 98765 00001',
+                'phone' => '+971 50 512 0001',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'status' => 'active',
@@ -55,7 +55,7 @@ class RoleAndPermissionSeeder extends Seeder
             ['email' => 'editor@autosparts.com'],
             [
                 'name' => 'Catalog Specialist',
-                'phone' => '+91 98765 00002',
+                'phone' => '+971 50 512 0002',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'status' => 'active',
@@ -67,8 +67,8 @@ class RoleAndPermissionSeeder extends Seeder
         $customerUser = User::updateOrCreate(
             ['email' => 'customer@autosparts.com'],
             [
-                'name' => 'Vikram Singh',
-                'phone' => '+91 98765 12345',
+                'name' => 'Tariq Al Mansoori',
+                'phone' => '+971 50 512 3456',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'status' => 'active',
@@ -80,9 +80,9 @@ class RoleAndPermissionSeeder extends Seeder
         $supplierUser = User::updateOrCreate(
             ['email' => 'supplier@autosparts.com'],
             [
-                'name' => 'Rajesh Sharma',
-                'company_name' => 'Apex Motorsport Spares Pvt. Ltd.',
-                'phone' => '+91 98765 00003',
+                'name' => 'Omar Haddad',
+                'company_name' => 'Apex Motorsport Spares LLC (Dubai)',
+                'phone' => '+971 4 512 0003',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'status' => 'active',

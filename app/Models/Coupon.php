@@ -56,7 +56,7 @@ class Coupon extends Model
         }
 
         if ($this->min_spend > 0 && $subtotal < (float) $this->min_spend) {
-            return ['valid' => false, 'message' => "Minimum order amount of ₹{$this->min_spend} required for this coupon."];
+            return ['valid' => false, 'message' => "Minimum order amount of AED {$this->min_spend} required for this coupon."];
         }
 
         if ($userId && $this->usage_per_user > 0) {
