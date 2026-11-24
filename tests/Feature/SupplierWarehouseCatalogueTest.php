@@ -311,4 +311,57 @@ class SupplierWarehouseCatalogueTest extends TestCase
         $this->assertCount(2, $catTransfers);
         $this->assertEquals($catTransfers[0]->lot_number, $catTransfers[1]->lot_number);
     }
+
+    public function test_admin_can_view_separate_catalogue_and_warehouse_transfer_logs_pages(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->firstOrFail();
+        $this->actingAs($admin);
+
+        $this->get('/admin/catalogue')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Catalogue/Index')
+                ->has('transfersCount')
+            );
+
+        $this->get('/admin/warehouse')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Warehouse/Index')
+                ->has('transfersCount')
+                ->has('pendingLotsCount')
+            );
+
+        $this->get('/admin/suppliers')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Suppliers/Index')
+                ->has('pendingLots')
+                ->where('activeTab', 'suppliers')
+            );
+
+        $this->get('/admin/suppliers?tab=incoming')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Suppliers/Index')
+                ->has('pendingLots')
+                ->where('activeTab', 'incoming')
+            );
+
+        $this->get('/admin/warehouse/incoming')->assertRedirect('/admin/suppliers?tab=incoming');
+
+        $this->get('/admin/catalogue/logs')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Transfers/Logs')
+                ->where('scope', 'catalogue')
+            );
+
+        $this->get('/admin/warehouse/logs')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Transfers/Logs')
+                ->where('scope', 'warehouse')
+            );
+    }
 }

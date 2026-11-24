@@ -21,12 +21,13 @@ class WarehouseController extends Controller
 
     public function index(): Response
     {
-        $pendingLots = StockTransfer::query()
+        $pendingBaseQuery = StockTransfer::query()
             ->where('direction', 'supplier_to_warehouse')
-            ->where('status', 'pending')
-            ->with(['product.brand', 'product.category', 'supplier'])
-            ->latest()
-            ->get();
+            ->where('status', 'pending');
+
+        $pendingLotsCount = (clone $pendingBaseQuery)->distinct('lot_number')->count('lot_number');
+        $pendingLinesCount = (clone $pendingBaseQuery)->count();
+        $pendingUnits = (int) (clone $pendingBaseQuery)->sum('quantity');
 
         $products = Product::query()
             ->with(['supplier', 'brand', 'category'])
@@ -34,11 +35,7 @@ class WarehouseController extends Controller
             ->orderByDesc('updated_at')
             ->get();
 
-        $recentTransfers = StockTransfer::query()
-            ->with(['product', 'supplier', 'initiator', 'approver'])
-            ->latest()
-            ->take(30)
-            ->get();
+        $transfersCount = StockTransfer::query()->count();
 
         $warehouseUnits = (int) Product::sum('warehouse_stock');
         $catalogueUnits = (int) Product::sum('stock_quantity');
@@ -46,16 +43,60 @@ class WarehouseController extends Controller
             ->value('total');
 
         return Inertia::render('Admin/Warehouse/Index', [
-            'pendingLots' => $pendingLots,
+            'pendingLotsCount' => $pendingLotsCount,
             'products' => $products,
-            'recentTransfers' => $recentTransfers,
+            'transfersCount' => $transfersCount,
             'stats' => [
-                'pending_lots_count' => $pendingLots->count(),
-                'pending_units' => (int) $pendingLots->sum('quantity'),
+                'pending_lots_count' => $pendingLotsCount,
+                'pending_lines_count' => $pendingLinesCount,
+                'pending_units' => $pendingUnits,
                 'warehouse_units' => $warehouseUnits,
                 'catalogue_units' => $catalogueUnits,
                 'warehouse_value' => $warehouseValue,
             ],
+        ]);
+    }
+
+    public function incoming(): RedirectResponse
+    {
+        return redirect('/admin/suppliers?tab=incoming');
+    }
+
+    public function logs(Request $request): Response
+    {
+        $query = StockTransfer::query()
+            ->with(['product', 'supplier', 'initiator', 'approver']);
+
+        if ($request->filled('search')) {
+            $search = trim((string) $request->input('search'));
+            $query->where(function ($q) use ($search) {
+                $q->where('lot_number', 'like', "%{$search}%")
+                    ->orWhere('notes', 'like', "%{$search}%")
+                    ->orWhereHas('product', function ($pq) use ($search) {
+                        $pq->where('name', 'like', "%{$search}%")
+                            ->orWhere('sku', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($request->filled('direction')) {
+            $query->where('direction', (string) $request->input('direction'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', (string) $request->input('status'));
+        }
+
+        $transfers = $query->latest()->paginate(15)->withQueryString();
+
+        return Inertia::render('Admin/Transfers/Logs', [
+            'transfers' => $transfers,
+            'scope' => 'warehouse',
+            'title' => 'Warehouse Stock Transfer Logs',
+            'backUrl' => '/admin/warehouse',
+            'backLabel' => 'Back to Warehouse',
+            'baseUrl' => '/admin/warehouse/logs',
+            'filters' => (object) $request->only(['search', 'direction', 'status']),
         ]);
     }
 

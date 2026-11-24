@@ -961,18 +961,23 @@
     }
 
     .hero-scene-controls {
-      position: relative;
-      bottom: auto;
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
       right: auto;
-      margin: 12px auto 4px;
+      transform: translateX(-50%);
+      z-index: 14;
+      margin: 0;
+      width: auto;
       display: flex;
       justify-content: center;
-      transform: none;
+      align-items: center;
     }
 
     .hero-play-pause-btn {
       bottom: 12px;
       right: 12px;
+      z-index: 15;
     }
   }
 }

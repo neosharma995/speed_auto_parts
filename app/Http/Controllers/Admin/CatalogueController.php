@@ -41,16 +41,13 @@ class CatalogueController extends Controller
 
         $products = $query->orderByDesc('warehouse_stock')->latest()->get();
 
-        $recentTransfers = StockTransfer::query()
+        $transfersCount = StockTransfer::query()
             ->whereIn('direction', ['warehouse_to_catalogue', 'catalogue_to_warehouse'])
-            ->with(['product', 'initiator'])
-            ->latest()
-            ->take(20)
-            ->get();
+            ->count();
 
         return Inertia::render('Admin/Catalogue/Index', [
             'products' => $products,
-            'recentTransfers' => $recentTransfers,
+            'transfersCount' => $transfersCount,
             'filters' => (object) $request->only(['search', 'filter']),
             'stats' => [
                 'published_count' => Product::where('status', 'published')->count(),
@@ -58,6 +55,45 @@ class CatalogueController extends Controller
                 'catalogue_units' => (int) Product::sum('stock_quantity'),
                 'warehouse_units' => (int) Product::sum('warehouse_stock'),
             ],
+        ]);
+    }
+
+    public function logs(Request $request): Response
+    {
+        $query = StockTransfer::query()
+            ->whereIn('direction', ['warehouse_to_catalogue', 'catalogue_to_warehouse'])
+            ->with(['product', 'supplier', 'initiator', 'approver']);
+
+        if ($request->filled('search')) {
+            $search = trim((string) $request->input('search'));
+            $query->where(function ($q) use ($search) {
+                $q->where('lot_number', 'like', "%{$search}%")
+                    ->orWhere('notes', 'like', "%{$search}%")
+                    ->orWhereHas('product', function ($pq) use ($search) {
+                        $pq->where('name', 'like', "%{$search}%")
+                            ->orWhere('sku', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($request->filled('direction')) {
+            $query->where('direction', (string) $request->input('direction'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', (string) $request->input('status'));
+        }
+
+        $transfers = $query->latest()->paginate(15)->withQueryString();
+
+        return Inertia::render('Admin/Transfers/Logs', [
+            'transfers' => $transfers,
+            'scope' => 'catalogue',
+            'title' => 'Catalogue Transfer Logs',
+            'backUrl' => '/admin/catalogue',
+            'backLabel' => 'Back to Website Catalogue',
+            'baseUrl' => '/admin/catalogue/logs',
+            'filters' => (object) $request->only(['search', 'direction', 'status']),
         ]);
     }
 

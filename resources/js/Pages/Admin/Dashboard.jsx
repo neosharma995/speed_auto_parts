@@ -109,7 +109,7 @@ export default function AdminDashboard({
                                         <td><span className="badge badge-warning">{lot.quantity} units</span></td>
                                         <td>₹{Number(lot.unit_price || 0).toLocaleString('en-IN')}</td>
                                         <td>
-                                            <Link href="/admin/warehouse" className="btn btn-primary btn-sm">
+                                            <Link href="/admin/suppliers?tab=incoming" className="btn btn-primary btn-sm">
                                                 Review in Warehouse
                                             </Link>
                                         </td>

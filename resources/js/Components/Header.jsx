@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useWishlist } from '@/Context/WishlistContext';
+import SearchDropdown from './SearchDropdown';
 
 export default function Header() {
     const { auth, navBrands = [], settings = {} } = usePage().props;
@@ -30,8 +31,131 @@ export default function Header() {
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [searchResults, setSearchResults] = useState(null);
+    const [searchSelectedIndex, setSearchSelectedIndex] = useState(-1);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [expandedSubmenu, setExpandedSubmenu] = useState(null);
+
     const accountRef = useRef(null);
+    const desktopSearchRef = useRef(null);
+    const mobileSearchRef = useRef(null);
+    const debounceTimerRef = useRef(null);
+    const abortControllerRef = useRef(null);
+
+    // Fetch search suggestions (empty query returns popular & categories/brands)
+    const fetchSuggestions = (query = '') => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        abortControllerRef.current = new AbortController();
+
+        setSearchLoading(true);
+        const url = query.trim()
+            ? `/api/search/suggestions?q=${encodeURIComponent(query.trim())}`
+            : `/api/search/suggestions`;
+
+        fetch(url, { signal: abortControllerRef.current.signal })
+            .then((res) => {
+                if (!res.ok) throw new Error('Search suggestions failed');
+                return res.json();
+            })
+            .then((data) => {
+                setSearchResults(data);
+                setSearchLoading(false);
+            })
+            .catch((err) => {
+                if (err.name !== 'AbortError') {
+                    setSearchLoading(false);
+                }
+            });
+    };
+
+    // Handle input change with debounce
+    const handleSearchChange = (value) => {
+        setSearchQuery(value);
+        setSearchSelectedIndex(-1);
+        setIsSearchOpen(true);
+
+        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(() => {
+            fetchSuggestions(value);
+        }, 220);
+    };
+
+    // Handle input focus
+    const handleSearchFocus = () => {
+        setIsSearchOpen(true);
+        if (!searchResults) {
+            fetchSuggestions(searchQuery);
+        }
+    };
+
+    // Handle popular search tag click
+    const handleSelectPopular = (term) => {
+        setSearchQuery(term);
+        setIsSearchOpen(true);
+        fetchSuggestions(term);
+    };
+
+    // Handle clear search
+    const handleClearSearch = () => {
+        setSearchQuery('');
+        setSearchSelectedIndex(-1);
+        fetchSuggestions('');
+    };
+
+    // Handle keyboard navigation (ArrowUp, ArrowDown, Enter, Escape)
+    const handleSearchKeyDown = (e) => {
+        if (!isSearchOpen) {
+            if (e.key === 'ArrowDown') {
+                setIsSearchOpen(true);
+                if (!searchResults) fetchSuggestions(searchQuery);
+            }
+            return;
+        }
+
+        const products = searchResults?.products || [];
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (products.length > 0) {
+                setSearchSelectedIndex((prev) => (prev < products.length - 1 ? prev + 1 : 0));
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (products.length > 0) {
+                setSearchSelectedIndex((prev) => (prev > 0 ? prev - 1 : products.length - 1));
+            }
+        } else if (e.key === 'Enter') {
+            if (searchSelectedIndex >= 0 && products[searchSelectedIndex]) {
+                e.preventDefault();
+                setIsSearchOpen(false);
+                window.location.href = `/products/${products[searchSelectedIndex].slug}`;
+            }
+        } else if (e.key === 'Escape') {
+            setIsSearchOpen(false);
+        }
+    };
+
+    // Click outside listener for search dropdown (desktop & mobile)
+    useEffect(() => {
+        if (!isSearchOpen) return;
+        const handleSearchClickOutside = (e) => {
+            const inDesktop = desktopSearchRef.current && desktopSearchRef.current.contains(e.target);
+            const inMobile = mobileSearchRef.current && mobileSearchRef.current.contains(e.target);
+            if (!inDesktop && !inMobile) {
+                setIsSearchOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleSearchClickOutside, true);
+        document.addEventListener('touchstart', handleSearchClickOutside, true);
+        return () => {
+            document.removeEventListener('mousedown', handleSearchClickOutside, true);
+            document.removeEventListener('touchstart', handleSearchClickOutside, true);
+        };
+    }, [isSearchOpen]);
 
     // Click outside listener for user account dropdown (using capture to intercept reliably)
     useEffect(() => {
@@ -71,13 +195,16 @@ export default function Header() {
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();
+        setIsSearchOpen(false);
         if (searchQuery.trim()) {
             window.location.href = `/shop?search=${encodeURIComponent(searchQuery.trim())}`;
+        } else {
+            window.location.href = '/shop';
         }
     };
 
     return (
-        <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`}>
+        <header className={`site-header ${isScrolled ? 'is-scrolled' : ''} ${isSearchOpen ? 'is-search-open' : ''}`}>
             {/* ============================================================ */}
             {/* ROW 1: TOP UTILITY BAR (Dark #0B0B0E)                         */}
             {/* ============================================================ */}
@@ -132,18 +259,46 @@ export default function Header() {
                             />
                         </Link>
 
-                        {/* Centered White Pill Search Bar */}
-                        <form onSubmit={handleSearchSubmit} className="site-header-search">
+                        {/* Centered White Pill Search Bar with Autocomplete Dropdown */}
+                        <form
+                            onSubmit={handleSearchSubmit}
+                            className="site-header-search"
+                            ref={desktopSearchRef}
+                            autoComplete="off"
+                        >
                             <input
                                 type="text"
                                 placeholder="Search by part number, product, brand..."
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={(e) => handleSearchChange(e.target.value)}
+                                onFocus={handleSearchFocus}
+                                onKeyDown={handleSearchKeyDown}
                                 aria-label="Search by part number, product, brand"
                             />
+                            {searchQuery && (
+                                <button
+                                    type="button"
+                                    className="search-clear-btn"
+                                    onClick={handleClearSearch}
+                                    aria-label="Clear search query"
+                                >
+                                    <X size={15} />
+                                </button>
+                            )}
                             <button type="submit" aria-label="Search" className="search-submit-btn">
                                 <Search size={15} strokeWidth={2.4} />
                             </button>
+
+                            <SearchDropdown
+                                isOpen={isSearchOpen}
+                                loading={searchLoading}
+                                results={searchResults}
+                                searchQuery={searchQuery}
+                                selectedIndex={searchSelectedIndex}
+                                onSelectPopular={handleSelectPopular}
+                                onClose={() => setIsSearchOpen(false)}
+                                isMobile={false}
+                            />
                         </form>
 
                         {/* Right: Actions (Account, Wishlist, Cart) */}
@@ -329,21 +484,44 @@ export default function Header() {
                         </div>
                     </div>
 
-                    {/* Expandable Mobile Search Field */}
+                    {/* Expandable Mobile Search Field with Autocomplete Dropdown */}
                     {mobileSearchOpen && (
-                        <div className="mobile-search-expand-wrap">
-                            <form onSubmit={handleSearchSubmit} className="mobile-search-form">
+                        <div className="mobile-search-expand-wrap" ref={mobileSearchRef}>
+                            <form onSubmit={handleSearchSubmit} className="mobile-search-form" autoComplete="off">
                                 <input
                                     type="text"
                                     placeholder="Search by part number, product, brand..."
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) => handleSearchChange(e.target.value)}
+                                    onFocus={handleSearchFocus}
+                                    onKeyDown={handleSearchKeyDown}
                                     autoFocus
                                 />
+                                {searchQuery && (
+                                    <button
+                                        type="button"
+                                        className="mobile-search-clear"
+                                        onClick={handleClearSearch}
+                                        aria-label="Clear search query"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                )}
                                 <button type="submit" className="mobile-search-submit" aria-label="Search">
                                     <Search size={16} />
                                 </button>
                             </form>
+
+                            <SearchDropdown
+                                isOpen={isSearchOpen}
+                                loading={searchLoading}
+                                results={searchResults}
+                                searchQuery={searchQuery}
+                                selectedIndex={searchSelectedIndex}
+                                onSelectPopular={handleSelectPopular}
+                                onClose={() => setIsSearchOpen(false)}
+                                isMobile={true}
+                            />
                         </div>
                     )}
                 </div>
@@ -478,6 +656,7 @@ export default function Header() {
                         </div>
 
                         <div className="mobile-drawer-body">
+                            {/* All Categories Link */}
                             <Link
                                 href="/categories"
                                 className="mobile-drawer-link highlight"
@@ -485,20 +664,71 @@ export default function Header() {
                             >
                                 <List size={16} /> All Categories
                             </Link>
-                            <Link
-                                href="/"
-                                className="mobile-drawer-link"
-                                onClick={() => setMobileDrawerOpen(false)}
-                            >
-                                Home
-                            </Link>
-                            <Link
-                                href="/shop"
-                                className="mobile-drawer-link"
-                                onClick={() => setMobileDrawerOpen(false)}
-                            >
-                                Performance Parts
-                            </Link>
+
+                            {/* Home with Accordion */}
+                            <div className="mobile-drawer-item">
+                                <div className="mobile-drawer-item-row">
+                                    <Link
+                                        href="/"
+                                        className="mobile-drawer-link-text"
+                                        onClick={() => setMobileDrawerOpen(false)}
+                                    >
+                                        Home
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        className={`mobile-drawer-chevron-btn ${expandedSubmenu === 'home' ? 'is-open' : ''}`}
+                                        onClick={() => setExpandedSubmenu(expandedSubmenu === 'home' ? null : 'home')}
+                                        aria-label="Toggle Home menu"
+                                    >
+                                        {expandedSubmenu === 'home' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                    </button>
+                                </div>
+                                {expandedSubmenu === 'home' && (
+                                    <div className="mobile-drawer-submenu">
+                                        <Link href="/" className="mobile-drawer-sublink highlight-sublink" onClick={() => setMobileDrawerOpen(false)}>Homepage</Link>
+                                        <Link href="/shop?sort=latest" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>New Arrivals</Link>
+                                        <Link href="/shop?sort=rating" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Featured Parts</Link>
+                                        <Link href="/shop" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Shop All Parts</Link>
+                                        <Link href="/vehicle-finder" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Vehicle Fitment Finder</Link>
+                                        <Link href="/categories" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Browse Categories</Link>
+                                        <Link href="/brands" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Top Brands</Link>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Performance Parts with Accordion */}
+                            <div className="mobile-drawer-item">
+                                <div className="mobile-drawer-item-row">
+                                    <Link
+                                        href="/shop"
+                                        className="mobile-drawer-link-text"
+                                        onClick={() => setMobileDrawerOpen(false)}
+                                    >
+                                        Performance Parts
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        className={`mobile-drawer-chevron-btn ${expandedSubmenu === 'performance' ? 'is-open' : ''}`}
+                                        onClick={() => setExpandedSubmenu(expandedSubmenu === 'performance' ? null : 'performance')}
+                                        aria-label="Toggle Performance menu"
+                                    >
+                                        {expandedSubmenu === 'performance' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                    </button>
+                                </div>
+                                {expandedSubmenu === 'performance' && (
+                                    <div className="mobile-drawer-submenu">
+                                        <Link href="/shop" className="mobile-drawer-sublink highlight-sublink" onClick={() => setMobileDrawerOpen(false)}>All Performance Parts</Link>
+                                        <Link href="/shop?category=tires" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Tires & Track Rubber</Link>
+                                        <Link href="/shop?category=brakes" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Rotors & Big Brake Kits</Link>
+                                        <Link href="/shop?category=intake" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Cold Air Intake Systems</Link>
+                                        <Link href="/shop?category=exhaust" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Stainless Cat-Back Exhausts</Link>
+                                        <Link href="/shop?category=suspension" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Adjustable Coilovers</Link>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Shop By Vehicle */}
                             <Link
                                 href="/vehicle-finder"
                                 className="mobile-drawer-link"
@@ -506,13 +736,51 @@ export default function Header() {
                             >
                                 Shop By Vehicle
                             </Link>
-                            <Link
-                                href="/brands"
-                                className="mobile-drawer-link"
-                                onClick={() => setMobileDrawerOpen(false)}
-                            >
-                                Brands
-                            </Link>
+
+                            {/* Brands with Accordion */}
+                            <div className="mobile-drawer-item">
+                                <div className="mobile-drawer-item-row">
+                                    <Link
+                                        href="/brands"
+                                        className="mobile-drawer-link-text"
+                                        onClick={() => setMobileDrawerOpen(false)}
+                                    >
+                                        Brands
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        className={`mobile-drawer-chevron-btn ${expandedSubmenu === 'brands' ? 'is-open' : ''}`}
+                                        onClick={() => setExpandedSubmenu(expandedSubmenu === 'brands' ? null : 'brands')}
+                                        aria-label="Toggle Brands menu"
+                                    >
+                                        {expandedSubmenu === 'brands' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                    </button>
+                                </div>
+                                {expandedSubmenu === 'brands' && (
+                                    <div className="mobile-drawer-submenu">
+                                        <Link href="/brands" className="mobile-drawer-sublink highlight-sublink" onClick={() => setMobileDrawerOpen(false)}>
+                                            View All Brands
+                                        </Link>
+                                        {navBrands.length > 0 ? (
+                                            navBrands.map(b => (
+                                                <Link key={b.id} href={`/shop?brand=${b.slug}`} className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>
+                                                    {b.name}
+                                                </Link>
+                                            ))
+                                        ) : (
+                                            <>
+                                                <Link href="/shop?brand=brembo" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Brembo</Link>
+                                                <Link href="/shop?brand=michelin" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Michelin</Link>
+                                                <Link href="/shop?brand=borla" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Borla</Link>
+                                                <Link href="/shop?brand=kn-engineering" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>K&N Engineering</Link>
+                                                <Link href="/shop?brand=bilstein" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Bilstein</Link>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Deals */}
                             <Link
                                 href="/shop?filter=deals"
                                 className="mobile-drawer-link deals-highlight"
@@ -520,13 +788,39 @@ export default function Header() {
                             >
                                 <span className="site-header-deals-icon">%</span> Deals
                             </Link>
-                            <Link
-                                href="/contact-us"
-                                className="mobile-drawer-link"
-                                onClick={() => setMobileDrawerOpen(false)}
-                            >
-                                Support
-                            </Link>
+
+                            {/* Support with Accordion */}
+                            <div className="mobile-drawer-item">
+                                <div className="mobile-drawer-item-row">
+                                    <Link
+                                        href="/contact-us"
+                                        className="mobile-drawer-link-text"
+                                        onClick={() => setMobileDrawerOpen(false)}
+                                    >
+                                        Support
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        className={`mobile-drawer-chevron-btn ${expandedSubmenu === 'support' ? 'is-open' : ''}`}
+                                        onClick={() => setExpandedSubmenu(expandedSubmenu === 'support' ? null : 'support')}
+                                        aria-label="Toggle Support menu"
+                                    >
+                                        {expandedSubmenu === 'support' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                    </button>
+                                </div>
+                                {expandedSubmenu === 'support' && (
+                                    <div className="mobile-drawer-submenu">
+                                        <Link href="/contact-us" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Contact Us</Link>
+                                        <Link href="/about-us" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>About Us</Link>
+                                        <Link href="/track-order" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Track Order</Link>
+                                        <Link href="/shipping-policy" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Shipping Policy</Link>
+                                        <Link href="/return-policy" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Return & Refund</Link>
+                                        <Link href="/terms" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Terms & Conditions</Link>
+                                        <Link href="/faqs" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>FAQs</Link>
+                                        <Link href="/help-center" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Help Center</Link>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <div className="mobile-drawer-footer">

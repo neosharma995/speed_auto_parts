@@ -13,6 +13,7 @@ use App\Http\Controllers\Public\VehicleFinderController;
 use Illuminate\Support\Facades\Route;
 
 // Public Storefront
+Route::get('/api/search/suggestions', [ShopController::class, 'suggestions'])->name('api.search.suggestions');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');

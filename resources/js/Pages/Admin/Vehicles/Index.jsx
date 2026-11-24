@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Plus, Edit, Trash2, Search, X, RotateCcw } from 'lucide-react';
+import AdminDataTable from '@/Components/Admin/AdminDataTable';
+import { Plus, Edit, Trash2, X } from 'lucide-react';
 
 const FUEL_TYPES = ['Petrol', 'Diesel', 'Hybrid', 'Electric', 'CNG'];
 
@@ -38,8 +39,7 @@ export default function AdminVehiclesIndex({ vehicles, makes = [], years = [], f
         filters?.year
     );
 
-    const handleFilter = (e) => {
-        e.preventDefault();
+    const handleFilter = () => {
         const params = {};
         if (search.trim()) params.search = search.trim();
         if (makeFilter) params.make = makeFilter;
@@ -118,210 +118,127 @@ export default function AdminVehiclesIndex({ vehicles, makes = [], years = [], f
 
     const errorMessages = Object.values(errors || {}).filter(Boolean);
 
+    const columns = [
+        {
+            key: 'year',
+            label: 'Year',
+            render: (v) => <strong>{v.year}</strong>,
+        },
+        {
+            key: 'make_model',
+            label: 'Make & Model',
+            render: (v) => (
+                <>
+                    <strong>{v.make}</strong> {v.model}
+                </>
+            ),
+        },
+        {
+            key: 'submodel',
+            label: 'Trim / Submodel',
+            render: (v) => v.submodel || '—',
+        },
+        {
+            key: 'engine',
+            label: 'Engine',
+            render: (v) => (
+                <>
+                    <code>{v.engine}</code>
+                    {v.engine_size && (
+                        <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>
+                            {v.engine_size}
+                        </div>
+                    )}
+                </>
+            ),
+        },
+        {
+            key: 'specs',
+            label: 'Specs',
+            render: (v) => {
+                const extraSpecs = [v.transmission, v.body_type].filter(Boolean).join(' • ');
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
+                        <span className="badge badge-neutral">{v.fuel_type || 'Petrol'}</span>
+                        {extraSpecs && <small style={{ color: '#64748B', fontSize: '12px' }}>{extraSpecs}</small>}
+                    </div>
+                );
+            },
+        },
+        {
+            key: 'linked_parts',
+            label: 'Linked Parts',
+            render: (v) => <span className="badge badge-neutral">{v.product_vehicles_count ?? 0} linked</span>,
+        },
+        {
+            key: 'actions',
+            label: 'Actions',
+            align: 'right',
+            render: (v) => (
+                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                    <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        title="Edit Vehicle"
+                        onClick={() => openEdit(v)}
+                    >
+                        <Edit size={14} />
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        style={{ color: '#D93025', borderColor: '#FECDD3' }}
+                        title="Delete Vehicle"
+                        onClick={() => handleDelete(v)}
+                    >
+                        <Trash2 size={14} />
+                    </button>
+                </div>
+            ),
+        },
+    ];
+
     return (
         <AdminLayout title="Vehicle Compatibility Database">
-            <div className="admin-card">
-                <div className="admin-card-header">
-                    <h3>Registered Vehicles ({totalCount})</h3>
+            <AdminDataTable
+                title="Registered Vehicles"
+                count={totalCount}
+                search={{
+                    value: search,
+                    onChange: setSearch,
+                    placeholder: 'Search by make, model, trim, engine, year...',
+                }}
+                filters={[
+                    {
+                        key: 'make',
+                        value: makeFilter,
+                        onChange: setMakeFilter,
+                        placeholder: 'All Makes',
+                        options: makes.map((m) => ({ value: m, label: m })),
+                    },
+                    {
+                        key: 'year',
+                        value: yearFilter,
+                        onChange: setYearFilter,
+                        placeholder: 'All Years',
+                        options: years.map((y) => ({ value: String(y), label: String(y) })),
+                    },
+                ]}
+                onSearch={handleFilter}
+                searchButtonLabel="Filter"
+                hasActiveFilters={hasActiveFilters}
+                onReset={handleResetFilters}
+                actions={
                     <button type="button" className="btn btn-primary btn-sm" onClick={openCreate}>
                         <Plus size={16} /> Add Vehicle
                     </button>
-                </div>
-
-                {/* Search & Filter Bar */}
-                <div
-                    className="admin-card-body"
-                    style={{ borderBottom: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', padding: '14px 20px' }}
-                >
-                    <form
-                        onSubmit={handleFilter}
-                        style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}
-                    >
-                        <div style={{ flex: '1 1 240px', position: 'relative' }}>
-                            <Search
-                                size={15}
-                                style={{
-                                    position: 'absolute',
-                                    left: '11px',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                    color: '#94A3B8',
-                                    pointerEvents: 'none',
-                                }}
-                            />
-                            <input
-                                type="text"
-                                className="form-input"
-                                style={{ paddingLeft: '34px' }}
-                                placeholder="Search by make, model, trim, engine, year..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
-                        </div>
-
-                        <select
-                            className="form-select"
-                            style={{ width: '165px' }}
-                            value={makeFilter}
-                            onChange={(e) => setMakeFilter(e.target.value)}
-                        >
-                            <option value="">All Makes</option>
-                            {makes.map((m) => (
-                                <option key={m} value={m}>
-                                    {m}
-                                </option>
-                            ))}
-                        </select>
-
-                        <select
-                            className="form-select"
-                            style={{ width: '130px' }}
-                            value={yearFilter}
-                            onChange={(e) => setYearFilter(e.target.value)}
-                        >
-                            <option value="">All Years</option>
-                            {years.map((y) => (
-                                <option key={y} value={String(y)}>
-                                    {y}
-                                </option>
-                            ))}
-                        </select>
-
-                        <button type="submit" className="btn btn-outline btn-sm" style={{ height: '38px', padding: '0 14px' }}>
-                            Filter
-                        </button>
-
-                        {hasActiveFilters && (
-                            <button
-                                type="button"
-                                className="btn btn-outline btn-sm"
-                                style={{ height: '38px', padding: '0 12px' }}
-                                onClick={handleResetFilters}
-                                title="Reset Filters"
-                            >
-                                <RotateCcw size={14} /> Reset
-                            </button>
-                        )}
-                    </form>
-                </div>
-
-                {/* Vehicles Table */}
-                <div className="admin-card-body" style={{ padding: 0, overflowX: 'auto' }}>
-                    <table className="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Year</th>
-                                <th>Make &amp; Model</th>
-                                <th>Trim / Submodel</th>
-                                <th>Engine</th>
-                                <th>Specs</th>
-                                <th>Linked Parts</th>
-                                <th style={{ textAlign: 'right' }}>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {items.length === 0 ? (
-                                <tr>
-                                    <td colSpan="7" style={{ textAlign: 'center', padding: '32px', color: '#64748B' }}>
-                                        No vehicles found matching your criteria.
-                                    </td>
-                                </tr>
-                            ) : (
-                                items.map((v) => {
-                                    const extraSpecs = [v.transmission, v.body_type].filter(Boolean).join(' • ');
-                                    return (
-                                        <tr key={v.id}>
-                                            <td>
-                                                <strong>{v.year}</strong>
-                                            </td>
-                                            <td>
-                                                <strong>{v.make}</strong> {v.model}
-                                            </td>
-                                            <td>{v.submodel || '—'}</td>
-                                            <td>
-                                                <code>{v.engine}</code>
-                                                {v.engine_size && (
-                                                    <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>
-                                                        {v.engine_size}
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
-                                                    <span className="badge badge-neutral">{v.fuel_type || 'Petrol'}</span>
-                                                    {extraSpecs && (
-                                                        <small style={{ color: '#64748B', fontSize: '12px' }}>{extraSpecs}</small>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span className="badge badge-neutral">
-                                                    {v.product_vehicles_count ?? 0} linked
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-outline btn-sm"
-                                                        title="Edit Vehicle"
-                                                        onClick={() => openEdit(v)}
-                                                    >
-                                                        <Edit size={14} />
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-outline btn-sm"
-                                                        style={{ color: '#D93025', borderColor: '#FECDD3' }}
-                                                        title="Delete Vehicle"
-                                                        onClick={() => handleDelete(v)}
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Pagination & Summary Footer */}
-                <div
-                    style={{
-                        padding: '16px 20px',
-                        borderTop: '1px solid #E2E8F0',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        flexWrap: 'wrap',
-                        gap: '12px',
-                    }}
-                >
-                    <div style={{ fontSize: '13px', color: '#64748B' }}>
-                        Showing {vehicles?.from || 0} to {vehicles?.to || 0} of {totalCount} vehicles
-                    </div>
-
-                    {vehicles?.links && vehicles.links.length > 3 && (
-                        <div className="pagination">
-                            {vehicles.links.map((link, idx) => (
-                                <button
-                                    key={idx}
-                                    type="button"
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                    className={`pagination-item ${link.active ? 'pagination-item--active' : ''}`}
-                                    onClick={() =>
-                                        link.url && router.visit(link.url, { preserveScroll: true, preserveState: true })
-                                    }
-                                    disabled={!link.url}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
+                }
+                columns={columns}
+                rows={items}
+                emptyMessage="No vehicles found matching your criteria."
+                pagination={Array.isArray(vehicles) ? null : vehicles}
+                itemLabel="vehicles"
+            />
 
             {/* Create / Edit Vehicle Modal */}
             {showModal && (

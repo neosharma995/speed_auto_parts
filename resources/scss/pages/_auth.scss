@@ -76,10 +76,20 @@
   z-index: 10;
   padding: 24px 0 16px 0;
 
+  @include respond-below('md') {
+    padding: 16px 0 12px 0;
+  }
+
   &-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    @include respond-below('md') {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
   }
 
   &-logo {
@@ -88,10 +98,14 @@
     text-decoration: none;
 
     img {
-      height: 38px;
+      height: 34px;
       width: auto;
       object-fit: contain;
       display: block;
+
+      @include respond-below('md') {
+        height: 28px;
+      }
     }
   }
 
@@ -130,16 +144,21 @@
     display: flex;
     align-items: center;
     gap: 14px;
+
+    @include respond-below('md') {
+      align-self: flex-end;
+      gap: 10px;
+    }
   }
 
   &-text {
     font-size: 14px;
     color: $color-text-secondary;
     font-weight: 500;
-    display: none;
+    display: inline;
 
-    @include respond-to('sm') {
-      display: inline;
+    @include respond-below('md') {
+      font-size: 12px;
     }
   }
 
@@ -155,11 +174,28 @@
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
+    white-space: nowrap;
     transition: background-color $transition-default, color $transition-default;
 
     &:hover {
       background-color: $color-primary;
       color: $color-white;
+    }
+
+    @include respond-below('md') {
+      height: 28px;
+      line-height: 1;
+      font-size: 12px;
+      padding: 0 14px;
+      border-radius: 6px;
+      gap: 6px;
+      box-sizing: border-box;
+
+      svg {
+        width: 13px;
+        height: 13px;
+        flex-shrink: 0;
+      }
     }
   }
 }
@@ -175,6 +211,11 @@
   z-index: 5;
   padding: 20px 0 60px 0;
 
+  @include respond-below('md') {
+    padding: 20px 0 40px 0;
+    align-items: flex-start;
+  }
+
   .container {
     max-width: 1400px;
   }
@@ -188,6 +229,12 @@
     @include respond-below('lg') {
       grid-template-columns: 1fr;
       gap: 40px;
+    }
+
+    @include respond-below('md') {
+      display: flex;
+      justify-content: center;
+      gap: 0;
     }
   }
 }
@@ -204,6 +251,10 @@
 
   @include respond-below('lg') {
     padding-bottom: 40px;
+  }
+
+  @include respond-below('md') {
+    display: none;
   }
 
   &-tag {

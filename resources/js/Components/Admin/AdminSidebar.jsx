@@ -14,7 +14,6 @@ import {
     Percent, 
     Star, 
     Settings, 
-    LogOut, 
     Shield, 
     X,
     Wrench,
@@ -67,13 +66,13 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                     <Link href="/admin/suppliers" className={isCurrent('/admin/suppliers') ? 'active' : ''}>
                         <Truck size={18} />
                         <span>Suppliers</span>
-                    </Link>
-                    <Link href="/admin/warehouse" className={isCurrent('/admin/warehouse') ? 'active' : ''}>
-                        <Boxes size={18} />
-                        <span>Warehouse</span>
                         {pendingLotsCount > 0 && (
                             <span className="badge-count">{pendingLotsCount}</span>
                         )}
+                    </Link>
+                    <Link href="/admin/warehouse" className={url === '/admin/warehouse' || isCurrent('/admin/warehouse/logs') ? 'active' : ''}>
+                        <Boxes size={18} />
+                        <span>Warehouse</span>
                     </Link>
                     <Link href="/admin/catalogue" className={isCurrent('/admin/catalogue') ? 'active' : ''}>
                         <Store size={18} />
@@ -118,12 +117,6 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                         <span>Settings</span>
                     </Link>
                 </nav>
-
-                <div className="admin-shell-sidebar-footer">
-                    <Link href="/logout" method="post" as="button" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#EF4444', fontSize: '13px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
-                        <LogOut size={16} /> Sign Out
-                    </Link>
-                </div>
             </aside>
         </>
     );
