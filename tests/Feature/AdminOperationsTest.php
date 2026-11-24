@@ -13,6 +13,7 @@ use App\Models\ProductAttribute;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AdminOperationsTest extends TestCase
@@ -468,5 +469,77 @@ class AdminOperationsTest extends TestCase
         // 4. Delete coupon
         $this->delete("/admin/coupons/{$coupon->id}")->assertRedirect();
         $this->assertDatabaseMissing('coupons', ['id' => $coupon->id]);
+    }
+
+    public function test_admin_can_manage_roles_permissions_and_staff_access_control(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->first();
+        $this->actingAs($admin);
+
+        // 1. Roles & Permissions page renders all 14 sidebar permissions
+        $this->get('/admin/roles')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Roles/Index')
+                ->has('roles')
+                ->has('allSidebarPermissions', 14)
+                ->has('permissionGroups')
+            );
+
+        // 2. Create custom role with only Orders and Customers sidebar permissions
+        $roleSlug = 'order_desk_' . random_int(100, 999);
+        $this->post('/admin/roles', [
+            'name' => $roleSlug,
+            'permissions' => ['manage orders', 'manage customers'],
+        ])->assertRedirect();
+
+        $customRole = Role::where('name', $roleSlug)->first();
+        $this->assertNotNull($customRole);
+        $this->assertTrue($customRole->hasPermissionTo('manage orders'));
+        $this->assertTrue($customRole->hasPermissionTo('manage customers'));
+        $this->assertFalse($customRole->hasPermissionTo('manage products'));
+
+        // 3. Create staff user assigned to custom role
+        $staffEmail = "staff_{$roleSlug}@autosparts.com";
+        $this->post('/admin/roles/staff', [
+            'name' => 'Order Desk Agent',
+            'email' => $staffEmail,
+            'phone' => '+91 98100 00111',
+            'role' => $roleSlug,
+            'password' => 'secret123',
+            'status' => 'active',
+        ])->assertRedirect();
+
+        $staffUser = User::where('email', $staffEmail)->first();
+        $this->assertNotNull($staffUser);
+        $this->assertTrue($staffUser->isStaff());
+        $this->assertTrue($staffUser->hasRole($roleSlug));
+
+        // 4. Staff user without 'view dashboard' redirects from /admin/dashboard to first permitted module (/admin/orders)
+        $this->actingAs($staffUser);
+        $this->get('/admin/dashboard')->assertRedirect('/admin/orders');
+        $this->get('/admin/orders')->assertStatus(200);
+        $this->get('/admin/customers')->assertStatus(200);
+        $this->get('/admin/products')->assertStatus(403);
+        $this->get('/admin/settings')->assertStatus(403);
+        $this->get('/admin/roles')->assertStatus(403);
+
+        // 5. Admin grants 'manage products' to custom role -> staff user can now access /admin/products
+        $this->actingAs($admin);
+        $this->put("/admin/roles/{$customRole->id}", [
+            'name' => $roleSlug,
+            'permissions' => ['manage orders', 'manage customers', 'manage products'],
+        ])->assertRedirect();
+
+        $this->actingAs($staffUser->fresh());
+        $this->get('/admin/products')->assertStatus(200);
+
+        // 6. Clean up staff user and custom role
+        $this->actingAs($admin);
+        $this->delete("/admin/roles/staff/{$staffUser->id}")->assertRedirect();
+        $this->assertDatabaseMissing('users', ['id' => $staffUser->id]);
+
+        $this->delete("/admin/roles/{$customRole->id}")->assertRedirect();
+        $this->assertDatabaseMissing('roles', ['id' => $customRole->id]);
     }
 }
