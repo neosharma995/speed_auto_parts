@@ -837,8 +837,19 @@
   &-nav-item {
     position: relative;
 
-    &:hover .site-header-dropdown {
-      display: block;
+    &:hover {
+      .site-header-dropdown {
+        display: block;
+      }
+
+      > .site-header-nav-link {
+        color: $color-primary;
+
+        .nav-chevron {
+          color: $color-primary;
+          transform: rotate(180deg);
+        }
+      }
     }
   }
 
@@ -855,7 +866,7 @@
 
     .nav-chevron {
       color: #111111;
-      transition: color $transition-default;
+      transition: transform 0.2s ease, color $transition-default;
     }
 
     &:hover {
@@ -886,6 +897,23 @@
 
       &:hover {
         color: $color-primary;
+      }
+    }
+
+    .vehicle-nav-text {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+
+      .vehicle-active-dot {
+        position: absolute;
+        top: -1px;
+        right: -8px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: $color-primary;
+        animation: vehicleDotPulse 2.2s infinite ease-in-out;
       }
     }
   }
@@ -1109,6 +1137,24 @@
 
     &.deals-highlight {
       color: $color-primary;
+    }
+
+    .vehicle-nav-text {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+
+      .vehicle-active-dot {
+        position: absolute;
+        top: -1px;
+        right: -9px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: $color-primary;
+        box-shadow: 0 0 0 0 rgba(243, 107, 22, 0.75), 0 0 3px rgba(243, 107, 22, 0.6);
+        animation: vehicleDotPulse 2.2s infinite ease-in-out;
+      }
     }
   }
 
@@ -1801,5 +1847,17 @@
 
   100% {
     transform: translateX(100%);
+  }
+}
+
+@keyframes vehicleDotPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(243, 107, 22, 0.75), 0 0 3px rgba(243, 107, 22, 0.6);
+  }
+  60% {
+    box-shadow: 0 0 0 5px rgba(243, 107, 22, 0), 0 0 5px rgba(243, 107, 22, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(243, 107, 22, 0), 0 0 3px rgba(243, 107, 22, 0.6);
   }
 }

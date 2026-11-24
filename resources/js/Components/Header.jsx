@@ -24,7 +24,7 @@ import { useWishlist } from '@/Context/WishlistContext';
 import SearchDropdown from './SearchDropdown';
 
 export default function Header() {
-    const { auth, navBrands = [], settings = {} } = usePage().props;
+    const { auth, navBrands = [], settings = {}, activeVehicle } = usePage().props;
     const { itemCount, setIsCartOpen } = useCart();
     const { wishlist = [] } = useWishlist();
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -704,8 +704,15 @@ export default function Header() {
 
                                 <div className="site-header-nav-item">
                                     <Link href="/vehicle-finder" className="site-header-nav-link">
-                                        <span>Shop By Vehicle</span>
-                                        <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
+                                        <span className="vehicle-nav-text">
+                                            Shop By Vehicle
+                                            {activeVehicle && (
+                                                <span 
+                                                    className="vehicle-active-dot" 
+                                                    title={`Active Vehicle: ${activeVehicle.year} ${activeVehicle.make} ${activeVehicle.model}`}
+                                                />
+                                            )}
+                                        </span>
                                     </Link>
                                 </div>
 
@@ -865,7 +872,15 @@ export default function Header() {
                                 className="mobile-drawer-link"
                                 onClick={() => setMobileDrawerOpen(false)}
                             >
-                                Shop By Vehicle
+                                <span className="vehicle-nav-text">
+                                    Shop By Vehicle
+                                    {activeVehicle && (
+                                        <span 
+                                            className="vehicle-active-dot" 
+                                            title={`Active Vehicle: ${activeVehicle.year} ${activeVehicle.make} ${activeVehicle.model}`}
+                                        />
+                                    )}
+                                </span>
                             </Link>
 
                             {/* Brands with Accordion */}

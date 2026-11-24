@@ -122,17 +122,29 @@
 
       @include respond-below('sm') {
         flex-direction: column;
+        gap: 12px;
       }
 
       .form-input {
         flex: 1;
+        width: 100%;
         height: 44px;
+        min-height: 44px;
         font-size: 14px;
         padding: 0 16px;
+        background-color: #FFFFFF;
         border: 1px solid #D1D5DB;
         border-radius: 6px;
         outline: none;
+        box-sizing: border-box;
         transition: border-color $transition-default, box-shadow $transition-default;
+
+        @include respond-below('sm') {
+          flex: none;
+          width: 100%;
+          height: 44px;
+          min-height: 44px;
+        }
 
         &:focus {
           border-color: $color-primary;
@@ -142,6 +154,7 @@
 
       .btn-track {
         height: 44px;
+        min-height: 44px;
         padding: 0 24px;
         background-color: $color-primary;
         color: #FFFFFF;
@@ -156,8 +169,14 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
+        white-space: nowrap;
+        box-sizing: border-box;
         cursor: pointer;
         transition: background-color $transition-default;
+
+        @include respond-below('sm') {
+          width: 100%;
+        }
 
         &:hover:not(:disabled) {
           background-color: $color-primary-hover;
@@ -290,6 +309,237 @@
         span {
           font-size: 11px;
           color: #6B7280;
+        }
+      }
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // Vehicle Finder Page Card & Horizontal Responsive Form
+  // --------------------------------------------------------------------------
+  .active-vehicle-banner {
+    background-color: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    border-radius: 8px;
+    padding: 18px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    @include respond-below('md') {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 18px 20px;
+    }
+
+    .active-vehicle-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .active-vehicle-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #15803D;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .active-vehicle-title {
+        font-size: 17px;
+        font-weight: 800;
+        color: #111827;
+        margin: 0;
+      }
+    }
+
+    .active-vehicle-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+
+      @include respond-below('md') {
+        width: 100%;
+      }
+
+      .btn-shop-car {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 38px;
+        padding: 0 18px;
+        background-color: $color-primary;
+        color: #FFFFFF;
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background-color $transition-default;
+
+        &:hover {
+          background-color: $color-primary-hover;
+        }
+
+        @include respond-below('md') {
+          flex: 1;
+          justify-content: center;
+        }
+      }
+
+      .btn-clear-car {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 38px;
+        padding: 0 14px;
+        background-color: transparent;
+        border: 1px solid #D1D5DB;
+        color: #4B5563;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all $transition-default;
+
+        &:hover {
+          border-color: #9CA3AF;
+          color: #111827;
+          background-color: #F9FAFB;
+        }
+      }
+    }
+  }
+
+  .vehicle-finder-card {
+    background-color: $color-white;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 32px 36px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    margin-bottom: 24px;
+
+    @include respond-below('md') {
+      padding: 24px 20px;
+    }
+
+    .vehicle-finder-form {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr 1.25fr 1.45fr auto;
+      gap: 16px;
+      align-items: flex-end;
+
+      @include respond-below('xl') {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+
+        .form-col-action {
+          grid-column: span 2;
+        }
+      }
+
+      @include respond-below('sm') {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+
+        .form-col-action {
+          grid-column: span 2;
+        }
+      }
+
+      .form-col {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+
+        .form-label {
+          font-size: 12px;
+          font-weight: 700;
+          color: #374151;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+          display: flex;
+          align-items: center;
+          gap: 3px;
+          white-space: nowrap;
+
+          .required {
+            color: $color-primary;
+          }
+        }
+
+        .form-select {
+          height: 44px;
+          min-height: 44px;
+          width: 100%;
+          padding: 0 28px 0 12px;
+          font-size: 13px;
+          font-weight: 500;
+          color: #111827;
+          background-color: #FFFFFF;
+          border: 1px solid #D1D5DB;
+          border-radius: 6px;
+          outline: none;
+          box-sizing: border-box;
+          cursor: pointer;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          transition: border-color $transition-default, box-shadow $transition-default;
+
+          &:focus {
+            border-color: $color-primary;
+            box-shadow: 0 0 0 3px rgba(243, 107, 22, 0.12);
+          }
+
+          &:disabled {
+            background-color: #F9FAFB;
+            color: #9CA3AF;
+            cursor: not-allowed !important;
+            border-color: #E5E7EB;
+          }
+        }
+
+        &.form-col-action {
+          .btn-vehicle-search {
+            height: 44px;
+            padding: 0 28px;
+            background-color: $color-primary;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 6px;
+            font-family: $font-primary;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background-color $transition-default;
+
+            &:hover:not(:disabled) {
+              background-color: $color-primary-hover;
+            }
+
+            &:disabled {
+              opacity: 0.55;
+              cursor: not-allowed !important;
+            }
+
+            @include respond-below('xl') {
+              width: 100%;
+            }
+          }
         }
       }
     }

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, router, usePage } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import AppLayout from '@/Layouts/AppLayout';
-import { Car, Search, RotateCcw, Check, ArrowRight } from 'lucide-react';
+import { ChevronRight, Search, ArrowRight, RotateCcw, CheckCircle } from 'lucide-react';
 
 export default function VehicleFinderPage({ activeVehicle = null }) {
     const [years, setYears] = useState([]);
@@ -79,109 +79,124 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
     };
 
     return (
-        <AppLayout title="Shop Automotive Parts By Vehicle">
-            <div className="section bg-light" style={{ minHeight: '70vh' }}>
-                <div className="container-narrow">
-                    <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-                        <span style={{ fontSize: '13px', fontWeight: 800, color: '#F36B16', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                            Precision Fitment Guarantee
-                        </span>
-                        <h1 style={{ fontSize: '32px', fontWeight: 900, color: '#151515', marginTop: '4px' }}>
-                            SELECT YOUR EXACT VEHICLE
+        <AppLayout title="Select Your Exact Vehicle">
+            <div className="support-page vehicle-finder-page">
+                <div className="container">
+                    {/* Breadcrumbs matching Track Order, Shop, Brands, Categories */}
+                    <div className="breadcrumb-nav">
+                        <Link href="/" className="breadcrumb-link">Home</Link>
+                        <ChevronRight size={12} className="breadcrumb-arrow" />
+                        <span className="breadcrumb-current">Select Your Vehicle</span>
+                    </div>
+
+                    {/* Left-Aligned Header with official stripe icon matching other pages */}
+                    <div className="support-page-header">
+                        <h1>
+                            <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                            Select Your Exact Vehicle
                         </h1>
-                        <p style={{ color: '#666', fontSize: '14px', maxWidth: '600px', margin: '8px auto 0' }}>
+                        <p>
                             Ensure every tire, brake rotor, suspension kit, and exhaust fits your car without guesswork or return shipping hassle.
                         </p>
                     </div>
 
+                    {/* Active Vehicle Banner (if a vehicle profile is selected) */}
                     {activeVehicle && (
-                        <div style={{
-                            backgroundColor: '#EAF5ED',
-                            border: '1px solid #A7F3D0',
-                            borderRadius: '8px',
-                            padding: '16px 20px',
-                            marginBottom: '28px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between'
-                        }}>
-                            <div>
-                                <span style={{ fontSize: '11px', fontWeight: 700, color: '#168A35', textTransform: 'uppercase' }}>
-                                    Active Vehicle Profile
+                        <div className="active-vehicle-banner">
+                            <div className="active-vehicle-info">
+                                <span className="active-vehicle-badge">
+                                    <CheckCircle size={14} /> Active Vehicle Profile
                                 </span>
-                                <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#151515' }}>
-                                    {activeVehicle.year} {activeVehicle.make} {activeVehicle.model} ({activeVehicle.engine})
+                                <h3 className="active-vehicle-title">
+                                    {activeVehicle.year} {activeVehicle.make} {activeVehicle.model} {activeVehicle.engine ? `(${activeVehicle.engine})` : ''}
                                 </h3>
                             </div>
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                                <Link href={`/shop?vehicle_id=${activeVehicle.id}`} className="btn btn-primary btn-sm">
-                                    Shop Parts For This Car <ArrowRight size={14} />
+                            <div className="active-vehicle-actions">
+                                <Link href={`/shop?vehicle_id=${activeVehicle.id}`} className="btn-shop-car">
+                                    <span>Shop Parts For This Car</span>
+                                    <ArrowRight size={14} />
                                 </Link>
                                 <button 
                                     type="button" 
-                                    className="btn btn-outline btn-sm"
+                                    className="btn-clear-car"
                                     onClick={() => router.post('/vehicles/clear')}
                                 >
-                                    Clear
+                                    <RotateCcw size={13} />
+                                    <span>Clear</span>
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    <div style={{
-                        backgroundColor: '#FFFFFF',
-                        border: '1px solid #DCDCDC',
-                        borderRadius: '8px',
-                        padding: '32px'
-                    }}>
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            <div className="form-group">
-                                <label className="form-label">1. Model Year <span className="required">*</span></label>
+                    {/* Full Width Card with All Form Fields in One Line */}
+                    <div className="vehicle-finder-card">
+                        <form onSubmit={handleSubmit} className="vehicle-finder-form">
+                            {/* 1. Model Year */}
+                            <div className="form-col">
+                                <label className="form-label">
+                                    1. Model Year <span className="required">*</span>
+                                </label>
                                 <select 
                                     className="form-select"
                                     value={selectedYear}
                                     onChange={(e) => handleYearChange(e.target.value)}
+                                    disabled={loadingYears}
                                 >
-                                    <option value="">Choose Year</option>
+                                    <option value="">{loadingYears ? 'Loading...' : 'Choose Year'}</option>
                                     {years.map(y => <option key={y} value={y}>{y}</option>)}
                                 </select>
                             </div>
 
-                            <div className="form-group">
-                                <label className="form-label">2. Vehicle Make <span className="required">*</span></label>
+                            {/* 2. Vehicle Make */}
+                            <div className="form-col">
+                                <label className="form-label">
+                                    2. Vehicle Make <span className="required">*</span>
+                                </label>
                                 <select 
                                     className="form-select"
                                     value={selectedMake}
                                     onChange={(e) => handleMakeChange(e.target.value)}
-                                    disabled={!selectedYear}
+                                    disabled={!selectedYear || loadingMakes}
                                 >
-                                    <option value="">Choose Make (e.g. BMW, Ford, Honda)</option>
+                                    <option value="">
+                                        {loadingMakes ? 'Loading Makes...' : 'Choose Make'}
+                                    </option>
                                     {makes.map(m => <option key={m} value={m}>{m}</option>)}
                                 </select>
                             </div>
 
-                            <div className="form-group">
-                                <label className="form-label">3. Vehicle Model <span className="required">*</span></label>
+                            {/* 3. Vehicle Model */}
+                            <div className="form-col">
+                                <label className="form-label">
+                                    3. Vehicle Model <span className="required">*</span>
+                                </label>
                                 <select 
                                     className="form-select"
                                     value={selectedModel}
                                     onChange={(e) => handleModelChange(e.target.value)}
-                                    disabled={!selectedMake}
+                                    disabled={!selectedMake || loadingModels}
                                 >
-                                    <option value="">Choose Model (e.g. M3, Mustang GT)</option>
+                                    <option value="">
+                                        {loadingModels ? 'Loading Models...' : 'Choose Model'}
+                                    </option>
                                     {models.map(m => <option key={m} value={m}>{m}</option>)}
                                 </select>
                             </div>
 
-                            <div className="form-group">
-                                <label className="form-label">4. Engine & Trim <span className="required">*</span></label>
+                            {/* 4. Engine & Trim */}
+                            <div className="form-col">
+                                <label className="form-label">
+                                    4. Engine & Trim <span className="required">*</span>
+                                </label>
                                 <select 
                                     className="form-select"
                                     value={selectedEngineId}
                                     onChange={(e) => setSelectedEngineId(e.target.value)}
-                                    disabled={!selectedModel}
+                                    disabled={!selectedModel || loadingEngines}
                                 >
-                                    <option value="">Choose Engine Specification</option>
+                                    <option value="">
+                                        {loadingEngines ? 'Loading Engines...' : 'Choose Engine'}
+                                    </option>
                                     {engines.map(eng => (
                                         <option key={eng.id} value={eng.id}>
                                             {eng.engine} {eng.submodel ? `— ${eng.submodel}` : ''}
@@ -190,13 +205,17 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                                 </select>
                             </div>
 
-                            <button 
-                                type="submit" 
-                                className="btn btn-primary btn-lg btn-full"
-                                disabled={!selectedEngineId}
-                            >
-                                <Search size={18} /> View Guaranteed Compatible Spares
-                            </button>
+                            {/* Action Button */}
+                            <div className="form-col form-col-action">
+                                <button 
+                                    type="submit" 
+                                    className="btn-vehicle-search"
+                                    disabled={!selectedEngineId}
+                                >
+                                    <Search size={16} />
+                                    <span>Find Parts</span>
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
