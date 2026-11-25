@@ -221,6 +221,17 @@ export default function ProductShow({
                                     }}
                                 />
 
+                                {/* Wishlist Trigger Icon Button (Top Right) */}
+                                <button
+                                    type="button"
+                                    className={`preview-wishlist-btn ${isFav ? 'preview-wishlist-btn--active' : ''}`}
+                                    onClick={() => toggleWishlist(product.id)}
+                                    title="Add to Wishlist"
+                                    aria-label="Add to Wishlist"
+                                >
+                                    <Heart size={16} fill={isFav ? '#D93025' : 'none'} color={isFav ? '#D93025' : 'currentColor'} />
+                                </button>
+
                                 {/* Fullscreen / Zoom Trigger Icon Button */}
                                 <button
                                     type="button"
@@ -678,14 +689,43 @@ export default function ProductShow({
                     <span>Total</span>
                     <strong>{formatPrice(effectivePrice * quantity)}</strong>
                 </div>
-                <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={handleAddToCart}
-                    disabled={!isInStock}
-                >
-                    <ShoppingCart size={16} /> Add to Cart
-                </button>
+                <div className="sticky-actions">
+                    <div className="qty-counter-mobile">
+                        <button
+                            type="button"
+                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                            disabled={!isInStock}
+                            aria-label="Decrease quantity"
+                        >
+                            -
+                        </button>
+                        <span className="qty-number">{quantity}</span>
+                        <button
+                            type="button"
+                            onClick={() => setQuantity(quantity + 1)}
+                            disabled={!isInStock}
+                            aria-label="Increase quantity"
+                        >
+                            +
+                        </button>
+                    </div>
+                    <button
+                        type="button"
+                        className="btn btn-primary sticky-add-btn"
+                        onClick={handleAddToCart}
+                        disabled={!isInStock}
+                    >
+                        {addedToast ? (
+                            <>
+                                <Check size={15} /> Added!
+                            </>
+                        ) : (
+                            <>
+                                <ShoppingCart size={15} /> Add to Cart
+                            </>
+                        )}
+                    </button>
+                </div>
             </div>
         </AppLayout>
     );
