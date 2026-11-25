@@ -69,11 +69,12 @@
 // ----------------------------------------------------------------------------
 .categories-grid-8 {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
 
   @include respond-to('sm') {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
   }
 
   @include respond-to('lg') {
@@ -90,15 +91,21 @@
     .cat-thumb-wrap {
       width: 100%;
       max-width: 130px;
-      height: 110px;
-      border-radius: 16px;
+      height: 88px;
+      border-radius: 14px;
       background-color: #F6F7F9;
       border: 1px solid #ECEEF1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 12px;
+      padding: 10px;
       transition: background-color $transition-default, border-color $transition-default, box-shadow $transition-default;
+
+      @include respond-to('sm') {
+        height: 110px;
+        border-radius: 16px;
+        padding: 12px;
+      }
 
       img {
         width: 100%;
@@ -109,12 +116,17 @@
     }
 
     .cat-name {
-      margin-top: 10px;
-      font-size: 13px;
+      margin-top: 8px;
+      font-size: 12px;
       font-weight: 800;
       color: #111114;
       text-align: center;
       transition: color $transition-default;
+
+      @include respond-to('sm') {
+        margin-top: 10px;
+        font-size: 13px;
+      }
     }
 
     &:hover {
@@ -169,11 +181,12 @@
 
 .product-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 
   @include respond-to('sm') {
     grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 
   @include respond-to('md') {
@@ -181,6 +194,10 @@
   }
 
   @include respond-to('lg') {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @include respond-to('xl') {
     grid-template-columns: repeat(5, 1fr);
   }
 }
@@ -191,9 +208,14 @@
 .promo-banners-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 20px;
+  gap: 16px;
 
   @include respond-to('md') {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  @include respond-to('lg') {
     grid-template-columns: repeat(3, 1fr);
   }
 
@@ -277,8 +299,8 @@
     }
 
     .promo-thumb-wrap {
-      width: 150px;
-      height: 120px;
+      width: 100px;
+      height: 90px;
       border-radius: 8px;
       overflow: hidden;
       flex-shrink: 0;
@@ -286,6 +308,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
+
+      @include respond-to('xl') {
+        width: 150px;
+        height: 120px;
+      }
 
       .promo-thumb {
         max-width: 100%;
@@ -303,10 +330,16 @@
 .vehicle-types-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: 12px;
 
-  @include respond-to('md') {
+  @include respond-to('sm') {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  @include respond-to('lg') {
     grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
   }
 
   .vt-card {
@@ -380,22 +413,29 @@
 // 6. Popular Brands (8 Logos - Separate Cards)
 // ----------------------------------------------------------------------------
 .brands-row-8 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 12px;
   align-items: center;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 
-  @include respond-to('sm') {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+  &::-webkit-scrollbar {
+    display: none;
   }
 
   @include respond-to('lg') {
+    display: grid;
     grid-template-columns: repeat(8, 1fr);
     gap: 16px;
+    overflow-x: visible;
   }
 
   .brand-logo-card {
+    flex: 0 0 132px;
+    scroll-snap-align: start;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -407,6 +447,10 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     text-decoration: none;
     transition: all $transition-default;
+
+    @include respond-to('lg') {
+      flex: initial;
+    }
 
     &:hover {
       border-color: #D1D5DB;
@@ -436,6 +480,12 @@
   gap: 16px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 
+  @include respond-to('sm') {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 20px;
+  }
+
   @include respond-to('lg') {
     display: grid;
     grid-template-columns: 1.25fr 1fr 1fr 1fr 1fr;
@@ -450,7 +500,16 @@
     gap: 14px;
     height: 100%;
 
+    @include respond-to('sm') {
+      grid-column: 1 / -1;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
     @include respond-to('lg') {
+      grid-column: auto;
+      padding-bottom: 0;
+      border-bottom: none;
       padding-right: 20px;
       border-right: 1px solid #E5E7EB;
     }
@@ -506,19 +565,27 @@
     }
 
     .wc-text {
+      min-width: 0;
+
       h4 {
         font-size: 13.5px;
         font-weight: 800;
         color: #111114;
         margin: 0 0 2px;
-        white-space: nowrap;
+
+        @include respond-to('lg') {
+          white-space: nowrap;
+        }
       }
 
       p {
         font-size: 11.5px;
         color: #6B7280;
         margin: 0;
-        white-space: nowrap;
+
+        @include respond-to('lg') {
+          white-space: nowrap;
+        }
       }
     }
   }
@@ -566,29 +633,51 @@
 }
 
 .top-picks-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 12px;
   width: 100%;
   flex: 1;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @include respond-to('sm') {
-    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 
   @include respond-to('lg') {
+    display: grid;
     grid-template-columns: repeat(4, 1fr);
+    overflow-x: visible;
   }
 
   .top-pick-card {
+    flex: 0 0 calc((100% - 12px) / 2);
+    min-width: 0;
+    scroll-snap-align: start;
     background-color: #121215;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 18px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
     text-decoration: none;
     transition: border-color $transition-default;
+
+    @include respond-to('sm') {
+      flex: 0 0 calc((100% - 16px) / 2);
+      padding: 18px;
+    }
+
+    @include respond-to('lg') {
+      flex: initial;
+    }
 
     &:hover {
       border-color: rgba(243, 107, 22, 0.5);
@@ -599,12 +688,17 @@
     }
 
     .tp-img-wrap {
-      height: 120px;
+      height: 88px;
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
+
+      @include respond-to('sm') {
+        height: 120px;
+        margin-bottom: 14px;
+      }
 
       .tp-thumb {
         max-height: 100%;
@@ -659,11 +753,16 @@
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: none;
-  padding: 30px 36px;
+  padding: 22px 16px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   overflow: hidden;
+
+  @include respond-to('sm') {
+    padding: 30px 36px;
+    gap: 24px;
+  }
 
   @include respond-to('lg') {
     display: grid;
@@ -756,11 +855,16 @@
       width: 100%;
       max-width: 500px;
       height: auto;
-      max-height: 205px;
+      max-height: 160px;
       object-fit: contain;
       filter: none;
-      transform: scale(1.08);
+      transform: none;
       transform-origin: center bottom;
+
+      @include respond-to('lg') {
+        max-height: 205px;
+        transform: scale(1.08);
+      }
     }
   }
 
@@ -799,11 +903,14 @@
       }
 
       .rr-stat-label {
-        font-size: 10.5px;
+        font-size: 10px;
         font-weight: 500;
         color: #9CA3AF;
-        line-height: 1.2;
-        white-space: nowrap;
+        line-height: 1.25;
+
+        @include respond-to('lg') {
+          white-space: nowrap;
+        }
 
         @include respond-to('xl') {
           font-size: 11px;
@@ -883,9 +990,14 @@
 
     .nl-form {
       display: flex;
+      flex-direction: column;
       width: 100%;
       max-width: 520px;
       gap: 10px;
+
+      @include respond-to('sm') {
+        flex-direction: row;
+      }
 
       input {
         flex: 1;

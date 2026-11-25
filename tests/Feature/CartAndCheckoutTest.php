@@ -86,6 +86,8 @@ class CartAndCheckoutTest extends TestCase
 
     public function test_user_can_complete_stripe_checkout_session_in_aed(): void
     {
+        config(['services.stripe.secret' => 'sk_test_your_stripe_secret_key_here']);
+
         $product = Product::first();
         $this->assertNotNull($product);
 

@@ -18,7 +18,7 @@ const UAE_EMIRATES = [
 
 export default function Checkout({ savedAddresses = [], user = null }) {
     const { cartItems, subtotal, clearCart } = useCart();
-    const { formatPrice, defaultCurrency } = useCurrency();
+    const { formatPrice, activeCurrency } = useCurrency();
 
     const defaultAddr = savedAddresses.find((a) => a.is_default) || savedAddresses[0] || null;
 
@@ -147,6 +147,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
             order_notes: orderNotes,
             items: cartItems,
             payment_method: paymentMethod,
+            currency: activeCurrency.code,
         };
 
         if (paymentMethod === 'cod') {
@@ -376,7 +377,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                         <div className="payment-desc">
                                             <strong>Online Card Payment via Stripe</strong>
                                             <span>
-                                                Pay securely in {defaultCurrency.code} with Visa, Mastercard, American Express, Apple Pay, or Google Pay via Stripe Checkout.
+                                                Pay securely in {activeCurrency.code} with Visa, Mastercard, American Express, Apple Pay, or Google Pay via Stripe Checkout.
                                             </span>
                                         </div>
                                     </label>
@@ -392,7 +393,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                         />
                                         <div className="payment-desc">
                                             <strong>Cash on Delivery (COD)</strong>
-                                            <span>Pay in {defaultCurrency.code} upon delivery anywhere in Dubai and across the UAE.</span>
+                                            <span>Pay in {activeCurrency.code} upon delivery anywhere in Dubai and across the UAE.</span>
                                         </div>
                                     </label>
                                 </div>

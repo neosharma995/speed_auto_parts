@@ -63,7 +63,7 @@
     gap: 32px;
 
     @include respond-to('lg') {
-      grid-template-columns: 60% 40%;
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
       gap: 36px;
       align-items: start;
     }
@@ -520,6 +520,15 @@
       align-items: center;
       gap: 12px;
 
+      @include respond-below('sm') {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      svg {
+        flex-shrink: 0;
+      }
+
       .qty-counter {
         display: flex;
         align-items: center;
@@ -527,6 +536,7 @@
         border-radius: $border-radius-sm;
         height: 48px;
         background: $color-white;
+        flex-shrink: 0;
 
         button {
           width: 36px;
@@ -557,18 +567,30 @@
       .btn-add-to-cart {
         flex: 1;
         height: 48px;
+        padding: 0 16px;
         border: none;
         border-radius: $border-radius-sm;
         background-color: $color-primary;
         color: $color-white;
         font-size: 15px;
         font-weight: 800;
+        white-space: nowrap;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
         cursor: pointer;
         transition: background-color $transition-default;
+
+        @include respond-below('sm') {
+          flex: 1 1 100%;
+          order: 3;
+          font-size: 14px;
+        }
+
+        svg {
+          flex-shrink: 0;
+        }
 
         &:hover:not(:disabled) {
           background-color: $color-primary-hover;
@@ -583,6 +605,7 @@
       .btn-wishlist-toggle {
         width: 48px;
         height: 48px;
+        flex-shrink: 0;
         border: 1px solid $color-border;
         border-radius: $border-radius-sm;
         background: $color-white;
