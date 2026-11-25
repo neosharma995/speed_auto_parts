@@ -1,5 +1,5 @@
 // ==========================================================================
-// AUTO PARTS - Form Inputs & Controls
+// SPEED AUTOS PARTS - Form Inputs & Controls
 // ==========================================================================
 @use '../abstracts/variables' as *;
 @use '../abstracts/mixins' as *;
@@ -53,7 +53,7 @@
   &:disabled {
     background-color: $color-background;
     color: $color-text-muted;
-    cursor: not-allowed;
+    cursor: not-allowed !important;
   }
 
   &--error {

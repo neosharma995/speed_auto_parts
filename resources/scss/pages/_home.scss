@@ -1,5 +1,5 @@
 // ==========================================================================
-// AUTO PARTS - Homepage Styles
+// SPEED AUTOS PARTS - Homepage Styles
 // Container max-width: 1720px | Inline padding: 20px (Desktop), 15px (Mobile)
 // STRICT RULE: No translate hover animations!
 // ==========================================================================
@@ -422,9 +422,9 @@
 }
 
 // ----------------------------------------------------------------------------
-// 7. Why Choose SpeedAutoParts Strip (4 Value Pillars)
+// 7. Why Choose SpeedAutosParts Strip (4 Value Pillars)
 // ----------------------------------------------------------------------------
-// 7. Why Choose SpeedAutoParts Strip (5 Equal Columns with Separators)
+// 7. Why Choose SpeedAutosParts Strip (5 Equal Columns with Separators)
 // ----------------------------------------------------------------------------
 .why-choose-card {
   background-color: #FFFFFF;
@@ -531,43 +531,45 @@
   display: flex;
   align-items: center;
   gap: 12px;
+
+  .slider-nav-arrows {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 6px;
+
+    .slider-arrow-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #D1D5DB;
+      background-color: #FFFFFF;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: border-color $transition-default, color $transition-default, background-color $transition-default;
+
+      &:hover {
+        border-color: $color-primary;
+        color: $color-primary;
+        background-color: rgba(243, 107, 22, 0.06);
+      }
+    }
+  }
 }
 
 .top-picks-slider-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  .slider-arrow-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: 1px solid #D1D5DB;
-    background-color: #FFFFFF;
-    color: #374151;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: border-color $transition-default, color $transition-default;
-
-    &:hover {
-      border-color: $color-primary;
-      color: $color-primary;
-    }
-
-    @include respond-below('md') {
-      display: none;
-    }
-  }
+  width: 100%;
 }
 
 .top-picks-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
+  width: 100%;
   flex: 1;
 
   @include respond-to('sm') {

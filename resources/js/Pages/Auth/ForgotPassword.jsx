@@ -1,7 +1,7 @@
 import React from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Mail, ArrowLeft } from 'lucide-react';
+import { Mail, ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function ForgotPassword({ status }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -14,14 +14,13 @@ export default function ForgotPassword({ status }) {
     };
 
     return (
-        <GuestLayout>
-            <Head title="Forgot Password | Speed Autos Parts" />
+        <GuestLayout mode="forgot" switchHref="/login" switchLabel="Sign In" switchText="Remember your credentials?">
+            <Head title="Reset Password | SPEED AUTOS PARTS" />
 
-            <div style={{ marginBottom: '24px', textAlign: 'center' }}>
-                <h1 style={{ fontSize: '22px', fontWeight: 900, color: '#151515', textTransform: 'uppercase' }}>
-                    Reset Password
-                </h1>
-                <p style={{ color: '#666', fontSize: '13px', marginTop: '6px', lineHeight: 1.5 }}>
+            {/* Header */}
+            <div className="auth-form-card-header">
+                <h2 className="auth-form-card-title">Reset Password</h2>
+                <p className="auth-form-card-subtitle">
                     Enter your registered email address and we'll send you a password reset link.
                 </p>
             </div>
@@ -32,31 +31,42 @@ export default function ForgotPassword({ status }) {
                 </div>
             )}
 
-            <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div className="form-group">
-                    <label className="form-label">Email Address</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className={`form-input ${errors.email ? 'form-input--error' : ''}`}
-                        autoComplete="email"
-                        required
-                        onChange={(e) => setData('email', e.target.value)}
-                    />
-                    {errors.email && <span className="form-error">{errors.email}</span>}
+            {/* Form */}
+            <form onSubmit={submit}>
+                {/* Email Address */}
+                <div className="auth-form-group">
+                    <div className="auth-input-wrap">
+                        <span className="auth-input-icon">
+                            <Mail size={16} />
+                        </span>
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Email Address"
+                            value={data.email}
+                            className={`auth-input auth-input--no-action ${errors.email ? 'auth-input--error' : ''}`}
+                            autoComplete="email"
+                            required
+                            onChange={(e) => setData('email', e.target.value)}
+                        />
+                    </div>
+                    {errors.email && <span className="auth-form-error">{errors.email}</span>}
                 </div>
 
-                <button 
-                    type="submit" 
-                    className="btn btn-primary btn-lg btn-full"
+                {/* Submit Button */}
+                <button
+                    type="submit"
+                    className="auth-submit-btn"
                     disabled={processing}
+                    style={{ marginTop: '8px' }}
                 >
-                    <Mail size={16} /> {processing ? 'Sending Link...' : 'Email Password Reset Link'}
+                    <ArrowRight size={18} />
+                    <span>{processing ? 'Sending Link...' : 'Email Reset Link'}</span>
                 </button>
 
-                <div style={{ textAlign: 'center', marginTop: '12px' }}>
-                    <Link href="/login" style={{ fontSize: '13px', color: '#666', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                {/* Footer Switch Prompt */}
+                <div className="auth-footer-prompt" style={{ marginTop: '24px' }}>
+                    <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                         <ArrowLeft size={14} /> Back to Sign In
                     </Link>
                 </div>

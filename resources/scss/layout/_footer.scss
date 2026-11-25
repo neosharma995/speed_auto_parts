@@ -1,5 +1,5 @@
 // ==========================================================================
-// SPEEDAUTOPARTS - Unified Footer (Exact Design Matching Reference)
+// SPEEDAUTOSPARTS - Unified Footer (Exact Design Matching Reference)
 // Features:
 // 1. Top Newsletter Section with Sports Car within Container & Glowing Red Taillights
 // 2. 5-Column Grid with Official Logo & Need Help Card
@@ -248,12 +248,18 @@
       .footer-heading {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         font-size: 15px;
         font-weight: 800;
         color: #FFFFFF;
         letter-spacing: 0.02em;
         margin: 0 0 2px;
+
+        .footer-heading-icon,
+        svg {
+          color: #F97316;
+          flex-shrink: 0;
+        }
 
         .title-stripe-icon {
           height: 13px;

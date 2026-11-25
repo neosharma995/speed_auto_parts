@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from '@inertiajs/react';
+import React, { useState, useMemo } from 'react';
+import { Head, Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import ProductCard from '@/Components/ProductCard';
 import {
@@ -13,8 +13,16 @@ import {
     Truck,
     Wrench,
     Car,
-    FileText,
-    MessageSquare
+    Maximize2,
+    X,
+    RotateCcw,
+    ArrowRight,
+    ShoppingBag,
+    Gauge,
+    Sliders,
+    Disc3,
+    Activity,
+    CheckCircle2
 } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useWishlist } from '@/Context/WishlistContext';
@@ -25,6 +33,7 @@ export default function ProductShow({
     variations = [],
     compatibleVehicles = [],
     relatedProducts = [],
+    reviews = [],
     activeVehicle = null,
     fitmentStatus = null
 }) {
@@ -32,13 +41,74 @@ export default function ProductShow({
     const { toggleWishlist, isInWishlist } = useWishlist();
     const { formatPrice } = useCurrency();
 
-    // Select default variation or first
     const defaultVar = variations.find(v => v.is_default) || variations[0] || null;
     const [selectedVariation, setSelectedVariation] = useState(defaultVar);
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState('specs');
-    const [activeImage, setActiveImage] = useState(product.main_image);
+    const [activeImage, setActiveImage] = useState(defaultVar?.image || product.main_image);
     const [addedToast, setAddedToast] = useState(false);
+    const [isZoomOpen, setIsZoomOpen] = useState(false);
+    const [isRotating, setIsRotating] = useState(false);
+
+    const attributeGroups = useMemo(() => {
+        if (!Array.isArray(variations) || variations.length === 0) return [];
+        const labelMap = {};
+        (product.attributes || []).forEach((attr) => {
+            if (attr?.slug) {
+                labelMap[attr.slug] = attr.name;
+            }
+        });
+
+        const groupsBySlug = {};
+        const orderedSlugs = [];
+
+        variations.forEach((v) => {
+            const attrs = v.attributes_json && typeof v.attributes_json === 'object' ? v.attributes_json : {};
+            Object.entries(attrs).forEach(([attrSlug, rawVal]) => {
+                const val = String(rawVal || '').trim();
+                if (!val) return;
+                if (!groupsBySlug[attrSlug]) {
+                    const fallbackLabel = attrSlug
+                        .split('-')
+                        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                        .join(' ');
+                    groupsBySlug[attrSlug] = {
+                        slug: attrSlug,
+                        label: labelMap[attrSlug] || fallbackLabel,
+                        values: [],
+                    };
+                    orderedSlugs.push(attrSlug);
+                }
+                if (!groupsBySlug[attrSlug].values.includes(val)) {
+                    groupsBySlug[attrSlug].values.push(val);
+                }
+            });
+        });
+
+        return orderedSlugs.map((s) => groupsBySlug[s]);
+    }, [variations, product.attributes]);
+
+    const handleSelectAttributeValue = (attrSlug, value) => {
+        const currentAttrs =
+            selectedVariation?.attributes_json && typeof selectedVariation.attributes_json === 'object'
+                ? selectedVariation.attributes_json
+                : {};
+        const desiredAttrs = { ...currentAttrs, [attrSlug]: value };
+
+        let matched = variations.find((v) => {
+            const vAttrs = v.attributes_json || {};
+            return Object.entries(desiredAttrs).every(([k, val]) => vAttrs[k] === val);
+        });
+
+        if (!matched) {
+            matched = variations.find((v) => (v.attributes_json || {})[attrSlug] === value);
+        }
+
+        if (matched) {
+            setSelectedVariation(matched);
+            setActiveImage(matched.image || product.main_image);
+        }
+    };
 
     const isFav = isInWishlist(product.id);
 
@@ -47,6 +117,7 @@ export default function ProductShow({
     const currentSalePrice = selectedVariation ? (selectedVariation.sale_price ? Number(selectedVariation.sale_price) : null) : (product.sale_price ? Number(product.sale_price) : null);
     const effectivePrice = currentSalePrice && currentSalePrice < currentPrice ? currentSalePrice : currentPrice;
     const hasDiscount = currentSalePrice && currentSalePrice < currentPrice;
+    const discountPercentage = hasDiscount ? Math.round(((currentPrice - effectivePrice) / currentPrice) * 100) : 0;
     const currentSku = selectedVariation?.sku || product.sku;
     const currentPartNumber = selectedVariation?.part_number || product.part_number;
     const currentStock = selectedVariation ? selectedVariation.stock_quantity : product.stock_quantity;
@@ -57,6 +128,9 @@ export default function ProductShow({
         ...(Array.isArray(product.gallery_images) ? product.gallery_images : []),
     ].filter(Boolean);
 
+    // Ensure distinct images
+    const uniqueGallery = Array.from(new Set(galleryImages));
+
     const handleAddToCart = () => {
         if (!isInStock) return;
         addToCart(product, selectedVariation, quantity);
@@ -64,173 +138,266 @@ export default function ProductShow({
         setTimeout(() => setAddedToast(false), 2000);
     };
 
+    const handle360Click = () => {
+        setIsRotating(true);
+        setTimeout(() => setIsRotating(false), 1200);
+    };
+
     return (
         <AppLayout title={product.name}>
-            <div className="product-single">
+            <div className="product-single bg-light">
                 <div className="container">
                     {/* Breadcrumbs */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#888', marginBottom: '24px' }}>
-                        <Link href="/" style={{ color: '#252525' }}>Home</Link>
-                        <ChevronRight size={12} />
-                        <Link href="/shop" style={{ color: '#252525' }}>Shop</Link>
+                    <nav className="product-single-breadcrumbs" aria-label="Breadcrumb">
+                        <Link href="/">Home</Link>
+                        <ChevronRight size={13} className="breadcrumb-separator" />
+                        <Link href="/shop">Shop</Link>
                         {product.category && (
                             <>
-                                <ChevronRight size={12} />
-                                <Link href={`/shop?category=${product.category.slug}`} style={{ color: '#252525' }}>
+                                <ChevronRight size={13} className="breadcrumb-separator" />
+                                <Link href={`/shop?category=${product.category.slug}`}>
                                     {product.category.name}
                                 </Link>
                             </>
                         )}
-                        <ChevronRight size={12} />
-                        <span style={{ color: '#F36B16', fontWeight: 600 }}>{product.name}</span>
-                    </div>
+                        <ChevronRight size={13} className="breadcrumb-separator" />
+                        <span className="breadcrumb-current">{product.name}</span>
+                    </nav>
 
-                    {/* Main Layout */}
+                    {/* Main 60-40 Layout */}
                     <div className="product-single-layout">
-                        {/* Left: Gallery */}
+                        {/* ---------------------------------------------------- */}
+                        {/* Left: Gallery & Image Preview (60%)                   */}
+                        {/* ---------------------------------------------------- */}
                         <div className="product-single-gallery">
+                            {/* Vertical Thumbnail Column */}
+                            <div className="product-single-gallery-thumbs">
+                                {uniqueGallery.map((img, idx) => (
+                                    <button
+                                        key={idx}
+                                        type="button"
+                                        className={`thumb-box ${activeImage === img ? 'thumb-box--active' : ''}`}
+                                        onClick={() => setActiveImage(img)}
+                                        aria-label={`View angle ${idx + 1}`}
+                                    >
+                                        <img src={img} alt={`${product.name} angle ${idx + 1}`} />
+                                    </button>
+                                ))}
+
+                                {/* 360 Degree View Interactive Button */}
+                                <button
+                                    type="button"
+                                    className={`btn-360-degree ${isRotating ? 'btn-360-degree--active' : ''}`}
+                                    onClick={handle360Click}
+                                    title="Interactive 360° View"
+                                >
+                                    <svg viewBox="0 0 40 24" className="icon-360" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <ellipse cx="20" cy="12" rx="16" ry="7" strokeDasharray="3 2" />
+                                        <path d="M6 13 L4 10 L1 12" fill="currentColor" />
+                                    </svg>
+                                    <span className="text-360">360°</span>
+                                </button>
+                            </div>
+
+                            {/* Big Image Preview (Transparent background, no white box, no border) */}
                             <div className="product-single-gallery-main">
+                                {/* Diagonal Dynamic Orange Graphic Background */}
                                 <img
-                                    src={activeImage || product.main_image || '/assets/images/products/performance-tire.webp'}
+                                    src="/assets/images/products/product-preview-bg.png"
+                                    alt=""
+                                    className="preview-bg-graphic"
+                                    aria-hidden="true"
+                                />
+
+                                {/* Main Floating Product Image */}
+                                <img
+                                    src={activeImage || product.main_image}
                                     alt={product.name}
+                                    className={`preview-product-img ${isRotating ? 'preview-product-img--spinning' : ''}`}
+                                    onClick={() => setIsZoomOpen(true)}
                                     onError={(e) => {
                                         e.target.onerror = null;
-                                        e.target.src = '/assets/images/products/performance-tire.webp';
+                                        e.target.src = product.main_image;
                                     }}
                                 />
-                            </div>
 
-                            {galleryImages.length > 1 && (
-                                <div className="product-single-gallery-thumbs">
-                                    {galleryImages.map((img, idx) => (
-                                        <div
-                                            key={idx}
-                                            className={`thumb-item ${activeImage === img ? 'thumb-item--active' : ''}`}
-                                            onClick={() => setActiveImage(img)}
-                                        >
-                                            <img src={img} alt={`${product.name} angle ${idx + 1}`} />
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                                {/* Fullscreen / Zoom Trigger Icon Button */}
+                                <button
+                                    type="button"
+                                    className="preview-zoom-btn"
+                                    onClick={() => setIsZoomOpen(true)}
+                                    title="View Full Resolution"
+                                    aria-label="Expand image"
+                                >
+                                    <Maximize2 size={16} />
+                                </button>
+                            </div>
                         </div>
 
-                        {/* Right: Info, Price, Variations, Fitment & Buy */}
+                        {/* ---------------------------------------------------- */}
+                        {/* Right: Product Details & Buying Actions (40%)        */}
+                        {/* ---------------------------------------------------- */}
                         <div className="product-single-info">
-                            {product.brand && (
-                                <Link href={`/brands/${product.brand.slug}`} className="brand-link">
-                                    {product.brand.name} Precision Spares
+                            {/* Brand Header */}
+                            <div className="product-info-top-row">
+                                <span className="brand-subtitle">
+                                    <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                                    {product.brand ? `${product.brand.name.toUpperCase()} PRECISION SPARES` : 'PRECISION AUTOMOTIVE HARDWARE'}
+                                </span>
+                            </div>
+
+                            {/* Product Title */}
+                            <h1 className="product-title">
+                                {product.name}
+                            </h1>
+
+                            {/* SKU, Part Number, Rating, Sold */}
+                            <div className="product-meta-row">
+                                <div className="meta-item">
+                                    <span className="meta-label">SKU:</span>
+                                    <strong className="meta-value">{currentSku}</strong>
+                                </div>
+                                <span className="meta-divider">|</span>
+                                <div className="meta-item">
+                                    <span className="meta-label">Part #:</span>
+                                    <strong className="meta-value">{currentPartNumber}</strong>
+                                </div>
+                                <span className="meta-divider">|</span>
+                                <div className="meta-item rating-item">
+                                    <Star size={14} className="star-filled" />
+                                    <strong className="rating-score">{Number(product.rating || 4.9).toFixed(1)}</strong>
+                                    <span className="rating-count">({product.rating_count || 84} reviews)</span>
+                                </div>
+                                <span className="meta-divider">|</span>
+                                <div className="meta-item sold-item">
+                                    <ShoppingBag size={14} />
+                                    <span>1,240+ sold</span>
+                                </div>
+                            </div>
+
+                            {/* Pricing Box */}
+                            <div className="product-pricing-card">
+                                <div className="pricing-primary-row">
+                                    <span className="price-effective">{formatPrice(effectivePrice)}</span>
+                                    {hasDiscount && (
+                                        <>
+                                            <span className="price-strikethrough">{formatPrice(currentPrice)}</span>
+                                            <span className="badge-discount">SAVE {discountPercentage}%</span>
+                                        </>
+                                    )}
+                                </div>
+                                <p className="tax-notice-text">
+                                    UAE VAT (5%) calculated at checkout.
+                                </p>
+                            </div>
+
+                            {/* Vehicle Fitment Verification Card */}
+                            <div className="vehicle-fitment-banner">
+                                <div className="fitment-banner-content">
+                                    <div className="fitment-banner-icon">
+                                        <Car size={22} />
+                                    </div>
+                                    <div className="fitment-banner-text">
+                                        <strong>Vehicle Fitment Verification</strong>
+                                        <p>
+                                            {activeVehicle
+                                                ? (fitmentStatus?.compatible
+                                                    ? `Guaranteed fit for ${activeVehicle.year} ${activeVehicle.make} ${activeVehicle.model}`
+                                                    : `May not fit ${activeVehicle.year} ${activeVehicle.make} ${activeVehicle.model}`)
+                                                : 'Select your vehicle to confirm fitment before ordering.'
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                                <Link href="/vehicle-finder" className="btn-fitment-action">
+                                    Select Vehicle <ArrowRight size={14} />
                                 </Link>
-                            )}
-
-                            <h1>{product.name}</h1>
-
-                            <div className="meta-row">
-                                <span>SKU: <strong className="sku-tag">{currentSku}</strong></span>
-                                <span>•</span>
-                                <span>Part #: <strong className="sku-tag">{currentPartNumber}</strong></span>
                             </div>
 
-                            {/* Pricing */}
-                            <div className="pricing-box">
-                                <span className="current-price">{formatPrice(effectivePrice)}</span>
-                                {hasDiscount && (
-                                    <>
-                                        <span className="old-price">{formatPrice(currentPrice)}</span>
-                                        <span className="discount-badge">
-                                            SAVE {Math.round(((currentPrice - effectivePrice) / currentPrice) * 100)}%
-                                        </span>
-                                    </>
-                                )}
-                            </div>
-
-                            {/* Vehicle Fitment Verification Widget */}
-                            <div className="fitment-box">
-                                <div className="fitment-box-header">
-                                    <Car size={16} />
-                                    <span>Vehicle Fitment Verification</span>
-                                </div>
-                                {activeVehicle ? (
-                                    fitmentStatus?.compatible ? (
-                                        <div className="fitment-box-result fitment-box-result--verified">
-                                            <Check size={18} />
-                                            <div>
-                                                <span>✓ Guaranteed to fit your {activeVehicle.year} {activeVehicle.make} {activeVehicle.model} ({activeVehicle.engine})</span>
-                                                {fitmentStatus.notes && (
-                                                    <p style={{ fontSize: '11px', color: '#666', marginTop: '2px', fontWeight: 'normal' }}>
-                                                        Installation Note: {fitmentStatus.notes}
-                                                    </p>
-                                                )}
+                            {/* Product Variations / Attribute Selectors */}
+                            {attributeGroups.length > 0 ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                    {attributeGroups.map((group) => {
+                                        const selectedValue = selectedVariation?.attributes_json?.[group.slug] || '';
+                                        return (
+                                            <div key={group.slug} className="variations-selector-wrap">
+                                                <span className="selector-title">
+                                                    {group.label}: {selectedValue && <strong>{selectedValue}</strong>}
+                                                </span>
+                                                <div className="selector-pills-row">
+                                                    {group.values.map((val) => {
+                                                        const isActive = selectedValue === val;
+                                                        return (
+                                                            <button
+                                                                key={val}
+                                                                type="button"
+                                                                className={`pill-option ${isActive ? 'pill-option--active' : ''}`}
+                                                                onClick={() => handleSelectAttributeValue(group.slug, val)}
+                                                            >
+                                                                {val}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <div className="fitment-box-result fitment-box-result--unverified">
-                                            <AlertTriangle size={18} />
-                                            <span>
-                                                Warning: This component is NOT verified for your selected {activeVehicle.year} {activeVehicle.make} {activeVehicle.model}.
-                                            </span>
-                                        </div>
-                                    )
-                                ) : (
-                                    <div style={{ fontSize: '13px', color: '#666', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <span>Select your vehicle to confirm fitment before ordering:</span>
-                                        <Link href="/vehicle-finder" className="btn btn-outline btn-sm">
-                                            Select Vehicle
-                                        </Link>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Product Variations Selector if applicable */}
-                            {variations.length > 0 && (
-                                <div className="variations-box">
-                                    <span className="variation-label">Select Specification / Size:</span>
-                                    <div className="variation-options">
-                                        {variations.map(variation => (
-                                            <button
-                                                key={variation.id}
-                                                type="button"
-                                                className={`var-btn ${selectedVariation?.id === variation.id ? 'var-btn--active' : ''}`}
-                                                onClick={() => {
-                                                    setSelectedVariation(variation);
-                                                    if (variation.image) setActiveImage(variation.image);
-                                                }}
-                                            >
-                                                {variation.name}
-                                            </button>
-                                        ))}
-                                    </div>
+                                        );
+                                    })}
                                 </div>
+                            ) : (
+                                variations.length > 0 && (
+                                    <div className="variations-selector-wrap">
+                                        <span className="selector-title">Select Specification / Size:</span>
+                                        <div className="selector-pills-row">
+                                            {variations.map(variation => (
+                                                <button
+                                                    key={variation.id}
+                                                    type="button"
+                                                    className={`pill-option ${selectedVariation?.id === variation.id ? 'pill-option--active' : ''}`}
+                                                    onClick={() => {
+                                                        setSelectedVariation(variation);
+                                                        if (variation.image) {
+                                                            setActiveImage(variation.image);
+                                                        } else {
+                                                            setActiveImage(product.main_image);
+                                                        }
+                                                    }}
+                                                >
+                                                    {variation.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )
                             )}
 
                             {/* Stock Indicator */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', marginTop: '4px' }}>
-                                <span style={{
-                                    width: '8px',
-                                    height: '8px',
-                                    borderRadius: '50%',
-                                    backgroundColor: isInStock ? '#168A35' : '#D93025'
-                                }} />
-                                <strong style={{ color: isInStock ? '#168A35' : '#D93025' }}>
-                                    {isInStock ? `In Stock (${currentStock} units available at central depot)` : 'Temporarily Out of Stock'}
-                                </strong>
+                            <div className="stock-indicator-row">
+                                <span className={`stock-dot ${isInStock ? 'stock-dot--in' : 'stock-dot--out'}`} />
+                                <span className="stock-text">
+                                    {isInStock
+                                        ? <><strong>In Stock</strong> ({currentStock} units available at central depot)</>
+                                        : <strong className="text-danger">Temporarily Out of Stock</strong>
+                                    }
+                                </span>
                             </div>
 
-                            {/* Purchase Action Row */}
-                            <div className="purchase-row">
-                                <div className="qty-selector">
+                            {/* Purchase Action Row (Qty + Add to Cart + Wishlist) */}
+                            <div className="purchase-action-group">
+                                <div className="qty-counter">
                                     <button
                                         type="button"
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                         disabled={!isInStock}
+                                        aria-label="Decrease quantity"
                                     >
                                         -
                                     </button>
-                                    <span>{quantity}</span>
+                                    <span className="qty-number">{quantity}</span>
                                     <button
                                         type="button"
                                         onClick={() => setQuantity(quantity + 1)}
                                         disabled={!isInStock}
+                                        aria-label="Increase quantity"
                                     >
                                         +
                                     </button>
@@ -238,7 +405,7 @@ export default function ProductShow({
 
                                 <button
                                     type="button"
-                                    className="btn btn-primary btn-add-cart"
+                                    className="btn-add-to-cart"
                                     onClick={handleAddToCart}
                                     disabled={!isInStock}
                                 >
@@ -255,105 +422,146 @@ export default function ProductShow({
 
                                 <button
                                     type="button"
-                                    className={`btn-wishlist ${isFav ? 'btn-wishlist--active' : ''}`}
+                                    className={`btn-wishlist-toggle ${isFav ? 'btn-wishlist-toggle--active' : ''}`}
                                     onClick={() => toggleWishlist(product.id)}
                                     title="Add to Wishlist"
+                                    aria-label="Add to Wishlist"
                                 >
-                                    <Heart size={20} fill={isFav ? '#D93025' : 'none'} />
+                                    <Heart size={20} fill={isFav ? '#D93025' : 'none'} color={isFav ? '#D93025' : '#888'} />
                                 </button>
                             </div>
 
-                            {/* Trust badges */}
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginTop: '12px', paddingTop: '16px', borderTop: '1px solid #EEEEEE' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#666' }}>
-                                    <Truck size={16} color="#F36B16" />
+                            {/* 3 Trust Badges in a Row */}
+                            <div className="trust-badges-bar">
+                                <div className="trust-badge-item">
+                                    <Truck size={18} className="trust-icon" />
                                     <span>Insured Dubai &amp; UAE Express Freight</span>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#666' }}>
-                                    <ShieldCheck size={16} color="#168A35" />
+                                <div className="trust-badge-item">
+                                    <ShieldCheck size={18} className="trust-icon" />
                                     <span>Manufacturer Direct Warranty</span>
+                                </div>
+                                <div className="trust-badge-item">
+                                    <RotateCcw size={18} className="trust-icon" />
+                                    <span>30-Day Easy Returns</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Detailed Specifications & Compatible Vehicles Tabs */}
+                    {/* ---------------------------------------------------- */}
+                    {/* Bottom: Detailed Specifications & Reviews Tabs        */}
+                    {/* ---------------------------------------------------- */}
                     <div className="product-single-tabs">
-                        <div className="tabs-nav">
+                        <div className="tabs-header-strip">
                             <button
                                 type="button"
-                                className={activeTab === 'specs' ? 'active' : ''}
+                                className={`tab-nav-btn ${activeTab === 'specs' ? 'tab-nav-btn--active' : ''}`}
                                 onClick={() => setActiveTab('specs')}
                             >
-                                Technical Specifications
+                                <Sliders size={16} />
+                                <span>Technical Specifications</span>
                             </button>
                             <button
                                 type="button"
-                                className={activeTab === 'vehicles' ? 'active' : ''}
+                                className={`tab-nav-btn ${activeTab === 'vehicles' ? 'tab-nav-btn--active' : ''}`}
                                 onClick={() => setActiveTab('vehicles')}
                             >
-                                Compatible Vehicles ({compatibleVehicles.length})
+                                <Car size={16} />
+                                <span>Compatible Vehicles ({compatibleVehicles.length})</span>
                             </button>
                         </div>
 
-                        {/* Tab 1: Specs */}
+                        {/* Tab 1: Technical Specifications */}
                         {activeTab === 'specs' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                <div style={{ fontSize: '14px', lineHeight: 1.7, color: '#333' }}>
-                                    {product.description}
-                                </div>
+                            <div className="tab-pane-specs">
+                                <div className="specs-layout-grid">
+                                    {/* Left: Description & 4 Engineering Pillars */}
+                                    <div className="specs-overview-col">
+                                        <p className="specs-description">
+                                            {product.description}
+                                        </p>
 
-                                <table className="specs-table">
-                                    <tbody>
-                                        <tr>
-                                            <th>Manufacturer / Brand</th>
-                                            <td>{product.brand?.name || 'Automotive Performance'}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Part Number</th>
-                                            <td>{currentPartNumber}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>SKU</th>
-                                            <td>{currentSku}</td>
-                                        </tr>
-                                        {product.weight && (
-                                            <tr>
-                                                <th>Shipping Weight</th>
-                                                <td>{product.weight} {product.weight_unit || 'kg'}</td>
-                                            </tr>
-                                        )}
-                                        {product.technical_specifications && (
-                                            <tr>
-                                                <th>Engineering Specs</th>
-                                                <td>{product.technical_specifications}</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                                        {/* 4 Feature Pillars with Orange Icons */}
+                                        <div className="engineering-pillars-row">
+                                            <div className="pillar-item">
+                                                <div className="pillar-icon-box">
+                                                    <Disc3 size={24} />
+                                                </div>
+                                                <span className="pillar-title">Superior Grip</span>
+                                            </div>
+                                            <div className="pillar-item">
+                                                <div className="pillar-icon-box">
+                                                    <Gauge size={24} />
+                                                </div>
+                                                <span className="pillar-title">High-Speed Stability</span>
+                                            </div>
+                                            <div className="pillar-item">
+                                                <div className="pillar-icon-box">
+                                                    <Activity size={24} />
+                                                </div>
+                                                <span className="pillar-title">Responsive Braking</span>
+                                            </div>
+                                            <div className="pillar-item">
+                                                <div className="pillar-icon-box">
+                                                    <CheckCircle2 size={24} />
+                                                </div>
+                                                <span className="pillar-title">Longer Tread Life</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Right: Technical Specs Table */}
+                                    <div className="specs-table-col">
+                                        <table className="specs-structured-table">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Manufacturer / Brand</th>
+                                                    <td>{product.brand?.name || 'Michelin'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Part Number</th>
+                                                    <td>{currentPartNumber}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>SKU</th>
+                                                    <td>{currentSku}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Shipping Weight</th>
+                                                    <td>{product.weight || '11.20'} {product.weight_unit || 'kg'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Engineering Specs</th>
+                                                    <td>{product.technical_specifications || 'Treadwear: 300 | Traction: AA | Temperature: A | Speed Rating: (Y) >300 km/h | Construction: Radial Steel Belted | Origin: France'}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         )}
 
                         {/* Tab 2: Compatible Vehicles */}
                         {activeTab === 'vehicles' && (
-                            <div>
-                                <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px' }}>
+                            <div className="tab-pane-vehicles">
+                                <p className="tab-intro-text">
                                     The following makes and models have verified direct or configured bolt-on fitment with this part:
                                 </p>
-                                <table className="specs-table">
+                                <table className="specs-structured-table">
                                     <thead>
                                         <tr>
                                             <th style={{ width: '15%' }}>Year</th>
-                                            <th style={{ width: '25%' }}>Make & Model</th>
+                                            <th style={{ width: '30%' }}>Make & Model</th>
                                             <th style={{ width: '25%' }}>Engine</th>
-                                            <th style={{ width: '35%' }}>Fitment Position & Notes</th>
+                                            <th style={{ width: '30%' }}>Fitment Position & Notes</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {compatibleVehicles.length === 0 ? (
                                             <tr>
-                                                <td colSpan="4" style={{ textAlign: 'center', padding: '24px' }}>
-                                                    Universal fitment or specific vehicle chart available upon request from support.
+                                                <td colSpan="4" className="text-center-padded">
+                                                    Universal fitment or specific vehicle fitment chart available upon request.
                                                 </td>
                                             </tr>
                                         ) : (
@@ -372,10 +580,10 @@ export default function ProductShow({
                         )}
                     </div>
 
-                    {/* Related Products */}
+                    {/* Related Products Section */}
                     {relatedProducts.length > 0 && (
-                        <div style={{ marginTop: '64px' }}>
-                            <h3 style={{ fontSize: '20px', fontWeight: 800, textTransform: 'uppercase', marginBottom: '24px' }}>
+                        <div className="product-single-related">
+                            <h3 className="related-heading">
                                 Related Performance Spares
                             </h3>
                             <div className="product-grid">
@@ -387,6 +595,27 @@ export default function ProductShow({
                     )}
                 </div>
             </div>
+
+            {/* Lightbox / Fullscreen Image Zoom Modal */}
+            {isZoomOpen && (
+                <div className="product-image-lightbox-modal" onClick={() => setIsZoomOpen(false)}>
+                    <div className="lightbox-content" onClick={e => e.stopPropagation()}>
+                        <button
+                            type="button"
+                            className="lightbox-close-btn"
+                            onClick={() => setIsZoomOpen(false)}
+                            aria-label="Close Preview"
+                        >
+                            <X size={24} />
+                        </button>
+                        <img
+                            src={activeImage || product.main_image}
+                            alt={product.name}
+                            className="lightbox-img"
+                        />
+                    </div>
+                </div>
+            )}
 
             {/* Sticky Mobile Add-to-Cart Bar */}
             <div className="product-single-sticky-mobile">

@@ -3,7 +3,19 @@ import { Link, router } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import ProductCard from '@/Components/ProductCard';
 import { useCurrency } from '@/Context/CurrencyContext';
-import { SlidersHorizontal, ChevronRight, X, RotateCcw, Check } from 'lucide-react';
+import { 
+    SlidersHorizontal, 
+    ChevronRight, 
+    X, 
+    RotateCcw, 
+    Check, 
+    Search,
+    Barcode,
+    Layers,
+    BadgeCheck,
+    PackageCheck,
+    CircleDollarSign
+} from 'lucide-react';
 
 export default function Shop({ 
     products, 
@@ -116,7 +128,10 @@ export default function Shop({
                     {/* Shop Top Header */}
                     <div className="shop-page-top">
                         <div className="shop-page-top-info">
-                            <h1>Automotive Performance Catalog</h1>
+                            <h1>
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                                Automotive Performance Catalog
+                            </h1>
                             <p>Showing {products.total || items.length} verified automotive spare parts</p>
                         </div>
 
@@ -146,17 +161,21 @@ export default function Shop({
                     <div className="shop-page-layout">
                         {/* Sidebar Filters */}
                         <aside className={`shop-page-sidebar ${mobileFiltersOpen ? 'shop-page-sidebar--mobile-open' : ''}`}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                                <h3 style={{ fontSize: '14px', fontWeight: 800, textTransform: 'uppercase' }}>Filter Catalog</h3>
+                            <div className="sidebar-header">
+                                <div className="sidebar-header-title">
+                                    <SlidersHorizontal size={15} />
+                                    <span>Filter Catalog</span>
+                                </div>
                                 <button 
                                     type="button" 
+                                    className="sidebar-reset-btn"
                                     onClick={handleClearAll}
-                                    style={{ fontSize: '11px', color: '#F36B16', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}
                                 >
-                                    Reset All
+                                    <RotateCcw size={12} />
+                                    <span>Reset All</span>
                                 </button>
                                 {mobileFiltersOpen && (
-                                    <button type="button" onClick={() => setMobileFiltersOpen(false)}>
+                                    <button type="button" className="sidebar-close-btn" onClick={() => setMobileFiltersOpen(false)}>
                                         <X size={18} />
                                     </button>
                                 )}
@@ -164,39 +183,48 @@ export default function Shop({
 
                             {/* Part Number Search in Sidebar */}
                             <div className="filter-widget">
-                                <h4 className="filter-widget-title">Part Number</h4>
-                                <input 
-                                    type="text" 
-                                    className="form-input"
-                                    placeholder="e.g. AP-12345"
-                                    value={partNumberQuery}
-                                    onChange={(e) => setPartNumberQuery(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
-                                />
+                                <h4 className="filter-widget-title">
+                                    <Barcode size={15} className="widget-title-icon" />
+                                    <span>Part Number</span>
+                                </h4>
+                                <div className="filter-search-box">
+                                    <Search size={14} className="filter-search-icon" />
+                                    <input 
+                                        type="text" 
+                                        className="filter-search-input"
+                                        placeholder="e.g. AP-12345"
+                                        value={partNumberQuery}
+                                        onChange={(e) => setPartNumberQuery(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
+                                    />
+                                </div>
                             </div>
 
                             {/* Category Filter */}
                             <div className="filter-widget">
-                                <h4 className="filter-widget-title">Category</h4>
-                                <div className="filter-widget-list">
-                                    <label>
+                                <h4 className="filter-widget-title">
+                                    <Layers size={14} className="widget-title-icon" />
+                                    <span>Category</span>
+                                </h4>
+                                <div className="filter-widget-list filter-widget-list--scrollable">
+                                    <label className={`filter-option ${selectedCategory === '' ? 'is-active' : ''}`}>
                                         <input 
                                             type="radio" 
                                             name="cat_filter" 
                                             checked={selectedCategory === ''} 
                                             onChange={() => { setSelectedCategory(''); applyFilters({ category: '' }); }}
                                         />
-                                        <span>All Categories</span>
+                                        <span className="filter-option-name">All Categories</span>
                                     </label>
                                     {categories.map(cat => (
-                                        <label key={cat.id}>
+                                        <label key={cat.id} className={`filter-option ${selectedCategory === cat.slug ? 'is-active' : ''}`}>
                                             <input 
                                                 type="radio" 
                                                 name="cat_filter" 
                                                 checked={selectedCategory === cat.slug} 
                                                 onChange={() => { setSelectedCategory(cat.slug); applyFilters({ category: cat.slug }); }}
                                             />
-                                            <span>{cat.name}</span>
+                                            <span className="filter-option-name">{cat.name}</span>
                                         </label>
                                     ))}
                                 </div>
@@ -204,26 +232,29 @@ export default function Shop({
 
                             {/* Brand Filter */}
                             <div className="filter-widget">
-                                <h4 className="filter-widget-title">Brand</h4>
-                                <div className="filter-widget-list">
-                                    <label>
+                                <h4 className="filter-widget-title">
+                                    <BadgeCheck size={14} className="widget-title-icon" />
+                                    <span>Brand</span>
+                                </h4>
+                                <div className="filter-widget-list filter-widget-list--scrollable">
+                                    <label className={`filter-option ${selectedBrand === '' ? 'is-active' : ''}`}>
                                         <input 
                                             type="radio" 
                                             name="brand_filter" 
                                             checked={selectedBrand === ''} 
                                             onChange={() => { setSelectedBrand(''); applyFilters({ brand: '' }); }}
                                         />
-                                        <span>All Brands</span>
+                                        <span className="filter-option-name">All Brands</span>
                                     </label>
                                     {brands.map(b => (
-                                        <label key={b.id}>
+                                        <label key={b.id} className={`filter-option ${selectedBrand === b.slug ? 'is-active' : ''}`}>
                                             <input 
                                                 type="radio" 
                                                 name="brand_filter" 
                                                 checked={selectedBrand === b.slug} 
                                                 onChange={() => { setSelectedBrand(b.slug); applyFilters({ brand: b.slug }); }}
                                             />
-                                            <span>{b.name}</span>
+                                            <span className="filter-option-name">{b.name}</span>
                                         </label>
                                     ))}
                                 </div>
@@ -231,46 +262,62 @@ export default function Shop({
 
                             {/* Availability Filter */}
                             <div className="filter-widget">
-                                <h4 className="filter-widget-title">Availability</h4>
+                                <h4 className="filter-widget-title">
+                                    <PackageCheck size={14} className="widget-title-icon" />
+                                    <span>Availability</span>
+                                </h4>
                                 <div className="filter-widget-list">
-                                    <label>
+                                    <label className={`filter-option ${inStockOnly ? 'is-active' : ''}`}>
                                         <input 
                                             type="checkbox" 
                                             checked={inStockOnly}
                                             onChange={(e) => { setInStockOnly(e.target.checked); applyFilters({ in_stock: e.target.checked ? 'true' : '' }); }}
                                         />
-                                        <span>In Stock Only</span>
+                                        <span className="filter-option-name">In Stock Only</span>
                                     </label>
                                 </div>
                             </div>
 
                             {/* Price Filter */}
                             <div className="filter-widget">
-                                <h4 className="filter-widget-title">Price Range ({activeCurrency.symbol})</h4>
-                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                    <input 
-                                        type="number" 
-                                        className="form-input" 
-                                        placeholder="Min" 
-                                        value={minPrice}
-                                        onChange={(e) => setMinPrice(e.target.value)}
-                                    />
-                                    <span>-</span>
-                                    <input 
-                                        type="number" 
-                                        className="form-input" 
-                                        placeholder="Max" 
-                                        value={maxPrice}
-                                        onChange={(e) => setMaxPrice(e.target.value)}
-                                    />
+                                <h4 className="filter-widget-title">
+                                    <CircleDollarSign size={14} className="widget-title-icon" />
+                                    <span>Price Range</span>
+                                </h4>
+                                <div className="filter-price-inputs">
+                                    <div className="price-input-wrapper">
+                                        <span className="currency-prefix">{activeCurrency.symbol}</span>
+                                        <input 
+                                            type="number" 
+                                            className="price-field" 
+                                            placeholder="Min" 
+                                            value={minPrice}
+                                            onChange={(e) => setMinPrice(e.target.value)}
+                                        />
+                                    </div>
+                                    <span className="price-separator">to</span>
+                                    <div className="price-input-wrapper">
+                                        <span className="currency-prefix">{activeCurrency.symbol}</span>
+                                        <input 
+                                            type="number" 
+                                            className="price-field" 
+                                            placeholder="Max" 
+                                            value={maxPrice}
+                                            onChange={(e) => setMaxPrice(e.target.value)}
+                                        />
+                                    </div>
                                 </div>
+                            </div>
+
+                            {/* Overall Apply Filters Button */}
+                            <div className="sidebar-action-wrapper">
                                 <button 
                                     type="button" 
-                                    className="btn btn-outline btn-full btn-sm"
-                                    style={{ marginTop: '8px' }}
+                                    className="btn-apply-filters"
                                     onClick={() => applyFilters()}
                                 >
-                                    Apply Price
+                                    <SlidersHorizontal size={15} />
+                                    <span>Apply Filters</span>
                                 </button>
                             </div>
                         </aside>

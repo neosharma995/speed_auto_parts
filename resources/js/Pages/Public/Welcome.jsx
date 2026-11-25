@@ -50,22 +50,21 @@ function StatCounter({ value, suffix = '', decimals = 0, isVisible, duration = 1
         return <span>0{suffix}</span>;
     }
 
-    const formatted = decimals > 0 
-        ? displayVal.toFixed(decimals) 
+    const formatted = decimals > 0
+        ? displayVal.toFixed(decimals)
         : Math.floor(displayVal).toLocaleString();
 
     return <span>{formatted}{suffix}</span>;
 }
 
-export default function Welcome({ 
-    categories = [], 
-    featuredProducts = [], 
-    bestSellers = [], 
-    newArrivals = [], 
-    brands = [] 
+export default function Welcome({
+    categories = [],
+    featuredProducts = [],
+    bestSellers = [],
+    newArrivals = [],
+    brands = []
 }) {
     const [activeTab, setActiveTab] = useState('All');
-    const [topPickTab, setTopPickTab] = useState('Performance');
     const [countersVisible, setCountersVisible] = useState(false);
     const resultsSectionRef = useRef(null);
 
@@ -175,8 +174,8 @@ export default function Welcome({
         },
     ];
 
-    const displayProducts = activeTab === 'All' 
-        ? mockupProducts 
+    const displayProducts = activeTab === 'All'
+        ? mockupProducts
         : mockupProducts.filter(p => p.category?.toLowerCase() === activeTab.toLowerCase());
 
     // 5 Vehicle types
@@ -229,16 +228,16 @@ export default function Welcome({
 
                     <div className="categories-grid-8">
                         {popularCategories.map((cat, idx) => (
-                            <Link 
-                                key={idx} 
+                            <Link
+                                key={idx}
                                 href={`/shop?category=${cat.slug}`}
                                 className="cat-card-item"
                             >
                                 <div className="cat-thumb-wrap">
-                                    <img 
-                                        src={cat.image} 
-                                        alt={cat.name} 
-                                        loading="lazy" 
+                                    <img
+                                        src={cat.image}
+                                        alt={cat.name}
+                                        loading="lazy"
                                     />
                                 </div>
                                 <span className="cat-name">{cat.name}</span>
@@ -294,9 +293,9 @@ export default function Welcome({
                                 </Link>
                             </div>
                             <div className="promo-thumb-wrap">
-                                <img 
-                                    src="/assets/images/promotions/tire-promotion.webp" 
-                                    alt="Performance Tires Promotion" 
+                                <img
+                                    src="/assets/images/promotions/tire-promotion.webp"
+                                    alt="Performance Tires Promotion"
                                     className="promo-thumb"
                                     loading="lazy"
                                 />
@@ -313,9 +312,9 @@ export default function Welcome({
                                 </Link>
                             </div>
                             <div className="promo-thumb-wrap">
-                                <img 
-                                    src="/assets/images/promotions/brake-promotion.webp" 
-                                    alt="Brake Upgrade Packages" 
+                                <img
+                                    src="/assets/images/promotions/brake-promotion.webp"
+                                    alt="Brake Upgrade Packages"
                                     className="promo-thumb"
                                     loading="lazy"
                                 />
@@ -332,9 +331,9 @@ export default function Welcome({
                                 </Link>
                             </div>
                             <div className="promo-thumb-wrap">
-                                <img 
-                                    src="/assets/images/promotions/engine-promotion.webp" 
-                                    alt="Engine Performance Tuning" 
+                                <img
+                                    src="/assets/images/promotions/engine-promotion.webp"
+                                    alt="Engine Performance Tuning"
                                     className="promo-thumb"
                                     loading="lazy"
                                 />
@@ -360,17 +359,17 @@ export default function Welcome({
 
                     <div className="vehicle-types-grid">
                         {vehicleTypes.map((vt, idx) => (
-                            <Link 
-                                key={idx} 
-                                href={`/shop?vehicle_type=${vt.slug}`} 
+                            <Link
+                                key={idx}
+                                href={`/shop?vehicle_type=${vt.slug}`}
                                 className="vt-card"
                             >
                                 <div className="vt-img-wrap">
-                                    <img 
-                                        src={vt.img} 
-                                        alt={vt.name} 
+                                    <img
+                                        src={vt.img}
+                                        alt={vt.name}
                                         className="vt-img"
-                                        loading="lazy" 
+                                        loading="lazy"
                                     />
                                 </div>
                                 <div className="vt-footer">
@@ -401,15 +400,15 @@ export default function Welcome({
 
                     <div className="brands-row-8">
                         {brandLogos.map((brand, idx) => (
-                            <Link 
-                                key={idx} 
-                                href={`/brands/${brand.slug}`} 
+                            <Link
+                                key={idx}
+                                href={`/shop?brand=${brand.slug}`}
                                 className="brand-logo-card"
                                 title={brand.name}
                             >
-                                <img 
-                                    src={brand.logo} 
-                                    alt={brand.name} 
+                                <img
+                                    src={brand.logo}
+                                    alt={brand.name}
                                     className="brand-logo-img"
                                 />
                             </Link>
@@ -483,42 +482,35 @@ export default function Welcome({
                             </h2>
                         </div>
                         <div className="top-picks-header-right">
-                            <div className="filter-tabs">
-                                {['Performance', 'Interior', 'Exterior', 'Engine', 'Wheels'].map(tab => (
-                                    <button
-                                        key={tab}
-                                        type="button"
-                                        className={`tab-pill ${topPickTab === tab ? 'active' : ''}`}
-                                        onClick={() => setTopPickTab(tab)}
-                                    >
-                                        {tab}
-                                    </button>
-                                ))}
-                            </div>
-                            <Link href="/shop" className="section-header-link" style={{ marginLeft: '12px' }}>
+                            <Link href="/shop" className="section-header-link">
                                 View All <ArrowRight size={15} />
                             </Link>
+
+                            <div className="slider-nav-arrows">
+                                <button type="button" className="slider-arrow-btn prev" aria-label="Previous">
+                                    <ChevronLeft size={16} />
+                                </button>
+                                <button type="button" className="slider-arrow-btn next" aria-label="Next">
+                                    <ChevronRight size={16} />
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <div className="top-picks-slider-wrap">
-                        <button type="button" className="slider-arrow-btn prev" aria-label="Previous">
-                            <ChevronLeft size={16} />
-                        </button>
-
                         <div className="top-picks-grid">
                             {topPicks.map((pick, idx) => (
-                                <Link 
-                                    key={idx} 
-                                    href={`/shop?category=${pick.slug}`} 
+                                <Link
+                                    key={idx}
+                                    href={`/shop?category=${pick.slug}`}
                                     className="top-pick-card"
                                 >
                                     <div className="tp-img-wrap">
-                                        <img 
-                                            src={pick.img} 
-                                            alt={pick.title} 
+                                        <img
+                                            src={pick.img}
+                                            alt={pick.title}
                                             className="tp-thumb"
-                                            loading="lazy" 
+                                            loading="lazy"
                                         />
                                     </div>
                                     <div className="tp-footer">
@@ -530,10 +522,6 @@ export default function Welcome({
                                 </Link>
                             ))}
                         </div>
-
-                        <button type="button" className="slider-arrow-btn next" aria-label="Next">
-                            <ChevronRight size={16} />
-                        </button>
                     </div>
                 </div>
             </section>
@@ -559,11 +547,11 @@ export default function Welcome({
                         </div>
 
                         <div className="rr-center-car">
-                            <img 
-                                src="/assets/images/customer/customer-builds.webp" 
-                                alt="Customer Performance Build" 
+                            <img
+                                src="/assets/images/customer/customer-builds.webp"
+                                alt="Customer Performance Build"
                                 className="rr-car-img"
-                                loading="lazy" 
+                                loading="lazy"
                             />
                         </div>
 

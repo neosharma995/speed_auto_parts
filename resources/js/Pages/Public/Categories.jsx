@@ -3,53 +3,71 @@ import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { ChevronRight, ArrowRight } from 'lucide-react';
 
+const CATEGORY_FALLBACK_IMAGES = {
+    tires: '/assets/images/categories/tires.webp',
+    brakes: '/assets/images/categories/brakes.webp',
+    intake: '/assets/images/categories/intake.webp',
+    exhaust: '/assets/images/categories/exhaust.webp',
+    suspension: '/assets/images/categories/suspension.webp',
+    engine: '/assets/images/categories/engine.webp',
+    cooling: '/assets/images/categories/cooling.webp',
+    lighting: '/assets/images/categories/lighting.webp',
+};
+
+const resolveCategoryImage = (cat) => {
+    if (cat.image && cat.image.startsWith('/assets/images/categories/')) {
+        return cat.image;
+    }
+    return CATEGORY_FALLBACK_IMAGES[cat.slug] || '/assets/images/categories/tires.webp';
+};
+
 export default function Categories({ categories = [] }) {
     return (
         <AppLayout title="All Product Categories">
-            <div className="section bg-light" style={{ minHeight: '70vh' }}>
+            <div className="categories-page">
                 <div className="container">
-                    <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                        <span style={{ fontSize: '13px', fontWeight: 800, color: '#F36B16', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                            Catalog Directory
-                        </span>
-                        <h1 style={{ fontSize: '32px', fontWeight: 900, color: '#151515', marginTop: '4px' }}>
-                            PERFORMANCE SPARE CATEGORIES
-                        </h1>
-                        <p style={{ color: '#666', fontSize: '14px', maxWidth: '600px', margin: '8px auto 0' }}>
-                            Explore precision replacement components categorized by vehicle system.
-                        </p>
+                    {/* Breadcrumbs matching Shop Page */}
+                    <div className="breadcrumb-nav">
+                        <Link href="/" className="breadcrumb-link">Home</Link>
+                        <ChevronRight size={12} className="breadcrumb-arrow" />
+                        <span className="breadcrumb-current">Product Categories</span>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+                    {/* Left-Aligned Header matching Shop Page */}
+                    <div className="categories-page-header">
+                        <h1>
+                            <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
+                            Performance Spare Categories
+                        </h1>
+                        <p>Explore precision replacement components categorized by vehicle system</p>
+                    </div>
+
+                    {/* Responsive Grid */}
+                    <div className="categories-page-grid">
                         {categories.map(cat => (
                             <Link 
                                 key={cat.id} 
                                 href={`/shop?category=${cat.slug}`} 
-                                style={{
-                                    backgroundColor: '#FFFFFF',
-                                    border: '1px solid #DCDCDC',
-                                    borderRadius: '4px',
-                                    overflow: 'hidden',
-                                    display: 'flex',
-                                    flexDirection: 'column'
-                                }}
-                                className="clickable"
+                                className="category-directory-card"
                             >
-                                <div style={{ height: '180px', backgroundColor: '#151515', overflow: 'hidden' }}>
+                                <div className="category-card-thumb">
                                     <img 
-                                        src={cat.image || '/images/categories/tires.jpg'} 
+                                        src={resolveCategoryImage(cat)} 
                                         alt={cat.name} 
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        onError={(e) => {
+                                            e.currentTarget.onerror = null;
+                                            e.currentTarget.src = CATEGORY_FALLBACK_IMAGES[cat.slug] || '/assets/images/categories/tires.webp';
+                                        }}
                                     />
                                 </div>
-                                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
-                                    <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#151515', textTransform: 'uppercase' }}>
+                                <div className="category-card-body">
+                                    <h3 className="category-card-name">
                                         {cat.name}
                                     </h3>
-                                    <p style={{ fontSize: '13px', color: '#666', lineHeight: 1.5 }}>
+                                    <p className="category-card-desc">
                                         {cat.description}
                                     </p>
-                                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#F36B16', marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <span className="category-card-action">
                                         Browse Products <ArrowRight size={14} />
                                     </span>
                                 </div>
