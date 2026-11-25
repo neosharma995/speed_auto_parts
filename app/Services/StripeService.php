@@ -215,6 +215,11 @@ class StripeService
             'payment_status' => (string) $session->payment_status,
             'payment_intent' => is_string($session->payment_intent) ? $session->payment_intent : ($session->payment_intent->id ?? null),
             'status' => (string) $session->status,
+            'amount_total' => (int) ($session->amount_total ?? 0),
+            'currency' => strtoupper((string) ($session->currency ?? $this->currency)),
+            'customer_email' => (string) ($session->customer_email ?? $session->customer_details?->email ?? ''),
+            'client_reference_id' => (string) ($session->client_reference_id ?? ''),
+            'metadata' => $session->metadata ? $session->metadata->toArray() : [],
         ];
     }
 
