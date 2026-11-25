@@ -26,13 +26,17 @@
     }
 
     &-title {
-      font-size: 20px;
+      font-size: 17px;
       font-weight: 900;
       color: #111114;
       display: flex;
       align-items: center;
       gap: 10px;
       margin: 0;
+
+      @include respond-to('sm') {
+        font-size: 20px;
+      }
 
       .title-stripe-icon {
         height: 18px;
@@ -73,7 +77,7 @@
   gap: 10px;
 
   @include respond-to('sm') {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
   }
 
@@ -743,7 +747,7 @@
 .real-results-card {
   position: relative;
   background-color: #0E0E11;
-  background-image: 
+  background-image:
     linear-gradient(90deg, #0E0E11 0%, rgba(14, 14, 17, 0.9) 16%, rgba(14, 14, 17, 0.25) 34%, rgba(14, 14, 17, 0.25) 66%, rgba(14, 14, 17, 0.9) 84%, #0E0E11 100%),
     linear-gradient(180deg, rgba(14, 14, 17, 0.85) 0%, transparent 22%, transparent 78%, rgba(14, 14, 17, 0.85) 100%),
     url('/assets/images/customer/clean-road-bg.webp');
@@ -800,7 +804,7 @@
     }
 
     .rr-heading {
-      font-size: 21px;
+      font-size: 18px;
       font-weight: 900;
       font-style: italic;
       color: #FFFFFF;
@@ -808,6 +812,10 @@
       margin: 0 0 10px;
       letter-spacing: 0.02em;
       text-transform: uppercase;
+
+      @include respond-to('sm') {
+        font-size: 21px;
+      }
 
       @include respond-to('xl') {
         font-size: 23px;
@@ -975,10 +983,14 @@
     }
 
     .nl-heading {
-      font-size: 24px;
+      font-size: 19px;
       font-weight: 900;
       color: #FFFFFF;
       margin: 0 0 10px;
+
+      @include respond-to('sm') {
+        font-size: 24px;
+      }
     }
 
     .nl-desc {

@@ -353,7 +353,7 @@
 
     &-info {
       h1 {
-        font-size: 24px;
+        font-size: 19px;
         font-weight: 800;
         color: $color-dark;
         text-transform: uppercase;
@@ -361,6 +361,10 @@
         align-items: center;
         gap: 10px;
         margin: 0 0 4px 0;
+
+        @include respond-to('sm') {
+          font-size: 24px;
+        }
 
         .title-stripe-icon {
           height: 20px;
