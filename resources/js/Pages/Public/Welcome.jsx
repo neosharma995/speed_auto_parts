@@ -67,6 +67,14 @@ export default function Welcome({
     const [activeTab, setActiveTab] = useState('All');
     const [countersVisible, setCountersVisible] = useState(false);
     const resultsSectionRef = useRef(null);
+    const topPicksGridRef = useRef(null);
+
+    const scrollTopPicks = (dir) => {
+        const el = topPicksGridRef.current;
+        if (!el) return;
+        const step = el.clientWidth * 0.8;
+        el.scrollBy({ left: dir * step, behavior: 'smooth' });
+    };
 
     useEffect(() => {
         if (!resultsSectionRef.current) return;
@@ -487,10 +495,10 @@ export default function Welcome({
                             </Link>
 
                             <div className="slider-nav-arrows">
-                                <button type="button" className="slider-arrow-btn prev" aria-label="Previous">
+                                <button type="button" className="slider-arrow-btn prev" aria-label="Previous" onClick={() => scrollTopPicks(-1)}>
                                     <ChevronLeft size={16} />
                                 </button>
-                                <button type="button" className="slider-arrow-btn next" aria-label="Next">
+                                <button type="button" className="slider-arrow-btn next" aria-label="Next" onClick={() => scrollTopPicks(1)}>
                                     <ChevronRight size={16} />
                                 </button>
                             </div>
@@ -498,7 +506,7 @@ export default function Welcome({
                     </div>
 
                     <div className="top-picks-slider-wrap">
-                        <div className="top-picks-grid">
+                        <div className="top-picks-grid" ref={topPicksGridRef}>
                             {topPicks.map((pick, idx) => (
                                 <Link
                                     key={idx}

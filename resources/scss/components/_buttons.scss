@@ -22,6 +22,10 @@
   user-select: none;
   border: 1px solid transparent;
 
+  svg {
+    flex-shrink: 0;
+  }
+
   &:disabled,
   &.disabled {
     opacity: 0.55;

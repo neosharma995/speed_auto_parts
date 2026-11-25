@@ -258,4 +258,82 @@
       }
     }
   }
+
+  // Compact mobile 2-column card adjustments
+  @include respond-below('sm') {
+    padding: 10px;
+    border-radius: 10px;
+
+    &-badge {
+      top: 8px;
+      left: 8px;
+
+      .badge-discount {
+        font-size: 10px;
+        padding: 2px 5px;
+      }
+    }
+
+    &-wishlist {
+      top: 8px;
+      right: 8px;
+      width: 26px;
+      height: 26px;
+    }
+
+    &-media {
+      height: 120px;
+      margin-bottom: 8px;
+    }
+
+    &-brand {
+      font-size: 10px;
+    }
+
+    &-title {
+      font-size: 12.5px;
+      line-height: 1.25;
+    }
+
+    &-desc {
+      display: none;
+    }
+
+    &-price-wrap {
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    &-price {
+      font-size: 14px;
+    }
+
+    &-original {
+      font-size: 11px;
+    }
+
+    &-actions {
+      gap: 5px;
+      margin-top: 8px;
+
+      .qty-select-wrap {
+        width: 42px;
+        flex-shrink: 0;
+
+        .qty-dropdown {
+          height: 32px;
+          font-size: 11.5px;
+          padding: 0 14px 0 6px;
+        }
+      }
+
+      .btn-add-cart {
+        height: 32px;
+        font-size: 10.5px;
+        padding: 0 6px;
+        gap: 4px;
+        white-space: nowrap;
+      }
+    }
+  }
 }
