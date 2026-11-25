@@ -135,7 +135,7 @@ class CheckoutController extends Controller
         $validated = $this->validateCheckoutPayload($request);
 
         $user = $request->user();
-        $currencyRate = $this->getCurrencyRate();
+        ['currency' => $checkoutCurrency, 'rate' => $currencyRate] = $this->resolveCheckoutCurrencyAndRate($validated['currency'] ?? null);
         $scaledItems = $this->scaleItemsForDefaultCurrency($validated['items'], $currencyRate);
         $shippingCost = round(((float) ($validated['shipping_cost'] ?? 0)) * $currencyRate, 2);
         $discountAmount = round(((float) ($validated['discount_amount'] ?? 0)) * $currencyRate, 2);
@@ -180,6 +180,7 @@ class CheckoutController extends Controller
                 'sgst_amount' => 0.00,
                 'igst_amount' => 0.00,
                 'total_amount' => $finalTotal,
+                'currency' => $checkoutCurrency,
                 'order_notes' => $validated['order_notes'] ?? null,
                 'items' => $scaledItems,
             ];
@@ -237,7 +238,20 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.index')->with('error', 'Stripe payment has not been completed yet.');
         }
 
-        $order = $this->finalizeStripeOrder($sessionId, $sessionData['payment_intent'] ?? null);
+        try {
+            $order = $this->finalizeStripeOrder($sessionId, $sessionData['payment_intent'] ?? null, $sessionData);
+        } catch (\Throwable $e) {
+            Log::error('Stripe Order Finalization Error: ' . $e->getMessage(), [
+                'session_id' => $sessionId,
+                'exception' => $e,
+            ]);
+
+            return redirect()->route('checkout.index')->with(
+                'error',
+                'Your payment succeeded, but finalizing the order encountered an issue. Please contact support with reference: ' . $sessionId
+            );
+        }
+
         if (! $order) {
             return redirect()->route('checkout.index')->with('error', 'Checkout session expired. Please contact support with reference: ' . $sessionId);
         }
@@ -285,12 +299,12 @@ class CheckoutController extends Controller
         $validated = $this->validateCheckoutPayload($request);
 
         $user = $request->user();
-        $currencyRate = $this->getCurrencyRate();
+        ['currency' => $checkoutCurrency, 'rate' => $currencyRate] = $this->resolveCheckoutCurrencyAndRate($validated['currency'] ?? null);
         $scaledItems = $this->scaleItemsForDefaultCurrency($validated['items'], $currencyRate);
         $shippingCost = round(((float) ($validated['shipping_cost'] ?? 0)) * $currencyRate, 2);
         $discountAmount = round(((float) ($validated['discount_amount'] ?? 0)) * $currencyRate, 2);
 
-        return DB::transaction(function () use ($validated, $scaledItems, $user, $shippingCost, $discountAmount) {
+        return DB::transaction(function () use ($validated, $scaledItems, $user, $shippingCost, $discountAmount, $checkoutCurrency) {
             $subtotal = 0.0;
             foreach ($scaledItems as $item) {
                 $subtotal += ((float) $item['price']) * ((int) $item['quantity']);
@@ -327,7 +341,7 @@ class CheckoutController extends Controller
                 'sgst_amount' => 0.00,
                 'igst_amount' => 0.00,
                 'total_amount' => $finalTotal,
-                'currency' => $this->stripeService->getCurrency(),
+                'currency' => $checkoutCurrency,
                 'payment_method' => 'cod',
                 'payment_status' => 'pending',
                 'delivery_status' => 'pending',
@@ -358,7 +372,7 @@ class CheckoutController extends Controller
         ]);
     }
 
-    private function finalizeStripeOrder(string $sessionId, ?string $paymentIntentId): ?Order
+    private function finalizeStripeOrder(string $sessionId, ?string $paymentIntentId, array $sessionData = []): ?Order
     {
         $existingOrder = Order::where('stripe_session_id', $sessionId)->first();
         if ($existingOrder) {
@@ -368,7 +382,42 @@ class CheckoutController extends Controller
         $cacheKey = 'pending_ap_stripe_' . $sessionId;
         $pendingData = Cache::get($cacheKey) ?? session()->get($cacheKey);
         if (! $pendingData) {
-            return null;
+            // Fallback for stateless/multi-container production environments when cache/session expired
+            if (empty($sessionData)) {
+                return null;
+            }
+
+            $meta = is_array($sessionData['metadata'] ?? null) ? $sessionData['metadata'] : [];
+            $amount = round(((int) ($sessionData['amount_total'] ?? 0)) / 100, 2);
+
+            $pendingData = [
+                'order_reference' => ($meta['order_reference'] ?? '') !== '' ? $meta['order_reference'] : ($sessionData['client_reference_id'] ?? null),
+                'user_id' => auth()->id(),
+                'customer_name' => $meta['customer_name'] ?? 'Stripe Customer',
+                'customer_email' => $sessionData['customer_email'] ?? 'customer@speedautosparts.ae',
+                'customer_phone' => $meta['customer_phone'] ?? 'N/A',
+                'shipping_address' => 'Dubai, UAE',
+                'apartment' => null,
+                'city' => 'Dubai',
+                'state' => 'Dubai',
+                'pincode' => '00000',
+                'country' => 'United Arab Emirates',
+                'billing_same_as_shipping' => true,
+                'billing_address' => null,
+                'billing_city' => null,
+                'billing_state' => null,
+                'billing_pincode' => null,
+                'shipping_method_title' => 'UAE Express Courier',
+                'shipping_cost' => 0.00,
+                'subtotal' => $amount,
+                'discount_amount' => 0.00,
+                'coupon_code' => null,
+                'tax_amount' => 0.00,
+                'total_amount' => $amount,
+                'currency' => strtoupper((string) ($sessionData['currency'] ?? $this->stripeService->getCurrency())),
+                'order_notes' => 'Recovered from Stripe Checkout Session',
+                'items' => [],
+            ];
         }
 
         return DB::transaction(function () use ($pendingData, $sessionId, $paymentIntentId, $cacheKey) {
@@ -399,7 +448,7 @@ class CheckoutController extends Controller
                 'sgst_amount' => 0.00,
                 'igst_amount' => 0.00,
                 'total_amount' => $pendingData['total_amount'],
-                'currency' => $this->stripeService->getCurrency(),
+                'currency' => $pendingData['currency'] ?? $this->stripeService->getCurrency(),
                 'payment_method' => 'stripe',
                 'payment_status' => 'paid',
                 'delivery_status' => 'pending',
@@ -409,8 +458,10 @@ class CheckoutController extends Controller
                 'paid_at' => now(),
             ]);
 
-            $this->createOrderItems($order, $pendingData['items']);
-            $this->inventoryService->deductStockForOrder($pendingData['items']);
+            if (! empty($pendingData['items'])) {
+                $this->createOrderItems($order, $pendingData['items']);
+                $this->inventoryService->deductStockForOrder($pendingData['items']);
+            }
 
             Cache::forget($cacheKey);
             session()->forget($cacheKey);
@@ -464,24 +515,69 @@ class CheckoutController extends Controller
             'coupon_code' => ['nullable', 'string', 'max:50'],
             'discount_amount' => ['nullable', 'numeric', 'min:0'],
             'order_notes' => ['nullable', 'string', 'max:1000'],
+            'currency' => ['nullable', 'string', 'max:10'],
             'items' => ['required', 'array', 'min:1'],
         ]);
     }
 
-    private function getCurrencyRate(): float
+    /**
+     * Resolve the active checkout currency and combined conversion multiplier
+     * from Admin Settings (default currency + rate) and the frontend currency switcher.
+     *
+     * @return array{currency: string, rate: float}
+     */
+    private function resolveCheckoutCurrencyAndRate(?string $requestedCurrency): array
     {
+        $defaultCode = 'AED';
+        $baseRate = 1.0;
+        $rates = [
+            'AED' => 1.0,
+            'USD' => 0.2723,
+            'EUR' => 0.2510,
+        ];
+
         try {
             if (Schema::hasTable('settings')) {
-                $rate = (float) Setting::get('currency_rate', 1.0);
-                if ($rate > 0) {
-                    return $rate;
+                $storedCode = strtoupper(trim((string) Setting::get('currency_code', 'AED')));
+                if ($storedCode !== '') {
+                    $defaultCode = $storedCode;
+                }
+
+                $storedBaseRate = (float) Setting::get('currency_rate', 1.0);
+                if ($storedBaseRate > 0) {
+                    $baseRate = $storedBaseRate;
+                }
+
+                $rawRates = Setting::get('currency_rates', '');
+                $decoded = is_array($rawRates) ? $rawRates : json_decode((string) $rawRates, true);
+                if (is_array($decoded)) {
+                    foreach ($decoded as $k => $v) {
+                        $upper = strtoupper((string) $k);
+                        $num = (float) $v;
+                        if ($num > 0 && array_key_exists($upper, $rates)) {
+                            $rates[$upper] = $num;
+                        }
+                    }
                 }
             }
         } catch (\Throwable) {
-            // Fallback to 1.0 during initial setup/migrations
+            // Fallback to defaults during initial setup/migrations
         }
 
-        return 1.0;
+        $rates[$defaultCode] = 1.0;
+
+        $selected = strtoupper(trim((string) ($requestedCurrency ?? '')));
+        if ($selected !== '' && isset($rates[$selected])) {
+            return [
+                'currency' => $selected,
+                'rate' => $baseRate * (float) $rates[$selected],
+            ];
+        }
+
+        return [
+            'currency' => $defaultCode,
+            'rate' => $baseRate,
+        ];
     }
 
     private function scaleItemsForDefaultCurrency(array $items, float $currencyRate): array

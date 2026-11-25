@@ -8,7 +8,9 @@ use App\Models\Setting;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use RuntimeException;
+use Stripe\ApiRequestor;
 use Stripe\Event;
+use Stripe\HttpClient\CurlClient;
 use Stripe\StripeClient;
 use Stripe\Webhook;
 
@@ -62,6 +64,10 @@ class StripeService
         $totalAmount = (float) ($orderData['total_amount'] ?? 0);
         $amountInFils = max(100, (int) round($totalAmount * 100));
         $receipt = (string) ($orderData['order_reference'] ?? ('SAP-' . uniqid()));
+        $sessionCurrency = strtolower(trim((string) ($orderData['currency'] ?? $this->currency)));
+        if ($sessionCurrency === '') {
+            $sessionCurrency = $this->currency;
+        }
 
         if (! $this->isConfigured()) {
             if (app()->environment('local', 'testing')) {
@@ -71,14 +77,14 @@ class StripeService
                 Log::info('Stripe secret key not configured yet; using simulated Checkout Session in local/testing mode.', [
                     'session_id' => $simId,
                     'amount_fils' => $amountInFils,
-                    'currency' => $this->currency,
+                    'currency' => $sessionCurrency,
                 ]);
 
                 return [
                     'id' => $simId,
                     'url' => $simUrl,
                     'amount_total' => $amountInFils,
-                    'currency' => strtoupper($this->currency),
+                    'currency' => strtoupper($sessionCurrency),
                     'simulated' => true,
                 ];
             }
@@ -86,7 +92,7 @@ class StripeService
             throw new RuntimeException('Stripe secret key is not configured. Please set STRIPE_SECRET in .env.');
         }
 
-        $client = new StripeClient($this->secretKey);
+        $client = $this->makeStripeClient();
 
         $lineItems = [];
         $items = $orderData['items'] ?? [];
@@ -102,7 +108,7 @@ class StripeService
 
             $lineItems[] = [
                 'price_data' => [
-                    'currency' => $this->currency,
+                    'currency' => $sessionCurrency,
                     'product_data' => [
                         'name' => "Speed Autos Parts Order ({$receipt})",
                         'description' => mb_strimwidth($itemSummary, 0, 240, '...'),
@@ -123,7 +129,7 @@ class StripeService
 
                 $lineItems[] = [
                     'price_data' => [
-                        'currency' => $this->currency,
+                        'currency' => $sessionCurrency,
                         'product_data' => $productData,
                         'unit_amount' => $unitFils,
                     ],
@@ -134,7 +140,7 @@ class StripeService
             if ($shippingCost > 0) {
                 $lineItems[] = [
                     'price_data' => [
-                        'currency' => $this->currency,
+                        'currency' => $sessionCurrency,
                         'product_data' => [
                             'name' => (string) ($orderData['shipping_method_title'] ?? 'UAE Delivery'),
                         ],
@@ -147,7 +153,7 @@ class StripeService
             if ($taxAmount > 0) {
                 $lineItems[] = [
                     'price_data' => [
-                        'currency' => $this->currency,
+                        'currency' => $sessionCurrency,
                         'product_data' => [
                             'name' => 'UAE VAT (5%)',
                         ],
@@ -176,7 +182,7 @@ class StripeService
             'id' => $session->id,
             'url' => (string) $session->url,
             'amount_total' => (int) ($session->amount_total ?? $amountInFils),
-            'currency' => strtoupper((string) ($session->currency ?? $this->currency)),
+            'currency' => strtoupper((string) ($session->currency ?? $sessionCurrency)),
             'simulated' => false,
         ];
     }
@@ -201,7 +207,7 @@ class StripeService
             throw new RuntimeException('Stripe secret key is not configured.');
         }
 
-        $client = new StripeClient($this->secretKey);
+        $client = $this->makeStripeClient();
         $session = $client->checkout->sessions->retrieve($sessionId);
 
         return [
@@ -209,6 +215,11 @@ class StripeService
             'payment_status' => (string) $session->payment_status,
             'payment_intent' => is_string($session->payment_intent) ? $session->payment_intent : ($session->payment_intent->id ?? null),
             'status' => (string) $session->status,
+            'amount_total' => (int) ($session->amount_total ?? 0),
+            'currency' => strtoupper((string) ($session->currency ?? $this->currency)),
+            'customer_email' => (string) ($session->customer_email ?? $session->customer_details?->email ?? ''),
+            'client_reference_id' => (string) ($session->client_reference_id ?? ''),
+            'metadata' => $session->metadata ? $session->metadata->toArray() : [],
         ];
     }
 
@@ -222,5 +233,20 @@ class StripeService
         }
 
         return Webhook::constructEvent($payload, $sigHeader, $this->webhookSecret);
+    }
+
+    /**
+     * Build a StripeClient configured to use the Windows native CA trust store on Windows hosts
+     * so TLS verification succeeds reliably on XAMPP/WAMP without disabling SSL verification.
+     */
+    protected function makeStripeClient(): StripeClient
+    {
+        if (PHP_OS_FAMILY === 'Windows' && defined('CURLSSLOPT_NATIVE_CA')) {
+            ApiRequestor::setHttpClient(new CurlClient([
+                CURLOPT_SSL_OPTIONS => CURLSSLOPT_NATIVE_CA,
+            ]));
+        }
+
+        return new StripeClient($this->secretKey);
     }
 }
