@@ -49,17 +49,11 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
-        if (! ($user->isAdmin() || $user->isEditor() || $user->isStaff())) {
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            throw ValidationException::withMessages([
-                'email' => 'Only administrator accounts can sign in here.',
-            ]);
+        if ($user->isAdmin() || $user->isEditor() || $user->isStaff()) {
+            return redirect()->intended(route('admin.dashboard'));
         }
 
-        return redirect()->intended(route('admin.dashboard'));
+        return redirect()->intended(route('customer.dashboard'));
     }
 
     public function destroy(Request $request): RedirectResponse

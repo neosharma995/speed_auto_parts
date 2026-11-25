@@ -44,6 +44,11 @@ class User extends Authenticatable
         return $this->hasRole(UserRole::Admin->value);
     }
 
+    public function isCustomer(): bool
+    {
+        return $this->hasRole(UserRole::Customer->value);
+    }
+
     public function isEditor(): bool
     {
         return $this->hasRole(UserRole::Editor->value);
@@ -53,17 +58,35 @@ class User extends Authenticatable
     {
         return $this->isAdmin()
             || $this->isEditor()
-            || $this->roles()->exists();
+            || $this->roles()->whereNotIn('name', [UserRole::Customer->value])->exists();
     }
 
     public function dashboardRoute(): string
     {
-        return UserRole::Admin->dashboardRoute();
+        if ($this->isAdmin() || $this->isEditor() || $this->isStaff()) {
+            return UserRole::Admin->dashboardRoute();
+        }
+
+        return UserRole::Customer->dashboardRoute();
     }
 
     public function accountRoute(): string
     {
-        return UserRole::Admin->accountRoute();
+        if ($this->isAdmin() || $this->isEditor() || $this->isStaff()) {
+            return UserRole::Admin->accountRoute();
+        }
+
+        return UserRole::Customer->accountRoute();
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'user_id');
+    }
+
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(CustomerAddress::class, 'user_id');
     }
 
     public function wishlist(): HasMany

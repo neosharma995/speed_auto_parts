@@ -23,12 +23,20 @@ export default function Login({ status, canResetPassword = true }) {
         post('/login');
     };
 
-    const fillDemo = () => {
-        setData({
-            email: 'admin@autoparts.com',
-            password: 'password',
-            remember: true,
-        });
+    const fillDemo = (role) => {
+        if (role === 'admin') {
+            setData({
+                email: 'admin@autoparts.com',
+                password: 'password',
+                remember: true,
+            });
+        } else {
+            setData({
+                email: 'customer@autoparts.com',
+                password: 'password',
+                remember: true,
+            });
+        }
     };
 
     return (
@@ -39,7 +47,7 @@ export default function Login({ status, canResetPassword = true }) {
             <div className="auth-form-card-header">
                 <h2 className="auth-form-card-title">Welcome Back</h2>
                 <p className="auth-form-card-subtitle">
-                    Sign in to manage Speed Autos Parts catalog
+                    Sign in to your SpeedAutoParts account
                 </p>
             </div>
 
@@ -49,10 +57,17 @@ export default function Login({ status, canResetPassword = true }) {
                 <div className="auth-demo-box-chips">
                     <button
                         type="button"
-                        onClick={fillDemo}
+                        onClick={() => fillDemo('admin')}
                         className="auth-demo-box-chip"
                     >
                         Admin Demo
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => fillDemo('customer')}
+                        className="auth-demo-box-chip"
+                    >
+                        Customer Demo
                     </button>
                 </div>
             </div>
@@ -142,6 +157,14 @@ export default function Login({ status, canResetPassword = true }) {
                     <ArrowRight size={18} />
                     <span>{processing ? 'Signing In...' : 'Sign In'}</span>
                 </button>
+
+                {/* Footer Switch Prompt */}
+                <div className="auth-footer-prompt">
+                    Don&apos;t have an account?{' '}
+                    <Link href="/register">
+                        Create Account <ArrowRight size={13} />
+                    </Link>
+                </div>
             </form>
         </GuestLayout>
     );

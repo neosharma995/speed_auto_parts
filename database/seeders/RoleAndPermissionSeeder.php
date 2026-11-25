@@ -31,6 +31,8 @@ class RoleAndPermissionSeeder extends Seeder
         $editorRole = Role::firstOrCreate(['name' => UserRole::Editor->value, 'guard_name' => 'web']);
         $editorRole->syncPermissions(UserPermission::editorPermissions());
 
+        $customerRole = Role::firstOrCreate(['name' => UserRole::Customer->value, 'guard_name' => 'web']);
+
         // 3. Default Admin user
         $adminUser = User::updateOrCreate(
             ['email' => 'admin@autoparts.com'],
@@ -56,5 +58,18 @@ class RoleAndPermissionSeeder extends Seeder
             ]
         );
         $editorUser->syncRoles([$editorRole]);
+
+        // 5. Default Customer user
+        $customerUser = User::updateOrCreate(
+            ['email' => 'customer@autoparts.com'],
+            [
+                'name' => 'Ahmed Al Mansoori',
+                'phone' => '+971 50 512 0003',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'status' => 'active',
+            ]
+        );
+        $customerUser->syncRoles([$customerRole]);
     }
 }

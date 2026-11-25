@@ -175,8 +175,8 @@ export default function Cart() {
                                     </div>
                                 </div>
 
-                                <Link href="/contact-us" className="btn btn-primary btn-lg btn-full" style={{ marginTop: '8px' }}>
-                                    Inquire / Contact Support <ArrowRight size={18} />
+                                <Link href="/checkout" className="btn btn-primary btn-lg btn-full" style={{ marginTop: '8px' }}>
+                                    Proceed to Checkout <ArrowRight size={18} />
                                 </Link>
                             </div>
                         </div>

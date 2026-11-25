@@ -456,7 +456,7 @@ export default function Header() {
 
                         <Link href="/contact-us" className="utility-link">Help & Support</Link>
 
-                        {auth?.user && (
+                        {auth?.user?.roles?.includes('admin') && (
                             <Link href="/admin/dashboard" className="utility-link-accent">
                                 Admin
                             </Link>
@@ -557,7 +557,7 @@ export default function Header() {
                                         <UserIcon size={24} strokeWidth={1.8} className="action-user-icon" />
                                         <div className="action-user-text">
                                             <span className="user-sub">Account</span>
-                                            <strong className="user-name">Sign In</strong>
+                                            <strong className="user-name">Sign In / Register</strong>
                                         </div>
                                     </Link>
                                 )}
@@ -567,13 +567,47 @@ export default function Header() {
                                         className="site-header-dropdown user-menu-dropdown"
                                         style={{ display: 'block' }}
                                     >
+                                        {auth.user.roles?.includes('admin') && (
+                                            <Link
+                                                href="/admin/dashboard"
+                                                className="site-header-dropdown-item"
+                                                onClick={() => setAccountDropdownOpen(false)}
+                                            >
+                                                <Shield size={16} strokeWidth={2} />
+                                                <span>Admin Dashboard</span>
+                                            </Link>
+                                        )}
                                         <Link
-                                            href="/admin/dashboard"
+                                            href="/customer/dashboard"
                                             className="site-header-dropdown-item"
                                             onClick={() => setAccountDropdownOpen(false)}
                                         >
-                                            <Shield size={16} strokeWidth={2} />
-                                            <span>Admin Dashboard</span>
+                                            <LayoutDashboard size={16} strokeWidth={2} />
+                                            <span>My Dashboard</span>
+                                        </Link>
+                                        <Link
+                                            href="/customer/orders"
+                                            className="site-header-dropdown-item"
+                                            onClick={() => setAccountDropdownOpen(false)}
+                                        >
+                                            <ShoppingBag size={16} strokeWidth={2} />
+                                            <span>Order History</span>
+                                        </Link>
+                                        <Link
+                                            href="/customer/addresses"
+                                            className="site-header-dropdown-item"
+                                            onClick={() => setAccountDropdownOpen(false)}
+                                        >
+                                            <MapPin size={16} strokeWidth={2} />
+                                            <span>Saved Addresses</span>
+                                        </Link>
+                                        <Link
+                                            href="/customer/wishlist"
+                                            className="site-header-dropdown-item"
+                                            onClick={() => setAccountDropdownOpen(false)}
+                                        >
+                                            <Heart size={16} strokeWidth={2} />
+                                            <span>My Wishlist</span>
                                         </Link>
                                         <Link
                                             href="/logout"
@@ -589,8 +623,8 @@ export default function Header() {
                                 )}
                             </div>
 
-                            {/* Saved / Cart Icon */}
-                            <Link href="/cart" className="site-header-action-icon" title="Saved Parts">
+                            {/* Wishlist Icon */}
+                            <Link href="/customer/wishlist" className="site-header-action-icon" title="Wishlist">
                                 <Heart size={24} strokeWidth={1.8} />
                                 {wishlist.length > 0 && <span className="action-badge">{wishlist.length}</span>}
                             </Link>
@@ -645,7 +679,7 @@ export default function Header() {
 
                             {/* Account Icon */}
                             <Link
-                                href={auth?.user ? "/admin/dashboard" : "/login"}
+                                href={auth?.user ? "/customer/dashboard" : "/login"}
                                 className="mobile-subbar-icon-btn"
                                 aria-label="My Account"
                             >
@@ -1219,11 +1253,11 @@ export default function Header() {
                         <div className="mobile-drawer-footer">
                             {auth?.user ? (
                                 <Link
-                                    href="/admin/dashboard"
+                                    href="/customer/dashboard"
                                     className="mobile-account-btn"
                                     onClick={() => setMobileDrawerOpen(false)}
                                 >
-                                    <UserIcon size={16} /> Admin Dashboard
+                                    <UserIcon size={16} /> My Account
                                 </Link>
                             ) : (
                                 <Link
@@ -1231,7 +1265,7 @@ export default function Header() {
                                     className="mobile-account-btn"
                                     onClick={() => setMobileDrawerOpen(false)}
                                 >
-                                    <UserIcon size={16} /> Sign In
+                                    <UserIcon size={16} /> Sign In / Register
                                 </Link>
                             )}
                         </div>

@@ -44,24 +44,24 @@ export default function MobileBottomBar() {
                     <span className="mobile-bottom-bar-label">Search</span>
                 </Link>
 
-                {/* 4. Cart */}
+                {/* 4. Wishlist */}
                 <Link 
-                    href="/cart" 
-                    className={`mobile-bottom-bar-item ${isCurrent('/cart') ? 'mobile-bottom-bar-item--active' : ''}`}
+                    href="/customer/wishlist" 
+                    className={`mobile-bottom-bar-item ${isCurrent('/customer/wishlist') ? 'mobile-bottom-bar-item--active' : ''}`}
                 >
                     <Heart size={20} />
                     {wishlistCount > 0 && <span className="badge-count">{wishlistCount}</span>}
-                    <span className="mobile-bottom-bar-label">Saved</span>
+                    <span className="mobile-bottom-bar-label">Wishlist</span>
                 </Link>
 
                 {/* 5. Account / Login */}
                 <Link 
-                    href={auth?.user ? '/admin/dashboard' : '/login'} 
-                    className={`mobile-bottom-bar-item ${isCurrent('/admin') || isCurrent('/login') ? 'mobile-bottom-bar-item--active' : ''}`}
+                    href={auth?.user ? '/customer/dashboard' : '/login'} 
+                    className={`mobile-bottom-bar-item ${isCurrent('/customer') || isCurrent('/login') ? 'mobile-bottom-bar-item--active' : ''}`}
                 >
                     <User size={20} />
                     <span className="mobile-bottom-bar-label">
-                        {auth?.user ? 'Admin' : 'Login'}
+                        {auth?.user ? 'Account' : 'Login'}
                     </span>
                 </Link>
             </div>
