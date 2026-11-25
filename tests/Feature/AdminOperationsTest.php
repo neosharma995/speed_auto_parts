@@ -6,30 +6,42 @@ namespace Tests\Feature;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Coupon;
+use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductAttribute;
 use App\Models\User;
+use App\Models\Vehicle;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AdminOperationsTest extends TestCase
 {
-    public function test_guest_cannot_access_admin_dashboard(): void
+    public function test_customer_cannot_access_admin_dashboard(): void
     {
+        $customer = User::where('email', 'customer@autosparts.com')->first();
+        $this->actingAs($customer);
+
         $response = $this->get('/admin/dashboard');
-        $response->assertRedirect('/login');
+        $response->assertStatus(403);
     }
 
     public function test_admin_can_access_admin_dashboard(): void
     {
-        $admin = User::where('email', 'admin@autoparts.com')->first();
+        $admin = User::where('email', 'admin@autosparts.com')->first();
         $this->actingAs($admin);
 
         $response = $this->get('/admin/dashboard');
         $response->assertStatus(200);
+
+        $this->get('/admin/settings')->assertStatus(200);
+        $this->get('/admin/taxes')->assertRedirect('/admin/settings?tab=tax');
     }
 
     public function test_admin_can_manage_products(): void
     {
-        $admin = User::where('email', 'admin@autoparts.com')->first();
+        $admin = User::where('email', 'admin@autosparts.com')->first();
         $this->actingAs($admin);
 
         $category = Category::first();
@@ -92,9 +104,448 @@ class AdminOperationsTest extends TestCase
         $this->assertNull(Product::find($created->id));
     }
 
+    public function test_admin_can_update_order_tracking_and_status(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->first();
+        $this->actingAs($admin);
+
+        $order = Order::first();
+        if (!$order) {
+            $order = Order::create([
+                'order_number' => 'ORD-TEST-' . rand(1000, 9999),
+                'customer_name' => 'Test Customer',
+                'customer_email' => 'customer@autosparts.com',
+                'customer_phone' => '+91 98765 43210',
+                'shipping_address' => 'Test St',
+                'city' => 'Delhi',
+                'state' => 'Delhi',
+                'pincode' => '110001',
+                'subtotal' => 5000.00,
+                'total_amount' => 5900.00,
+                'payment_method' => 'cod',
+                'payment_status' => 'pending',
+                'delivery_status' => 'pending',
+            ]);
+        }
+
+        $this->get('/admin/orders')->assertStatus(200);
+        $this->get('/admin/orders?search=AP-')->assertStatus(200);
+        $this->get("/admin/orders/{$order->id}")->assertStatus(200);
+
+        $response = $this->put("/admin/orders/{$order->id}", [
+            'delivery_status' => 'shipped',
+            'payment_status' => 'paid',
+            'tracking_number' => 'BLUEDART-987654321',
+            'tracking_carrier' => 'Blue Dart Aviation',
+            'tracking_url' => 'https://bluedart.com/track/BLUEDART-987654321',
+        ]);
+
+        $response->assertStatus(302);
+
+        $order->refresh();
+        $this->assertEquals('shipped', $order->delivery_status);
+        $this->assertEquals('paid', $order->payment_status);
+        $this->assertEquals('BLUEDART-987654321', $order->tracking_number);
+        $this->assertEquals('Blue Dart Aviation', $order->tracking_carrier);
+    }
+
+    public function test_admin_can_manage_product_attributes_and_variations_inline(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->first();
+        $this->actingAs($admin);
+
+        $existingAttr = ProductAttribute::first();
+        $rand = rand(10000, 99999);
+        $sku = 'VAR-TEST-' . $rand;
+        $part = 'PN-VAR-' . $rand;
+        $customAttrName = "Piston Count {$rand}";
+        $customAttrSlug = "piston-count-{$rand}";
+
+        // 1. Create variable product with inline existing + custom attribute & variations
+        $createResponse = $this->post('/admin/products', [
+            'name' => "Modular Caliper Kit {$rand}",
+            'slug' => "modular-caliper-kit-{$rand}",
+            'sku' => $sku,
+            'part_number' => $part,
+            'product_type' => 'variable',
+            'status' => 'published',
+            'base_price' => 24000.00,
+            'stock_quantity' => 20,
+            'stock_status' => 'in_stock',
+            'product_attributes' => [
+                [
+                    'id' => $existingAttr?->id,
+                    'name' => $existingAttr?->name ?? 'Finish',
+                    'slug' => $existingAttr?->slug ?? 'finish',
+                    'values' => ['Red Anodized'],
+                    'used_for_variations' => true,
+                ],
+                [
+                    'id' => null,
+                    'name' => $customAttrName,
+                    'slug' => $customAttrSlug,
+                    'values' => ['4-Piston', '6-Piston'],
+                    'used_for_variations' => true,
+                ],
+            ],
+            'variations' => [
+                [
+                    'name' => 'Red Anodized / 4-Piston',
+                    'sku' => "{$sku}-4P",
+                    'part_number' => "{$part}-4P",
+                    'attributes_json' => [
+                        ($existingAttr?->slug ?? 'finish') => 'Red Anodized',
+                        $customAttrSlug => '4-Piston',
+                    ],
+                    'price' => 24000.00,
+                    'sale_price' => 22000.00,
+                    'stock_quantity' => 12,
+                    'stock_status' => 'in_stock',
+                    'is_default' => false,
+                ],
+                [
+                    'name' => 'Red Anodized / 6-Piston',
+                    'sku' => "{$sku}-6P",
+                    'part_number' => "{$part}-6P",
+                    'attributes_json' => [
+                        ($existingAttr?->slug ?? 'finish') => 'Red Anodized',
+                        $customAttrSlug => '6-Piston',
+                    ],
+                    'price' => 32000.00,
+                    'sale_price' => null,
+                    'stock_quantity' => 8,
+                    'stock_status' => 'in_stock',
+                    'is_default' => true,
+                ],
+            ],
+        ]);
+
+        $createResponse->assertRedirect('/admin/products');
+
+        $product = Product::where('sku', $sku)->with(['attributes.values', 'variations'])->first();
+        $this->assertNotNull($product);
+        $this->assertEquals('variable', $product->product_type);
+        $this->assertCount(2, $product->variations);
+
+        $customAttr = ProductAttribute::where('slug', $customAttrSlug)->with('values')->first();
+        $this->assertNotNull($customAttr);
+        $this->assertCount(2, $customAttr->values);
+        $this->assertTrue($product->attributes->contains('id', $customAttr->id));
+
+        $sixPiston = $product->variations->firstWhere('sku', "{$sku}-6P");
+        $this->assertNotNull($sixPiston);
+        $this->assertTrue($sixPiston->is_default);
+        $this->assertEquals('6-Piston', $sixPiston->attributes_json[$customAttrSlug]);
+
+        // 2. Edit page loads cleanly
+        $this->get("/admin/products/{$product->id}/edit")->assertStatus(200);
+
+        // 3. Update product keeping 1 variation and removing the other
+        $updateResponse = $this->put("/admin/products/{$product->id}", [
+            'name' => "Modular Caliper Kit {$rand}",
+            'slug' => "modular-caliper-kit-{$rand}",
+            'sku' => $sku,
+            'part_number' => $part,
+            'product_type' => 'variable',
+            'status' => 'published',
+            'base_price' => 33000.00,
+            'stock_quantity' => 8,
+            'stock_status' => 'in_stock',
+            'product_attributes' => [
+                [
+                    'id' => $customAttr->id,
+                    'name' => $customAttrName,
+                    'slug' => $customAttrSlug,
+                    'values' => ['6-Piston'],
+                    'used_for_variations' => true,
+                ],
+            ],
+            'variations' => [
+                [
+                    'id' => $sixPiston->id,
+                    'name' => '6-Piston Pro',
+                    'sku' => "{$sku}-6P",
+                    'part_number' => "{$part}-6P",
+                    'attributes_json' => [$customAttrSlug => '6-Piston'],
+                    'price' => 33500.00,
+                    'sale_price' => 31000.00,
+                    'stock_quantity' => 5,
+                    'stock_status' => 'in_stock',
+                    'is_default' => true,
+                ],
+            ],
+        ]);
+        $updateResponse->assertRedirect('/admin/products');
+
+        $product->refresh();
+        $this->assertCount(1, $product->variations);
+        $this->assertEquals('6-Piston Pro', $product->variations->first()->name);
+        $this->assertEquals(33500.00, (float) $product->variations->first()->price);
+
+        // 4. Clean up test product & custom attribute
+        $this->delete("/admin/products/{$product->id}")->assertRedirect('/admin/products');
+        $customAttr->delete();
+    }
+
+    public function test_admin_can_crud_vehicles_with_pagination(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->first();
+        $this->actingAs($admin);
+
+        // 1. Index returns paginated vehicles (8 per page across 10+ seeded vehicles)
+        $indexResponse = $this->get('/admin/vehicles');
+        $indexResponse->assertStatus(200);
+        $indexResponse->assertInertia(fn ($page) => $page
+            ->component('Admin/Vehicles/Index')
+            ->has('vehicles.data', 8)
+            ->where('vehicles.total', fn ($total) => $total >= 10)
+            ->has('makes')
+            ->has('years')
+        );
+
+        // 2. Page 2 & search filter work cleanly
+        $this->get('/admin/vehicles?page=2')->assertStatus(200);
+        $this->get('/admin/vehicles?search=Mustang')->assertStatus(200);
+
+        // 3. Create vehicle with all spec fields
+        $uniqueModel = 'GT-R Nismo ' . random_int(100, 999);
+        $createResponse = $this->post('/admin/vehicles', [
+            'year' => 2024,
+            'make' => 'Nissan',
+            'model' => $uniqueModel,
+            'submodel' => 'Track Edition',
+            'engine' => '3.8L Twin-Turbo V6 VR38DETT',
+            'engine_size' => '3.8L',
+            'fuel_type' => 'Petrol',
+            'transmission' => '6-Speed Dual-Clutch',
+            'body_type' => 'Coupe',
+        ]);
+        $createResponse->assertRedirect();
+
+        $vehicle = Vehicle::where('make', 'Nissan')->where('model', $uniqueModel)->first();
+        $this->assertNotNull($vehicle);
+        $this->assertEquals(2024, $vehicle->year);
+        $this->assertEquals('Track Edition', $vehicle->submodel);
+        $this->assertEquals('3.8L', $vehicle->engine_size);
+        $this->assertEquals('Petrol', $vehicle->fuel_type);
+        $this->assertEquals('6-Speed Dual-Clutch', $vehicle->transmission);
+        $this->assertEquals('Coupe', $vehicle->body_type);
+
+        // 4. Update vehicle (empty fuel_type should normalize back to 'Petrol')
+        $updateResponse = $this->put("/admin/vehicles/{$vehicle->id}", [
+            'year' => 2025,
+            'make' => 'Nissan',
+            'model' => $uniqueModel,
+            'submodel' => 'Special Edition',
+            'engine' => '3.8L Twin-Turbo V6 Revised',
+            'engine_size' => '3.8L V6',
+            'fuel_type' => '',
+            'transmission' => '7-Speed DCT',
+            'body_type' => 'Sport Coupe',
+        ]);
+        $updateResponse->assertRedirect();
+
+        $vehicle->refresh();
+        $this->assertEquals(2025, $vehicle->year);
+        $this->assertEquals('Special Edition', $vehicle->submodel);
+        $this->assertEquals('3.8L Twin-Turbo V6 Revised', $vehicle->engine);
+        $this->assertEquals('3.8L V6', $vehicle->engine_size);
+        $this->assertEquals('Petrol', $vehicle->fuel_type);
+        $this->assertEquals('7-Speed DCT', $vehicle->transmission);
+        $this->assertEquals('Sport Coupe', $vehicle->body_type);
+
+        // 5. Delete vehicle
+        $deleteResponse = $this->delete("/admin/vehicles/{$vehicle->id}");
+        $deleteResponse->assertRedirect();
+        $this->assertDatabaseMissing('vehicles', ['id' => $vehicle->id]);
+    }
+
+    public function test_admin_can_view_and_update_profile_and_password(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->first();
+        $originalName = $admin->name;
+        $this->actingAs($admin);
+
+        // 1. Profile page renders
+        $this->get('/admin/profile')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Profile/Edit')
+                ->where('profile.email', 'admin@autosparts.com')
+            );
+
+        // 2. Update profile details
+        $this->put('/admin/profile', [
+            'name' => 'Autos Parts Master Admin',
+            'email' => $admin->email,
+            'phone' => '+91 99999 88888',
+        ])->assertRedirect();
+
+        $admin->refresh();
+        $this->assertEquals('Autos Parts Master Admin', $admin->name);
+        $this->assertEquals('+91 99999 88888', $admin->phone);
+
+        // 3. Update password
+        $this->put('/admin/profile/password', [
+            'current_password' => 'password',
+            'password' => 'new-secret-123',
+            'password_confirmation' => 'new-secret-123',
+        ])->assertRedirect();
+
+        $admin->refresh();
+        $this->assertTrue(Hash::check('new-secret-123', $admin->password));
+
+        // 4. Restore original name and password
+        $this->put('/admin/profile', [
+            'name' => $originalName,
+            'email' => $admin->email,
+            'phone' => null,
+        ])->assertRedirect();
+
+        $this->put('/admin/profile/password', [
+            'current_password' => 'new-secret-123',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertRedirect();
+    }
+
+    public function test_admin_can_crud_coupons_with_pagination(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->first();
+        $this->actingAs($admin);
+
+        // 1. Index renders paginated Coupons page and supports search
+        $this->get('/admin/coupons')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Coupons/Index')
+                ->has('coupons.data')
+                ->has('filters')
+            );
+
+        $this->get('/admin/coupons?search=SPEED10')->assertStatus(200);
+
+        // 2. Create coupon (lowercase should normalize to uppercase)
+        $code = 'POPUP' . random_int(100, 999);
+        $this->post('/admin/coupons', [
+            'code' => strtolower($code),
+            'type' => 'percentage',
+            'value' => 15,
+            'min_spend' => 2500,
+            'max_discount' => 1500,
+            'usage_limit' => 50,
+            'usage_per_user' => 2,
+            'is_active' => true,
+        ])->assertRedirect();
+
+        $coupon = Coupon::where('code', $code)->first();
+        $this->assertNotNull($coupon);
+        $this->assertEquals('percentage', $coupon->type);
+        $this->assertEquals(15.0, (float) $coupon->value);
+        $this->assertEquals(1500.0, (float) $coupon->max_discount);
+        $this->assertEquals(50, $coupon->usage_limit);
+        $this->assertEquals(2, $coupon->usage_per_user);
+        $this->assertTrue($coupon->is_active);
+
+        // 3. Update coupon to fixed amount and deactivate
+        $this->put("/admin/coupons/{$coupon->id}", [
+            'code' => $code,
+            'type' => 'fixed',
+            'value' => 750,
+            'min_spend' => 4000,
+            'max_discount' => 999, // should be cleared for fixed type
+            'usage_limit' => 25,
+            'usage_per_user' => 1,
+            'is_active' => false,
+        ])->assertRedirect();
+
+        $coupon->refresh();
+        $this->assertEquals('fixed', $coupon->type);
+        $this->assertEquals(750.0, (float) $coupon->value);
+        $this->assertNull($coupon->max_discount);
+        $this->assertEquals(25, $coupon->usage_limit);
+        $this->assertFalse($coupon->is_active);
+
+        // 4. Delete coupon
+        $this->delete("/admin/coupons/{$coupon->id}")->assertRedirect();
+        $this->assertDatabaseMissing('coupons', ['id' => $coupon->id]);
+    }
+
+    public function test_admin_can_manage_roles_permissions_and_staff_access_control(): void
+    {
+        $admin = User::where('email', 'admin@autosparts.com')->first();
+        $this->actingAs($admin);
+
+        // 1. Roles & Permissions page renders all 14 sidebar permissions
+        $this->get('/admin/roles')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Roles/Index')
+                ->has('roles')
+                ->has('allSidebarPermissions', 14)
+                ->has('permissionGroups')
+            );
+
+        // 2. Create custom role with only Orders and Customers sidebar permissions
+        $roleSlug = 'order_desk_' . random_int(100, 999);
+        $this->post('/admin/roles', [
+            'name' => $roleSlug,
+            'permissions' => ['manage orders', 'manage customers'],
+        ])->assertRedirect();
+
+        $customRole = Role::where('name', $roleSlug)->first();
+        $this->assertNotNull($customRole);
+        $this->assertTrue($customRole->hasPermissionTo('manage orders'));
+        $this->assertTrue($customRole->hasPermissionTo('manage customers'));
+        $this->assertFalse($customRole->hasPermissionTo('manage products'));
+
+        // 3. Create staff user assigned to custom role
+        $staffEmail = "staff_{$roleSlug}@autosparts.com";
+        $this->post('/admin/roles/staff', [
+            'name' => 'Order Desk Agent',
+            'email' => $staffEmail,
+            'phone' => '+91 98100 00111',
+            'role' => $roleSlug,
+            'password' => 'secret123',
+            'status' => 'active',
+        ])->assertRedirect();
+
+        $staffUser = User::where('email', $staffEmail)->first();
+        $this->assertNotNull($staffUser);
+        $this->assertTrue($staffUser->isStaff());
+        $this->assertTrue($staffUser->hasRole($roleSlug));
+
+        // 4. Staff user without 'view dashboard' redirects from /admin/dashboard to first permitted module (/admin/orders)
+        $this->actingAs($staffUser);
+        $this->get('/admin/dashboard')->assertRedirect('/admin/orders');
+        $this->get('/admin/orders')->assertStatus(200);
+        $this->get('/admin/customers')->assertStatus(200);
+        $this->get('/admin/products')->assertStatus(403);
+        $this->get('/admin/settings')->assertStatus(403);
+        $this->get('/admin/roles')->assertStatus(403);
+
+        // 5. Admin grants 'manage products' to custom role -> staff user can now access /admin/products
+        $this->actingAs($admin);
+        $this->put("/admin/roles/{$customRole->id}", [
+            'name' => $roleSlug,
+            'permissions' => ['manage orders', 'manage customers', 'manage products'],
+        ])->assertRedirect();
+
+        $this->actingAs($staffUser->fresh());
+        $this->get('/admin/products')->assertStatus(200);
+
+        // 6. Clean up staff user and custom role
+        $this->actingAs($admin);
+        $this->delete("/admin/roles/staff/{$staffUser->id}")->assertRedirect();
+        $this->assertDatabaseMissing('users', ['id' => $staffUser->id]);
+
+        $this->delete("/admin/roles/{$customRole->id}")->assertRedirect();
+        $this->assertDatabaseMissing('roles', ['id' => $customRole->id]);
+    }
+
     public function test_admin_can_configure_default_currency_and_conversion_rate_in_settings(): void
     {
-        $admin = User::where('email', 'admin@autoparts.com')->first();
+        $admin = User::where('email', 'admin@autosparts.com')->first();
         $this->actingAs($admin);
 
         // Save USD as default currency with 0.2723 rate and only the 3 supported currencies (AED, USD, EUR)
@@ -124,7 +575,7 @@ class AdminOperationsTest extends TestCase
         // Restore default Dubai AED configuration
         $this->post('/admin/settings', [
             'currency_code' => 'AED',
-            'currency_symbol' => 'د.إ',
+            'currency_symbol' => 'AED',
             'currency_locale' => 'en-AE',
             'currency_rate' => 1,
             'currency_rates' => [

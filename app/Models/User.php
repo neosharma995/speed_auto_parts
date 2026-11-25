@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'phone',
+        'company_name',
         'password',
         'status',
     ];
@@ -54,11 +55,16 @@ class User extends Authenticatable
         return $this->hasRole(UserRole::Editor->value);
     }
 
+    public function isSupplier(): bool
+    {
+        return $this->hasRole(UserRole::Supplier->value);
+    }
+
     public function isStaff(): bool
     {
         return $this->isAdmin()
             || $this->isEditor()
-            || $this->roles()->whereNotIn('name', [UserRole::Customer->value])->exists();
+            || $this->roles()->whereNotIn('name', [UserRole::Customer->value, UserRole::Supplier->value])->exists();
     }
 
     public function dashboardRoute(): string
@@ -66,7 +72,9 @@ class User extends Authenticatable
         if ($this->isAdmin() || $this->isEditor() || $this->isStaff()) {
             return UserRole::Admin->dashboardRoute();
         }
-
+        if ($this->isSupplier()) {
+            return UserRole::Supplier->dashboardRoute();
+        }
         return UserRole::Customer->dashboardRoute();
     }
 
@@ -75,7 +83,9 @@ class User extends Authenticatable
         if ($this->isAdmin() || $this->isEditor() || $this->isStaff()) {
             return UserRole::Admin->accountRoute();
         }
-
+        if ($this->isSupplier()) {
+            return UserRole::Supplier->accountRoute();
+        }
         return UserRole::Customer->accountRoute();
     }
 
@@ -89,9 +99,24 @@ class User extends Authenticatable
         return $this->hasMany(CustomerAddress::class, 'user_id');
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class, 'user_id');
+    }
+
     public function wishlist(): HasMany
     {
         return $this->hasMany(Wishlist::class, 'user_id');
+    }
+
+    public function suppliedProducts(): HasMany
+    {
+        return $this->hasMany(Product::class, 'supplier_id');
+    }
+
+    public function stockTransfers(): HasMany
+    {
+        return $this->hasMany(StockTransfer::class, 'supplier_id');
     }
 
     public function updateProfile(array $attributes): void

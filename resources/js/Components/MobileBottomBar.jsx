@@ -54,7 +54,7 @@ export default function MobileBottomBar() {
                     <span className="mobile-bottom-bar-label">Wishlist</span>
                 </Link>
 
-                {/* 5. Account / Login */}
+                {/* 5. Account */}
                 <Link 
                     href={auth?.user ? '/customer/dashboard' : '/login'} 
                     className={`mobile-bottom-bar-item ${isCurrent('/customer') || isCurrent('/login') ? 'mobile-bottom-bar-item--active' : ''}`}

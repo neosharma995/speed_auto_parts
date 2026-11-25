@@ -111,13 +111,13 @@ export function CurrencyProvider({ initialSettings = {}, children }) {
         const activeLocale = activeCode === config.code ? config.locale : activeMeta.locale;
         const storefrontMultiplier = Number(config.rates[activeCode] || 1);
 
-        // Convert stored DB base price -> default currency price (used in Admin dashboard)
+        // Convert stored DB base price -> default currency price (used in Admin/Supplier dashboards & checkout)
         const convertToDefault = (baseAmount) => Number(baseAmount || 0) * config.rate;
 
         // Convert stored DB base price -> currently selected storefront display currency
         const convertForDisplay = (baseAmount) => convertToDefault(baseAmount) * storefrontMultiplier;
 
-        // Format price for Admin Dashboard (always uses Admin's configured Default Currency)
+        // Format price for Admin / Supplier Dashboard (always uses Admin's configured Default Currency)
         const formatAdminPrice = (baseAmount, options = {}) =>
             formatWithSymbol(convertToDefault(baseAmount), defaultCurrency.symbol, defaultCurrency.locale, options);
 
@@ -171,7 +171,7 @@ export function useCurrency() {
                 { code: 'EUR', symbol: '€', name: 'EUR (€)', rate: 0.251 },
             ],
             currencyCatalog: CURRENCY_CATALOG,
-            setSelectedCurrency: () => {},
+            setSelectedCurrency: () => { },
             convertToDefault: (v) => Number(v || 0),
             convertForDisplay: (v) => Number(v || 0),
             formatAdminPrice: (v, opts) => formatWithSymbol(v, 'د.إ', 'en-AE', opts),

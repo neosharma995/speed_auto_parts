@@ -32,12 +32,16 @@ class RoleAndPermissionSeeder extends Seeder
         $editorRole->syncPermissions(UserPermission::editorPermissions());
 
         $customerRole = Role::firstOrCreate(['name' => UserRole::Customer->value, 'guard_name' => 'web']);
+        $customerRole->syncPermissions(UserPermission::customerPermissions());
+
+        $supplierRole = Role::firstOrCreate(['name' => UserRole::Supplier->value, 'guard_name' => 'web']);
+        $supplierRole->syncPermissions(UserPermission::supplierPermissions());
 
         // 3. Default Admin user
         $adminUser = User::updateOrCreate(
-            ['email' => 'admin@autoparts.com'],
+            ['email' => 'admin@autosparts.com'],
             [
-                'name' => 'Speed Autos Parts Admin',
+                'name' => 'Autos Parts Admin',
                 'phone' => '+971 50 512 0001',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
@@ -48,7 +52,7 @@ class RoleAndPermissionSeeder extends Seeder
 
         // 4. Default Editor user
         $editorUser = User::updateOrCreate(
-            ['email' => 'editor@autoparts.com'],
+            ['email' => 'editor@autosparts.com'],
             [
                 'name' => 'Catalog Specialist',
                 'phone' => '+971 50 512 0002',
@@ -61,15 +65,29 @@ class RoleAndPermissionSeeder extends Seeder
 
         // 5. Default Customer user
         $customerUser = User::updateOrCreate(
-            ['email' => 'customer@autoparts.com'],
+            ['email' => 'customer@autosparts.com'],
             [
-                'name' => 'Ahmed Al Mansoori',
-                'phone' => '+971 50 512 0003',
+                'name' => 'Tariq Al Mansoori',
+                'phone' => '+971 50 512 3456',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'status' => 'active',
             ]
         );
         $customerUser->syncRoles([$customerRole]);
+
+        // 6. Default Supplier user
+        $supplierUser = User::updateOrCreate(
+            ['email' => 'supplier@autosparts.com'],
+            [
+                'name' => 'Omar Haddad',
+                'company_name' => 'Apex Motorsport Spares LLC (Dubai)',
+                'phone' => '+971 4 512 0003',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'status' => 'active',
+            ]
+        );
+        $supplierUser->syncRoles([$supplierRole]);
     }
 }

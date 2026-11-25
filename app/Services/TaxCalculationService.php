@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Product;
-use Illuminate\Support\Facades\Schema;
 
 class TaxCalculationService
 {
@@ -41,7 +40,7 @@ class TaxCalculationService
             $taxRatePercent = $this->defaultRatePercent;
 
             $productId = $item['productId'] ?? $item['product_id'] ?? null;
-            if ($productId && Schema::hasTable('tax_classes') && method_exists(Product::class, 'taxClass')) {
+            if ($productId) {
                 $product = Product::with('taxClass.rates')->find($productId);
                 if ($product && $product->taxClass && $product->taxClass->rates->isNotEmpty()) {
                     $activeRate = $product->taxClass->rates->firstWhere('is_active', true) ?? $product->taxClass->rates->first();

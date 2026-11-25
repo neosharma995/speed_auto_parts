@@ -7,6 +7,9 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Order;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -38,12 +41,59 @@ class StaticPageController extends Controller
         ]);
     }
 
+    public function trackOrder(): Response
+    {
+        return Inertia::render('Public/TrackOrder');
+    }
+
+    public function trackOrderApi(Request $request): JsonResponse
+    {
+        $orderNumber = trim((string) $request->query('order_number'));
+
+        if (empty($orderNumber)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please provide a valid order number.',
+            ], 422);
+        }
+
+        $order = Order::query()
+            ->where('order_number', $orderNumber)
+            ->with(['items'])
+            ->first();
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => "Order #{$orderNumber} was not found. Please verify the order number on your invoice.",
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'order' => [
+                'order_number' => $order->order_number,
+                'status' => $order->delivery_status,
+                'payment_status' => $order->payment_status,
+                'delivery_status' => $order->delivery_status,
+                'tracking_number' => $order->tracking_number,
+                'tracking_url' => $order->tracking_url,
+                'carrier' => $order->tracking_carrier,
+                'total_amount' => $order->total_amount,
+                'shipping_city' => $order->city,
+                'shipping_state' => $order->state,
+                'created_at' => $order->created_at->format('M d, Y h:i A'),
+                'items_count' => $order->items->count(),
+            ],
+        ]);
+    }
+
     public function about(): Response
     {
         return Inertia::render('Public/StaticPage', [
-            'title' => 'About Speed Autos Parts',
+            'title' => 'About SPEED AUTOS PARTS',
             'subtitle' => 'Specialized automotive engineering spares & motorsport hardware distribution.',
-            'content' => "Welcome to Speed Autos Parts — your dedicated supplier for high-performance automotive replacement components, precision braking systems, high-flow induction setups, mandrel-bent exhausts, and track-grade suspension kits.\n\nFounded by passionate automotive engineers and drivers, Speed Autos Parts bridges the gap between precision track performance and everyday street reliability. Every single component in our catalog is engineered to exacting tolerances, 100% genuine guaranteed, and backed by comprehensive vehicle compatibility databases.\n\nWhether you're executing a weekend garage build, upgrading track day brakes, or replacing critical OEM components, Speed Autos Parts delivers verified fitment and fast nationwide distribution.",
+            'content' => "Welcome to SPEED AUTOS PARTS — your dedicated supplier for high-performance automotive replacement components, precision braking systems, high-flow induction setups, mandrel-bent exhausts, and track-grade suspension kits.\n\nFounded by passionate automotive engineers and drivers, SPEED AUTOS PARTS bridges the gap between precision track performance and everyday street reliability. Every single component in our catalog is engineered to exacting tolerances, 100% genuine guaranteed, and backed by comprehensive vehicle compatibility databases.\n\nWhether you're executing a weekend garage build, upgrading track day brakes, or replacing critical OEM components, SPEED AUTOS PARTS delivers verified fitment and fast nationwide distribution.",
         ]);
     }
 
@@ -78,7 +128,7 @@ class StaticPageController extends Controller
     {
         return Inertia::render('Public/StaticPage', [
             'title' => 'Privacy Policy',
-            'subtitle' => 'How Speed Autos Parts protects your vehicle details and order information.',
+            'subtitle' => 'How SPEED AUTOS PARTS protects your vehicle details and account information.',
             'content' => "We value your privacy. We only collect essential customer data required to fulfill parts orders, calculate accurate UAE VAT (5%), verify vehicle fitment compatibility, and coordinate courier delivery.\n\nWe never sell or rent your personal information to third-party marketing brokers. All financial transactions are securely processed via 256-bit SSL encrypted channels directly through PCI-DSS Level 1 certified Stripe Checkout. Your credit card credentials are never stored on our servers.",
         ]);
     }
@@ -88,7 +138,7 @@ class StaticPageController extends Controller
         return Inertia::render('Public/StaticPage', [
             'title' => 'Terms of Service',
             'subtitle' => 'Guidelines and legal terms governing parts procurement and vehicle fitment.',
-            'content' => "By accessing Speed Autos Parts and placing an order, you agree to our standard terms of service:\n\n1. Component Installation: Automotive hardware, especially brake components, suspension coilovers, and high-performance exhausts, should always be installed by certified automotive technicians following factory torque specifications.\n2. Vehicle Modifications: Fitment compatibility guarantees apply to stock, unmodified OEM chassis configurations unless explicitly noted for aftermarket configurations.\n3. Warranties: All manufacturer warranties are passed directly to the purchaser. Speed Autos Parts assists with RMA claims for certified defect inspections.",
+            'content' => "By accessing SPEED AUTOS PARTS and placing an order, you agree to our standard terms of service:\n\n1. Component Installation: Automotive hardware, especially brake components, suspension coilovers, and high-performance exhausts, should always be installed by certified automotive technicians following factory torque specifications.\n2. Vehicle Modifications: Fitment compatibility guarantees apply to stock, unmodified OEM chassis configurations unless explicitly noted for aftermarket configurations.\n3. Warranties: All manufacturer warranties are passed directly to the purchaser. SPEED AUTOS PARTS assists with RMA claims for certified defect inspections.",
         ]);
     }
 
@@ -108,5 +158,10 @@ class StaticPageController extends Controller
             'subtitle' => 'Quick answers to common questions about parts, fitment, orders, and warranties.',
             'content' => "Frequently Asked Questions:\n\n1. How do I verify part compatibility?\nUse the Vehicle Parts Finder at the top of the store. Select your vehicle Year, Make, Model, and Engine to filter catalog parts guaranteed to fit.\n\n2. How long does shipping take?\nOrders are dispatched within 24–48 hours. Standard surface transit takes 3–5 business days, and express courier takes 1–2 business days.\n\n3. Can I return a part if it doesn't fit?\nYes! If verified via our Vehicle Parts Finder and it does not fit your unmodified vehicle, we provide 100% free return pickup and replacement.\n\n4. Are the parts genuine OEM or certified aftermarket?\nAll components sold on Speed Autos Parts are 100% authentic, sourced directly from certified manufacturers and authorized global distributors.",
         ]);
+    }
+
+    public function notFound(): \Symfony\Component\HttpFoundation\Response
+    {
+        return Inertia::render('Public/NotFound')->toResponse(request())->setStatusCode(404);
     }
 }

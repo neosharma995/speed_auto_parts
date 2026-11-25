@@ -7,7 +7,7 @@ export function CartProvider({ children, initialCart = [] }) {
     const [cartItems, setCartItems] = useState(() => {
         if (typeof window !== 'undefined') {
             try {
-                const stored = localStorage.getItem('autoparts_cart');
+                const stored = localStorage.getItem('autosparts_cart') || localStorage.getItem('autoparts_cart');
                 if (stored) return JSON.parse(stored);
             } catch (e) {
                 console.error('Error reading cart from localStorage', e);
@@ -23,7 +23,7 @@ export function CartProvider({ children, initialCart = [] }) {
         setCartItems(items);
         if (typeof window !== 'undefined') {
             try {
-                localStorage.setItem('autoparts_cart', JSON.stringify(items));
+                localStorage.setItem('autosparts_cart', JSON.stringify(items));
             } catch (e) {
                 console.error('Error saving cart to localStorage', e);
             }

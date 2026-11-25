@@ -1,16 +1,11 @@
 import React from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
+import CustomerSidebar from '@/Components/CustomerSidebar';
 import { useCurrency } from '@/Context/CurrencyContext';
 import { 
-    LayoutDashboard, 
     ShoppingBag, 
-    MapPin, 
     Heart, 
-    Shield, 
-    LogOut, 
-    ChevronRight, 
-    Clock, 
     Package 
 } from 'lucide-react';
 
@@ -28,36 +23,12 @@ export default function CustomerDashboard({
             <div className="customer-portal">
                 <div className="container">
                     <div className="customer-portal-layout">
-                        {/* Sidebar Navigation */}
-                        <aside className="customer-portal-sidebar">
-                            <div className="user-greeting">
-                                <h3>{user?.name}</h3>
-                                <span>{user?.email}</span>
-                            </div>
-
-                            <nav className="portal-nav">
-                                <Link href="/customer/dashboard" className="portal-nav-link portal-nav-link--active">
-                                    <LayoutDashboard size={18} />
-                                    <span>Dashboard Overview</span>
-                                </Link>
-                                <Link href="/customer/orders" className="portal-nav-link">
-                                    <ShoppingBag size={18} />
-                                    <span>My Orders ({ordersCount})</span>
-                                </Link>
-                                <Link href="/customer/addresses" className="portal-nav-link">
-                                    <MapPin size={18} />
-                                    <span>Saved Addresses</span>
-                                </Link>
-                                <Link href="/customer/wishlist" className="portal-nav-link">
-                                    <Heart size={18} />
-                                    <span>My Wishlist ({wishlistCount})</span>
-                                </Link>
-                                <Link href="/logout" method="post" as="button" className="portal-nav-link" style={{ width: '100%', textAlign: 'left', color: '#D93025' }}>
-                                    <LogOut size={18} />
-                                    <span>Sign Out</span>
-                                </Link>
-                            </nav>
-                        </aside>
+                        <CustomerSidebar
+                            activeTab="dashboard"
+                            user={user}
+                            ordersCount={ordersCount}
+                            wishlistCount={wishlistCount}
+                        />
 
                         {/* Main Content */}
                         <div className="customer-portal-content">
@@ -102,44 +73,46 @@ export default function CustomerDashboard({
                                         </Link>
                                     </div>
                                 ) : (
-                                    <table className="orders-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Order #</th>
-                                                <th>Date</th>
-                                                <th>Items</th>
-                                                <th>Total</th>
-                                                <th>Payment</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {recentOrders.map(order => (
-                                                <tr key={order.id}>
-                                                    <td><strong>{order.order_number}</strong></td>
-                                                    <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                                                    <td>{order.items_count || order.items?.length || 1} parts</td>
-                                                    <td><strong>{formatPrice(order.total_amount)}</strong></td>
-                                                    <td>
-                                                        <span className="badge badge-success" style={{ textTransform: 'uppercase' }}>
-                                                            {order.payment_status}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <span className="badge badge-primary" style={{ textTransform: 'uppercase' }}>
-                                                            {order.delivery_status}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <Link href={`/order-success/${order.order_number}`} className="btn btn-outline btn-sm">
-                                                            View
-                                                        </Link>
-                                                    </td>
+                                    <div className="orders-table-wrap">
+                                        <table className="orders-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Order #</th>
+                                                    <th>Date</th>
+                                                    <th>Items</th>
+                                                    <th>Total</th>
+                                                    <th>Payment</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                {recentOrders.map(order => (
+                                                    <tr key={order.id}>
+                                                        <td><strong>{order.order_number}</strong></td>
+                                                        <td>{new Date(order.created_at).toLocaleDateString()}</td>
+                                                        <td>{order.items_count || order.items?.length || 1} parts</td>
+                                                        <td><strong>{formatPrice(order.total_amount)}</strong></td>
+                                                        <td>
+                                                            <span className="badge badge-success" style={{ textTransform: 'uppercase' }}>
+                                                                {order.payment_status}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span className="badge badge-primary" style={{ textTransform: 'uppercase' }}>
+                                                                {order.delivery_status}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <Link href={`/order-success/${order.order_number}`} className="btn btn-outline btn-sm">
+                                                                View
+                                                            </Link>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 )}
                             </div>
 

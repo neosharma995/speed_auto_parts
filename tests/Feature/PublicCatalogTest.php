@@ -44,7 +44,7 @@ class PublicCatalogTest extends TestCase
 
     public function test_static_information_pages_load(): void
     {
-        $pages = ['/about', '/contact', '/shipping-policy', '/return-policy', '/privacy-policy', '/terms'];
+        $pages = ['/about-us', '/contact-us', '/shipping-policy', '/return-policy', '/privacy-policy', '/terms'];
 
         foreach ($pages as $url) {
             $response = $this->get($url);
@@ -57,5 +57,16 @@ class PublicCatalogTest extends TestCase
         $product = Product::first();
         $response = $this->get("/shop?search={$product->part_number}");
         $response->assertStatus(200);
+    }
+
+    public function test_not_found_page_renders_404(): void
+    {
+        $response = $this->get('/404');
+        $response->assertStatus(404);
+        $response->assertInertia(fn ($page) => $page->component('Public/NotFound'));
+
+        $fallbackResponse = $this->get('/non-existent-page-url');
+        $fallbackResponse->assertStatus(404);
+        $fallbackResponse->assertInertia(fn ($page) => $page->component('Public/NotFound'));
     }
 }

@@ -20,7 +20,7 @@ export function getCurrencyMeta(code) {
 /**
  * Format a numeric amount using a currency symbol & locale.
  * Multi-character currency symbols like "AED" get a separating space ("AED 1,250");
- * single-character symbols like "$", "€", "£" attach directly ("$1,250").
+ * single-character symbols like "$", "€", "£", "₹" attach directly ("$1,250").
  */
 export function formatWithSymbol(amount, symbol = 'د.إ', locale = 'en-AE', options = {}) {
     const num = Number(amount || 0);

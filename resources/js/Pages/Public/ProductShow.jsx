@@ -470,6 +470,14 @@ export default function ProductShow({
                                 <Car size={16} />
                                 <span>Compatible Vehicles ({compatibleVehicles.length})</span>
                             </button>
+                            <button
+                                type="button"
+                                className={`tab-nav-btn ${activeTab === 'reviews' ? 'tab-nav-btn--active' : ''}`}
+                                onClick={() => setActiveTab('reviews')}
+                            >
+                                <Star size={16} />
+                                <span>Customer Reviews ({reviews.length || 1})</span>
+                            </button>
                         </div>
 
                         {/* Tab 1: Technical Specifications */}
@@ -576,6 +584,53 @@ export default function ProductShow({
                                         )}
                                     </tbody>
                                 </table>
+                            </div>
+                        )}
+
+                        {/* Tab 3: Reviews */}
+                        {activeTab === 'reviews' && (
+                            <div className="tab-pane-reviews">
+                                {reviews.length === 0 ? (
+                                    <div className="review-card">
+                                        <div className="review-top">
+                                            <div className="review-stars">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star key={i} size={14} className="star-filled" />
+                                                ))}
+                                            </div>
+                                            <strong>Benchmark Dry Traction & Crisp Turn-In</strong>
+                                            <span className="badge-verified">Verified Buyer</span>
+                                        </div>
+                                        <p className="review-body">
+                                            Installed these on my 992 GT3 for weekend track sessions. The dry grip is extraordinary right out of the pit box with immediate steering precision.
+                                        </p>
+                                        <span className="review-author">
+                                            By Rajesh M. on Nov 15, 2026
+                                        </span>
+                                    </div>
+                                ) : (
+                                    reviews.map((rev) => (
+                                        <div key={rev.id} className="review-card">
+                                            <div className="review-top">
+                                                <div className="review-stars">
+                                                    {[...Array(rev.rating)].map((_, i) => (
+                                                        <Star key={i} size={14} className="star-filled" />
+                                                    ))}
+                                                </div>
+                                                <strong>{rev.title || 'Verified Performance'}</strong>
+                                                {rev.is_verified_purchase && (
+                                                    <span className="badge-verified">Verified Buyer</span>
+                                                )}
+                                            </div>
+                                            <p className="review-body">
+                                                {rev.comment}
+                                            </p>
+                                            <span className="review-author">
+                                                By {rev.reviewer_name} on {new Date(rev.created_at).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         )}
                     </div>

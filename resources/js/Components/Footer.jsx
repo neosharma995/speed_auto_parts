@@ -146,6 +146,7 @@ export default function Footer() {
                                 <span>Customer Support</span>
                             </h3>
                             <ul className="footer-links">
+                                <li><Link href="/track-order">Track Your Order</Link></li>
                                 <li><Link href="/help-center">Help Center</Link></li>
                                 <li><Link href="/faqs">FAQs</Link></li>
                                 <li><Link href="/terms-and-conditions">Warranty Information</Link></li>

@@ -49,8 +49,12 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
-        if ($user->isAdmin() || $user->isEditor() || $user->isStaff()) {
+        if ($user->isAdmin() || $user->isEditor()) {
             return redirect()->intended(route('admin.dashboard'));
+        }
+
+        if ($user->isSupplier()) {
+            return redirect()->intended(route('supplier.dashboard'));
         }
 
         return redirect()->intended(route('customer.dashboard'));

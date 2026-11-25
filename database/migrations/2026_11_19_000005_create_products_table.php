@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('brand_id')->nullable()->constrained('brands')->nullOnDelete();
             $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
+            $table->foreignId('tax_class_id')->nullable()->constrained('tax_classes')->nullOnDelete();
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('sku')->unique()->index();

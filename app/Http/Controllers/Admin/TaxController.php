@@ -1,0 +1,56 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\TaxClass;
+use App\Models\TaxRate;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
+class TaxController extends Controller
+{
+    public function index(): RedirectResponse
+    {
+        return redirect()->route('admin.settings.index', ['tab' => 'tax']);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', 'unique:tax_classes,slug'],
+            'rate' => ['required', 'numeric', 'min:0', 'max:100'],
+            'cgst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'sgst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'igst_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+        ]);
+
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['name']);
+        }
+
+        $taxClass = TaxClass::create([
+            'name' => $validated['name'],
+            'slug' => $validated['slug'],
+            'description' => "UAE VAT Rate {$validated['rate']}%",
+        ]);
+
+        TaxRate::create([
+            'tax_class_id' => $taxClass->id,
+            'name' => "{$validated['name']} Rate",
+            'rate' => $validated['rate'],
+            'cgst_rate' => 0.00,
+            'sgst_rate' => 0.00,
+            'igst_rate' => 0.00,
+            'country_code' => 'AE',
+            'is_active' => true,
+        ]);
+
+        return redirect()->route('admin.settings.index', ['tab' => 'tax'])
+            ->with('success', "VAT tax class '{$validated['name']}' created successfully.");
+    }
+}

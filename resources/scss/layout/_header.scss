@@ -764,7 +764,11 @@
   &-nav-left-group {
     display: flex;
     align-items: center;
-    gap: 80px;
+    gap: 28px;
+
+    @include respond-to('xl') {
+      gap: 80px;
+    }
   }
 
   // Left: All Categories
@@ -779,6 +783,7 @@
       font-size: 14px;
       font-weight: 800;
       text-decoration: none;
+      white-space: nowrap;
       transition: color $transition-default;
 
       .categories-list-icon {
@@ -800,7 +805,11 @@
   &-nav-list {
     display: flex;
     align-items: center;
-    gap: 44px;
+    gap: 20px;
+
+    @include respond-to('xl') {
+      gap: 44px;
+    }
   }
 
   // Right-aligned Info / Contact
@@ -816,6 +825,7 @@
       text-decoration: none;
       color: #111111;
       font-size: 13px;
+      white-space: nowrap;
       transition: color $transition-default;
 
       .nav-contact-icon {
@@ -829,8 +839,13 @@
         gap: 5px;
 
         .nav-contact-label {
+          display: none;
           color: #6B7280;
           font-weight: 500;
+
+          @include respond-to('xl') {
+            display: inline;
+          }
         }
 
         .nav-contact-val {
@@ -1000,6 +1015,7 @@
     font-weight: 600;
     color: #111111;
     text-decoration: none;
+    white-space: nowrap;
     padding: 10px 0;
     transition: color $transition-default;
 

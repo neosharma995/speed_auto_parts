@@ -13,28 +13,49 @@ use App\Http\Controllers\Public\VehicleFinderController;
 use Illuminate\Support\Facades\Route;
 
 // Public Storefront
+Route::get('/api/search/suggestions', [ShopController::class, 'suggestions'])->name('api.search.suggestions');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/categories', [StaticPageController::class, 'categories'])->name('categories.index');
 Route::get('/brands', [StaticPageController::class, 'brands'])->name('brands.index');
+Route::get('/brands/{slug}', function (string $slug) {
+    return redirect()->route('shop', ['brand' => $slug]);
+});
 Route::get('/vehicle-finder', [VehicleFinderController::class, 'page'])->name('vehicle-finder');
 Route::post('/vehicles/select', [VehicleFinderController::class, 'selectVehicle'])->name('vehicles.select');
 Route::post('/vehicles/clear', [VehicleFinderController::class, 'clearVehicle'])->name('vehicles.clear');
+Route::get('/track-order', [StaticPageController::class, 'trackOrder'])->name('track-order');
 Route::get('/order-success/{orderNumber}', [CheckoutController::class, 'success'])->name('order.success');
 
 // Static Pages
-Route::get('/about', [StaticPageController::class, 'about'])->name('about');
-Route::get('/contact', [StaticPageController::class, 'contact'])->name('contact');
-Route::get('/contact-us', [StaticPageController::class, 'contact'])->name('contact-us');
+Route::get('/about-us', [StaticPageController::class, 'about'])->name('about');
+Route::redirect('/about', '/about-us');
+
+Route::get('/contact-us', [StaticPageController::class, 'contact'])->name('contact');
+Route::redirect('/contact', '/contact-us');
+
+Route::get('/shipping-delivery', [StaticPageController::class, 'shippingPolicy'])->name('shipping.delivery');
+Route::get('/shipping-policy', [StaticPageController::class, 'shippingPolicy'])->name('shipping-policy');
+
+Route::get('/return-policy', [StaticPageController::class, 'returnPolicy'])->name('return-policy');
+Route::get('/returns-refunds', [StaticPageController::class, 'returnPolicy'])->name('returns.refunds');
+
+Route::get('/privacy-policy', [StaticPageController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::get('/terms-and-conditions', [StaticPageController::class, 'terms'])->name('terms.conditions');
+Route::get('/terms', [StaticPageController::class, 'terms'])->name('terms');
+
 Route::get('/help-center', [StaticPageController::class, 'helpCenter'])->name('help-center');
 Route::get('/faqs', [StaticPageController::class, 'faqs'])->name('faqs');
-Route::get('/shipping-policy', [StaticPageController::class, 'shippingPolicy'])->name('shipping-policy');
-Route::get('/return-policy', [StaticPageController::class, 'returnPolicy'])->name('return-policy');
-Route::get('/privacy-policy', [StaticPageController::class, 'privacyPolicy'])->name('privacy-policy');
-Route::get('/terms', [StaticPageController::class, 'terms'])->name('terms');
-Route::get('/terms-of-service', [StaticPageController::class, 'terms'])->name('terms-of-service');
+Route::get('/404', [StaticPageController::class, 'notFound'])->name('not-found');
+Route::fallback([StaticPageController::class, 'notFound']);
+
+// Category & Product Redirects
+Route::get('/products', [ShopController::class, 'index'])->name('products');
+Route::get('/category/{slug}', function (string $slug) {
+    return redirect('/shop?category=' . urlencode($slug));
+})->name('category.redirect');
 
 // Cart Routes
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -48,6 +69,8 @@ Route::post('/api/cart/clear', [CartController::class, 'clear'])->name('cart.cle
 // Checkout Routes
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/api/checkout/calculate-tax', [CheckoutController::class, 'calculateTax'])->name('checkout.calculate-tax');
+Route::post('/api/coupons/validate', [CheckoutController::class, 'validateCoupon'])->name('coupons.validate');
+Route::post('/api/checkout/apply-coupon', [CheckoutController::class, 'validateCoupon'])->name('checkout.apply-coupon');
 Route::post('/checkout/cod', [CheckoutController::class, 'placeCodOrder'])->name('checkout.cod');
 Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 Route::post('/checkout/stripe-session', [CheckoutController::class, 'createStripeSession'])->name('checkout.stripe-session');
@@ -62,6 +85,9 @@ Route::prefix('api/vehicles')->group(function () {
     Route::get('/models', [VehicleFinderController::class, 'getModels']);
     Route::get('/engines', [VehicleFinderController::class, 'getEngines']);
 });
+
+// Order Tracking API
+Route::get('/api/orders/track', [StaticPageController::class, 'trackOrderApi']);
 
 // Customer Portal (Authenticated)
 Route::middleware(['auth'])->group(function () {

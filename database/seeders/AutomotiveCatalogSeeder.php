@@ -6,25 +6,54 @@ namespace Database\Seeders;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Coupon;
+use App\Models\CustomerAddress;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductAttributeValue;
+use App\Models\ProductReview;
 use App\Models\ProductVariation;
 use App\Models\ProductVehicle;
+use App\Models\StockTransfer;
+use App\Models\TaxClass;
+use App\Models\TaxRate;
+use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class AutomotiveCatalogSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Categories
+        // 1. UAE VAT Taxes
+        $taxClassStandard = TaxClass::firstOrCreate(
+            ['slug' => 'vat-5'],
+            ['name' => 'Standard Auto Parts (UAE VAT 5%)', 'description' => 'Standard 5% UAE Federal VAT applicable to automotive parts', 'is_default' => true]
+        );
+        TaxRate::firstOrCreate(
+            ['tax_class_id' => $taxClassStandard->id, 'country_code' => 'AE'],
+            ['name' => 'UAE Federal VAT 5%', 'rate' => 5.00, 'cgst_rate' => 0.00, 'sgst_rate' => 0.00, 'igst_rate' => 0.00, 'is_active' => true]
+        );
+
+        $taxClassHigh = TaxClass::firstOrCreate(
+            ['slug' => 'vat-0'],
+            ['name' => 'GCC Export / Zero-Rated (VAT 0%)', 'description' => 'Zero-rated export automotive components outside UAE', 'is_default' => false]
+        );
+        TaxRate::firstOrCreate(
+            ['tax_class_id' => $taxClassHigh->id, 'country_code' => 'AE'],
+            ['name' => 'UAE Export Zero-Rated 0%', 'rate' => 0.00, 'cgst_rate' => 0.00, 'sgst_rate' => 0.00, 'igst_rate' => 0.00, 'is_active' => true]
+        );
+
+        // 2. Categories
         $categoriesData = [
             [
                 'name' => 'Tires',
                 'slug' => 'tires',
                 'description' => 'Ultra high performance, street and track tires engineered for grip and longevity.',
-                'image' => '/images/categories/tires.jpg',
+                'image' => '/assets/images/categories/tires.webp',
                 'icon' => 'Disc',
                 'sort_order' => 1,
                 'is_featured' => true,
@@ -33,7 +62,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'name' => 'Brakes',
                 'slug' => 'brakes',
                 'description' => 'Slotted and drilled rotors, carbon ceramic kits, racing calipers and performance pads.',
-                'image' => '/images/categories/brakes.jpg',
+                'image' => '/assets/images/categories/brakes.webp',
                 'icon' => 'ShieldAlert',
                 'sort_order' => 2,
                 'is_featured' => true,
@@ -42,7 +71,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'name' => 'Intake',
                 'slug' => 'intake',
                 'description' => 'Cold air intake systems, high-flow air filters, silicone piping, and intercoolers.',
-                'image' => '/images/categories/intake.jpg',
+                'image' => '/assets/images/categories/intake.webp',
                 'icon' => 'Wind',
                 'sort_order' => 3,
                 'is_featured' => true,
@@ -51,7 +80,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'name' => 'Exhaust',
                 'slug' => 'exhaust',
                 'description' => 'T304 stainless steel cat-back exhaust systems, headers, downpipes and quad tips.',
-                'image' => '/images/categories/exhaust.jpg',
+                'image' => '/assets/images/categories/exhaust.webp',
                 'icon' => 'Flame',
                 'sort_order' => 4,
                 'is_featured' => true,
@@ -60,7 +89,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'name' => 'Suspension',
                 'slug' => 'suspension',
                 'description' => 'Fully adjustable coilover kits, strut bars, lowering springs and anti-roll sway bars.',
-                'image' => '/images/categories/suspension.jpg',
+                'image' => '/assets/images/categories/suspension.webp',
                 'icon' => 'GitCommit',
                 'sort_order' => 5,
                 'is_featured' => true,
@@ -74,14 +103,14 @@ class AutomotiveCatalogSeeder extends Seeder
 
         // 3. Brands
         $brandsData = [
-            ['name' => 'Brembo', 'slug' => 'brembo', 'website' => 'https://www.brembo.com', 'description' => 'World leader in the design and production of high-performance braking systems.', 'is_featured' => true],
-            ['name' => 'Michelin', 'slug' => 'michelin', 'website' => 'https://www.michelin.com', 'description' => 'Pioneering tire manufacturer engineered for track dominance and street comfort.', 'is_featured' => true],
-            ['name' => 'Borla', 'slug' => 'borla', 'website' => 'https://www.borla.com', 'description' => 'Pioneers in the design and manufacture of stainless steel performance exhaust systems.', 'is_featured' => true],
-            ['name' => 'K&N Engineering', 'slug' => 'kn-engineering', 'website' => 'https://www.knfilters.com', 'description' => 'The world’s leading manufacturer of washable performance air filters and intake systems.', 'is_featured' => true],
-            ['name' => 'Bilstein', 'slug' => 'bilstein', 'website' => 'https://www.bilstein.com', 'description' => 'Legendary German suspension dampers, coilovers, and motorsport shock absorbers.', 'is_featured' => true],
-            ['name' => 'Garrett Motion', 'slug' => 'garrett-motion', 'website' => 'https://www.garrettmotion.com', 'description' => 'Cutting-edge turbocharger aerodynamics and boost solutions for street and motorsport.', 'is_featured' => true],
-            ['name' => 'Akrapovič', 'slug' => 'akrapovic', 'website' => 'https://www.akrapovic.com', 'description' => 'Premium titanium and carbon fiber exhaust systems engineered for motorsport.', 'is_featured' => true],
-            ['name' => 'BBS Wheels', 'slug' => 'bbs-wheels', 'website' => 'https://bbs.com', 'description' => 'Iconic forged monoblock and modular aluminum racing wheels.', 'is_featured' => true],
+            ['name' => 'Brembo', 'slug' => 'brembo', 'logo' => '/assets/icons/brembo.svg', 'website' => 'https://www.brembo.com', 'description' => 'World leader in the design and production of high-performance braking systems.', 'is_featured' => true],
+            ['name' => 'Michelin', 'slug' => 'michelin', 'logo' => '/assets/icons/michelin.svg', 'website' => 'https://www.michelin.com', 'description' => 'Pioneering tire manufacturer engineered for track dominance and street comfort.', 'is_featured' => true],
+            ['name' => 'Borla', 'slug' => 'borla', 'logo' => '/assets/icons/borla.svg', 'website' => 'https://www.borla.com', 'description' => 'Pioneers in the design and manufacture of stainless steel performance exhaust systems.', 'is_featured' => true],
+            ['name' => 'K&N Engineering', 'slug' => 'kn-engineering', 'logo' => '/assets/icons/kn.svg', 'website' => 'https://www.knfilters.com', 'description' => 'The world’s leading manufacturer of washable performance air filters and intake systems.', 'is_featured' => true],
+            ['name' => 'Bilstein', 'slug' => 'bilstein', 'logo' => '/assets/icons/bilstein.svg', 'website' => 'https://www.bilstein.com', 'description' => 'Legendary German suspension dampers, coilovers, and motorsport shock absorbers.', 'is_featured' => true],
+            ['name' => 'Garrett Motion', 'slug' => 'garrett-motion', 'logo' => '/assets/icons/garrett.svg', 'website' => 'https://www.garrettmotion.com', 'description' => 'Cutting-edge turbocharger aerodynamics and boost solutions for street and motorsport.', 'is_featured' => true],
+            ['name' => 'Akrapovič', 'slug' => 'akrapovic', 'logo' => '/assets/icons/akrapovic.svg', 'website' => 'https://www.akrapovic.com', 'description' => 'Premium titanium and carbon fiber exhaust systems engineered for motorsport.', 'is_featured' => true],
+            ['name' => 'BBS Wheels', 'slug' => 'bbs-wheels', 'logo' => '/assets/icons/bbs.svg', 'website' => 'https://bbs.com', 'description' => 'Iconic forged monoblock and modular aluminum racing wheels.', 'is_featured' => true],
         ];
 
         $brands = [];
@@ -114,12 +143,18 @@ class AutomotiveCatalogSeeder extends Seeder
         }
 
         // 5. Attributes
+        $attrColor = ProductAttribute::firstOrCreate(['slug' => 'color'], ['name' => 'Color', 'description' => 'Component exterior or anodized finish color']);
         $attrRim = ProductAttribute::firstOrCreate(['slug' => 'rim-diameter'], ['name' => 'Rim Diameter', 'description' => 'Wheel diameter in inches']);
         $attrWidth = ProductAttribute::firstOrCreate(['slug' => 'tire-width'], ['name' => 'Tire Width', 'description' => 'Section width in millimeters']);
         $attrPosition = ProductAttribute::firstOrCreate(['slug' => 'position'], ['name' => 'Axle Position', 'description' => 'Vehicle axle installation position']);
         $attrRotorDia = ProductAttribute::firstOrCreate(['slug' => 'rotor-diameter'], ['name' => 'Rotor Diameter', 'description' => 'Disc rotor diameter in millimeters']);
         $attrMaterial = ProductAttribute::firstOrCreate(['slug' => 'material'], ['name' => 'Construction Material', 'description' => 'Manufacturing material composition']);
 
+        ProductAttributeValue::firstOrCreate(['attribute_id' => $attrColor->id, 'slug' => 'red'], ['value' => 'Red']);
+        ProductAttributeValue::firstOrCreate(['attribute_id' => $attrColor->id, 'slug' => 'green'], ['value' => 'Green']);
+        ProductAttributeValue::firstOrCreate(['attribute_id' => $attrColor->id, 'slug' => 'blue'], ['value' => 'Blue']);
+        ProductAttributeValue::firstOrCreate(['attribute_id' => $attrColor->id, 'slug' => 'matte-black'], ['value' => 'Matte Black']);
+        ProductAttributeValue::firstOrCreate(['attribute_id' => $attrColor->id, 'slug' => 'silver'], ['value' => 'Silver']);
         ProductAttributeValue::firstOrCreate(['attribute_id' => $attrRim->id, 'slug' => '18-inch'], ['value' => '18 Inch']);
         ProductAttributeValue::firstOrCreate(['attribute_id' => $attrRim->id, 'slug' => '19-inch'], ['value' => '19 Inch']);
         ProductAttributeValue::firstOrCreate(['attribute_id' => $attrWidth->id, 'slug' => '245mm'], ['value' => '245 mm']);
@@ -130,28 +165,34 @@ class AutomotiveCatalogSeeder extends Seeder
         ProductAttributeValue::firstOrCreate(['attribute_id' => $attrRotorDia->id, 'slug' => '355mm'], ['value' => '355 mm']);
 
         // 6. Products from prompt specifications
+        $supplier = User::where('email', 'supplier@autosparts.com')->first();
 
-        // Product 1: Performance Summer Tire
+        // Product 1: Pilot Sport 5 Performance Tire
         $pTire = Product::updateOrCreate(
             ['sku' => 'AP-TIRE-992'],
             [
                 'brand_id' => $brands['michelin']->id,
                 'category_id' => $categories['tires']->id,
-                'name' => 'Performance Summer Tire',
-                'slug' => 'performance-summer-tire',
+                'tax_class_id' => $taxClassStandard->id,
+                'supplier_id' => $supplier?->id,
+                'name' => 'Pilot Sport 5 Performance Tire',
+                'slug' => 'pilot-sport-5-performance-tire',
                 'part_number' => 'AP-12345',
                 'short_description' => 'Ultra-high performance compound engineered for maximum dry road traction and razor-sharp steering feedback.',
                 'description' => "Developed directly from motorsport championship compounds, the Performance Summer Tire delivers benchmark cornering grip, exceptional high-speed stability, and responsive dry braking performance. Equipped with dual-compound technology across the asymmetrical tread pattern for optimal road contact under extreme lateral loads.",
                 'technical_specifications' => "Treadwear: 300 | Traction: AA | Temperature: A | Speed Rating: (Y) >300 km/h | Construction: Radial Steel Belted | Origin: France",
-                'main_image' => '/assets/images/products/michelin-tire.svg',
+                'main_image' => '/assets/images/products/performance-tire.webp',
                 'gallery_images' => [
-                    '/assets/images/products/michelin-tire.svg',
+                    '/assets/images/products/performance-tire.webp',
                 ],
                 'product_type' => 'variable',
                 'base_price' => 14500.00,
                 'sale_price' => 12999.00,
                 'cost_price' => 8500.00,
+                'supplier_price' => 8500.00,
                 'stock_quantity' => 45,
+                'supplier_stock' => 60,
+                'warehouse_stock' => 30,
                 'stock_status' => 'in_stock',
                 'weight' => 11.20,
                 'weight_unit' => 'kg',
@@ -160,7 +201,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'is_best_seller' => true,
                 'is_new_arrival' => false,
                 'status' => 'published',
-                'seo_title' => 'Performance Summer Tire - Speed Autos Parts',
+                'seo_title' => 'Performance Summer Tire - Autos Parts Shop',
                 'seo_description' => 'Buy Michelin Performance Summer Tires online. High-speed track and street radial performance.',
                 'rating' => 4.90,
                 'rating_count' => 84,
@@ -179,7 +220,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'sale_price' => 12999.00,
                 'stock_quantity' => 25,
                 'stock_status' => 'in_stock',
-                'image' => 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80',
+                'image' => null,
                 'weight' => 11.20,
                 'is_default' => true,
             ]
@@ -196,7 +237,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'sale_price' => 16499.00,
                 'stock_quantity' => 20,
                 'stock_status' => 'in_stock',
-                'image' => 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80',
+                'image' => null,
                 'weight' => 12.80,
                 'is_default' => false,
             ]
@@ -208,21 +249,26 @@ class AutomotiveCatalogSeeder extends Seeder
             [
                 'brand_id' => $brands['brembo']->id,
                 'category_id' => $categories['brakes']->id,
+                'tax_class_id' => $taxClassHigh->id,
+                'supplier_id' => $supplier?->id,
                 'name' => 'Slotted & Drilled Brake Rotor',
                 'slug' => 'slotted-drilled-brake-rotor',
                 'part_number' => 'AP-54012',
                 'short_description' => 'High-carbon cast iron brake rotor with directional cross-drilling and curved gas expansion slots.',
                 'description' => "Engineered to withstand intense thermal stress on the street and circuit. The precision cross-drilled holes ensure optimal heat dissipation and wet-weather bite, while the bidirectional slots continuously sweep brake pad glaze and outgassing away from the contact surface.",
                 'technical_specifications' => "Material: High-Carbon G3000 Alloy | Coating: Anti-corrosion Zinc Dichromate | Balancing: Dynamically 100% Runout Balanced | Vane Type: Curved Directional Vane",
-                'main_image' => '/assets/images/products/brembo-rotor.svg',
+                'main_image' => '/assets/images/products/brake-rotor.webp',
                 'gallery_images' => [
-                    '/assets/images/products/brembo-rotor.svg',
+                    '/assets/images/products/brake-rotor.webp',
                 ],
                 'product_type' => 'variable',
                 'base_price' => 11200.00,
                 'sale_price' => 9850.00,
                 'cost_price' => 6200.00,
+                'supplier_price' => 6200.00,
                 'stock_quantity' => 38,
+                'supplier_stock' => 40,
+                'warehouse_stock' => 25,
                 'stock_status' => 'in_stock',
                 'weight' => 9.40,
                 'weight_unit' => 'kg',
@@ -250,7 +296,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'sale_price' => 10999.00,
                 'stock_quantity' => 20,
                 'stock_status' => 'in_stock',
-                'image' => 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80',
+                'image' => null,
                 'weight' => 10.20,
                 'is_default' => true,
             ]
@@ -267,7 +313,7 @@ class AutomotiveCatalogSeeder extends Seeder
                 'sale_price' => 8999.00,
                 'stock_quantity' => 18,
                 'stock_status' => 'in_stock',
-                'image' => 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80',
+                'image' => null,
                 'weight' => 8.60,
                 'is_default' => false,
             ]
@@ -279,21 +325,26 @@ class AutomotiveCatalogSeeder extends Seeder
             [
                 'brand_id' => $brands['borla']->id,
                 'category_id' => $categories['exhaust']->id,
+                'tax_class_id' => $taxClassStandard->id,
+                'supplier_id' => $supplier?->id,
                 'name' => 'Performance Cat-Back Exhaust',
                 'slug' => 'performance-cat-back-exhaust',
                 'part_number' => 'AP-88024',
                 'short_description' => 'Acoustically tuned T304 aircraft-grade stainless steel cat-back exhaust with aggressive quad tips.',
                 'description' => "Unleash genuine exhaust acoustics and improved horsepower with mandrel-bent T304 stainless steel piping. Straight-through multi-core patented muffler chambers reduce backpressure and provide zero in-cabin highway drone while yielding an unmistakable deep exhaust note under wide-open throttle.",
                 'technical_specifications' => "Tubing Diameter: 3.0 Inch Mandrel-Bent | Material: T-304 Austenitic Stainless Steel | Tip Finish: 4.0 Inch Dual Angle-Cut Polished Tips | Sound Level: ATAK Aggressive",
-                'main_image' => '/assets/images/products/borla-exhaust.svg',
+                'main_image' => '/assets/images/products/performance-exhaust.webp',
                 'gallery_images' => [
-                    '/assets/images/products/borla-exhaust.svg',
+                    '/assets/images/products/performance-exhaust.webp',
                 ],
                 'product_type' => 'simple',
                 'base_price' => 48500.00,
                 'sale_price' => 42999.00,
                 'cost_price' => 29000.00,
+                'supplier_price' => 29000.00,
                 'stock_quantity' => 12,
+                'supplier_stock' => 20,
+                'warehouse_stock' => 15,
                 'stock_status' => 'in_stock',
                 'weight' => 18.50,
                 'weight_unit' => 'kg',
@@ -309,27 +360,32 @@ class AutomotiveCatalogSeeder extends Seeder
             ]
         );
 
-        // Product 4: High-Flow Cold Air Intake
+        // Product 4: Cold-Air Intake System
         $pIntake = Product::updateOrCreate(
             ['sku' => 'AP-INT-3010'],
             [
                 'brand_id' => $brands['kn-engineering']->id,
                 'category_id' => $categories['intake']->id,
-                'name' => 'High-Flow Cold Air Intake System',
-                'slug' => 'high-flow-cold-air-intake-system',
+                'tax_class_id' => $taxClassStandard->id,
+                'supplier_id' => $supplier?->id,
+                'name' => 'Cold-Air Intake System',
+                'slug' => 'cold-air-intake-system',
                 'part_number' => 'AP-30109',
                 'short_description' => 'Dyno-proven cold air intake kit featuring mandrel-bent aluminum tube and washable conical cotton filter.',
                 'description' => "Guaranteed to increase horsepower and throttle response. Features a custom heat shield to block hot engine bay air and direct dense, cold external air straight to the throttle body for maximum combustion efficiency.",
                 'technical_specifications' => "Filter Media: Washable Oiled Cotton Gauze | Pipe: Powdercoated 3.5\" Aluminum | Estimated Gain: +14.2 HP @ 5800 RPM",
-                'main_image' => '/assets/images/products/kn-intake.svg',
+                'main_image' => '/assets/images/products/cold-air-intake.webp',
                 'gallery_images' => [
-                    '/assets/images/products/kn-intake.svg',
+                    '/assets/images/products/cold-air-intake.webp',
                 ],
                 'product_type' => 'simple',
                 'base_price' => 24500.00,
                 'sale_price' => 21999.00,
                 'cost_price' => 14000.00,
+                'supplier_price' => 14000.00,
                 'stock_quantity' => 22,
+                'supplier_stock' => 30,
+                'warehouse_stock' => 18,
                 'stock_status' => 'in_stock',
                 'weight' => 5.20,
                 'weight_unit' => 'kg',
@@ -345,27 +401,32 @@ class AutomotiveCatalogSeeder extends Seeder
             ]
         );
 
-        // Product 5: Track-Spec Adjustable Coilover Kit
+        // Product 5: B16 PSS10 Coilover Suspension Kit
         $pCoilovers = Product::updateOrCreate(
             ['sku' => 'AP-SUS-7700'],
             [
                 'brand_id' => $brands['bilstein']->id,
                 'category_id' => $categories['suspension']->id,
-                'name' => 'Track-Spec Adjustable Coilover Kit',
-                'slug' => 'track-spec-adjustable-coilover-kit',
+                'tax_class_id' => $taxClassStandard->id,
+                'supplier_id' => $supplier?->id,
+                'name' => 'B16 PSS10 Coilover Suspension Kit',
+                'slug' => 'b16-pss10-coilover-suspension-kit',
                 'part_number' => 'AP-77001',
                 'short_description' => 'Monotube inverted shock dampers with 16-way combined rebound & compression damping adjustment.',
                 'description' => "Engineered for drivers who demand race-winning chassis control without sacrificing road usability. Threaded aluminum shock bodies allow independent ride height adjustment from 30mm to 65mm lowering.",
                 'technical_specifications' => "Design: Inverted Monotube Gas Pressurized | Adjustability: 16-click simultaneous Damping | Spring Rates: Front 8k / Rear 6k",
-                'main_image' => '/assets/images/build/coilover.svg',
+                'main_image' => '/assets/images/products/coilover-suspension.webp',
                 'gallery_images' => [
-                    '/assets/images/build/coilover.svg',
+                    '/assets/images/products/coilover-suspension.webp',
                 ],
                 'product_type' => 'simple',
                 'base_price' => 74500.00,
                 'sale_price' => 68900.00,
                 'cost_price' => 48000.00,
+                'supplier_price' => 48000.00,
                 'stock_quantity' => 10,
+                'supplier_stock' => 18,
+                'warehouse_stock' => 12,
                 'stock_status' => 'in_stock',
                 'weight' => 24.00,
                 'weight_unit' => 'kg',
@@ -438,6 +499,173 @@ class AutomotiveCatalogSeeder extends Seeder
                     'position' => 'All Corners',
                 ]);
             }
+        }
+
+        // 8. Coupons (AED)
+        Coupon::updateOrCreate(
+            ['code' => 'SPEED10'],
+            [
+                'type' => 'percentage',
+                'value' => 10.00,
+                'min_spend' => 250.00,
+                'max_discount' => 150.00,
+                'usage_limit' => 1000,
+                'usage_per_user' => 3,
+                'is_active' => true,
+            ]
+        );
+
+        Coupon::updateOrCreate(
+            ['code' => 'TRACKDAY'],
+            [
+                'type' => 'fixed',
+                'value' => 100.00,
+                'min_spend' => 750.00,
+                'max_discount' => 100.00,
+                'usage_limit' => 500,
+                'usage_per_user' => 1,
+                'is_active' => true,
+            ]
+        );
+
+        // 9. Customer address for seed user (Dubai, UAE)
+        $customerUser = User::where('email', 'customer@autosparts.com')->first();
+        if ($customerUser) {
+            CustomerAddress::firstOrCreate(
+                ['user_id' => $customerUser->id, 'address_line1' => 'Villa 18, Al Wasl Road, Jumeirah 1'],
+                [
+                    'type' => 'both',
+                    'full_name' => 'Tariq Al Mansoori',
+                    'phone' => '+971 50 512 3456',
+                    'address_line2' => 'Near City Walk Boulevard',
+                    'city' => 'Dubai',
+                    'state' => 'Dubai',
+                    'pincode' => '00000',
+                    'country' => 'United Arab Emirates',
+                    'is_default' => true,
+                ]
+            );
+
+            // Sample Order for customer (Dubai / Stripe / AED / 5% UAE VAT)
+            $sampleOrder = Order::firstOrCreate(
+                ['order_number' => 'AP-20261119-DEMO1'],
+                [
+                    'user_id' => $customerUser->id,
+                    'customer_name' => 'Tariq Al Mansoori',
+                    'customer_email' => 'customer@autosparts.com',
+                    'customer_phone' => '+971 50 512 3456',
+                    'shipping_address' => 'Villa 18, Al Wasl Road, Jumeirah 1',
+                    'apartment' => 'Gate 2, Villa 18',
+                    'city' => 'Dubai',
+                    'state' => 'Dubai',
+                    'pincode' => '00000',
+                    'country' => 'United Arab Emirates',
+                    'shipping_method_title' => 'Aramex Same-Day Dubai Express',
+                    'shipping_cost' => 35.00,
+                    'subtotal' => 1160.00,
+                    'discount_amount' => 100.00,
+                    'coupon_code' => 'TRACKDAY',
+                    'tax_amount' => 58.00,
+                    'cgst_amount' => 0.00,
+                    'sgst_amount' => 0.00,
+                    'igst_amount' => 0.00,
+                    'total_amount' => 1153.00,
+                    'currency' => 'AED',
+                    'payment_method' => 'stripe',
+                    'payment_status' => 'paid',
+                    'delivery_status' => 'processing',
+                    'stripe_session_id' => 'cs_test_demo_01',
+                    'stripe_payment_intent_id' => 'pi_test_demo_01',
+                    'order_notes' => 'Please call 15 minutes before arrival.',
+                    'tracking_number' => 'ARAMEX-88291039AE',
+                    'tracking_carrier' => 'Aramex Express UAE',
+                    'tracking_url' => 'https://www.aramex.com/ae/en/track/shipments',
+                    'paid_at' => now()->subDay(),
+                ]
+            );
+
+            OrderItem::firstOrCreate(
+                ['order_id' => $sampleOrder->id, 'product_id' => $pTire->id],
+                [
+                    'product_name' => 'Pilot Sport 5 Performance Tire',
+                    'variation_name' => '245/40R18 97Y XL',
+                    'sku' => 'AP-TIRE-992-245-18',
+                    'part_number' => 'AP-12345-A',
+                    'unit_price' => 580.00,
+                    'quantity' => 2,
+                    'tax_rate_percent' => 5.00,
+                    'tax_amount' => 58.00,
+                    'subtotal' => 1160.00,
+                    'total' => 1218.00,
+                    'product_image' => '/assets/images/products/performance-tire.webp',
+                ]
+            );
+        }
+
+        // 10. Product Reviews (Dubai Motorsport)
+        ProductReview::firstOrCreate(
+            ['product_id' => $pTire->id, 'reviewer_email' => 'driver@dubaiautodrome.ae'],
+            [
+                'reviewer_name' => 'Khalid Al Maktoum',
+                'rating' => 5,
+                'title' => 'Unbelievable dry grip on Dubai Autodrome',
+                'comment' => 'Installed a staggered set on my Mustang GT. Cornering speeds are noticeably higher and braking stability is rock solid even in UAE summer heat.',
+                'is_verified_purchase' => true,
+                'is_approved' => true,
+            ]
+        );
+
+        ProductReview::firstOrCreate(
+            ['product_id' => $pBrake->id, 'reviewer_email' => 'trackdayfan@yasmarina.ae'],
+            [
+                'reviewer_name' => 'Faisal Al Qasimi',
+                'rating' => 5,
+                'title' => 'Zero brake fade during Yas Marina track nights',
+                'comment' => 'Rotors run much cooler than the stock blanks. The zinc coating keeps the hub bells looking brand new.',
+                'is_verified_purchase' => true,
+                'is_approved' => true,
+            ]
+        );
+
+        // 11. Supplier-Created Draft Product + Pending Incoming Lot for Admin Warehouse
+        $pClutch = Product::updateOrCreate(
+            ['sku' => 'SUP-CLT-9001'],
+            [
+                'brand_id' => $brands['garrett-motion']->id,
+                'category_id' => $categories['brakes']->id,
+                'tax_class_id' => $taxClassStandard->id,
+                'supplier_id' => $supplier?->id,
+                'name' => 'Carbon Kevlar Racing Clutch Kit',
+                'slug' => 'carbon-kevlar-racing-clutch-kit',
+                'part_number' => 'SUP-9001',
+                'short_description' => 'Twin-disc carbon kevlar clutch assembly engineered for high-torque track builds.',
+                'description' => 'Supplied directly by Apex Motorsport Spares. Pending Admin Warehouse receiving and catalogue pricing before website publication.',
+                'main_image' => '/assets/images/products/placeholder.jpg',
+                'product_type' => 'simple',
+                'base_price' => 18500.00,
+                'cost_price' => 18500.00,
+                'supplier_price' => 18500.00,
+                'stock_quantity' => 0,
+                'supplier_stock' => 35,
+                'warehouse_stock' => 0,
+                'stock_status' => 'out_of_stock',
+                'status' => 'draft',
+            ]
+        );
+
+        if ($supplier) {
+            StockTransfer::firstOrCreate(
+                ['lot_number' => 'LOT-20261120-DEMO', 'product_id' => $pClutch->id],
+                [
+                    'supplier_id' => $supplier->id,
+                    'initiated_by' => $supplier->id,
+                    'direction' => 'supplier_to_warehouse',
+                    'quantity' => 15,
+                    'unit_price' => 18500.00,
+                    'status' => 'pending',
+                    'notes' => 'Initial racing clutch shipment lot awaiting Admin Warehouse receipt.',
+                ]
+            );
         }
     }
 }

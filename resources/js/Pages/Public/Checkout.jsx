@@ -432,6 +432,38 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                 ))}
                             </div>
 
+                            {/* Promo Code Form */}
+                            <form onSubmit={handleApplyCoupon} className="coupon-box">
+                                <input
+                                    type="text"
+                                    placeholder="COUPON (e.g. SPEED10)"
+                                    value={couponCode}
+                                    onChange={(e) => setCouponCode(e.target.value)}
+                                />
+                                <button type="submit" className="btn btn-dark btn-sm">
+                                    Apply
+                                </button>
+                            </form>
+
+                            {couponSuccessMsg && (
+                                <span
+                                    style={{
+                                        fontSize: '12px',
+                                        color: '#168A35',
+                                        fontWeight: 700,
+                                        marginBottom: '12px',
+                                        display: 'block',
+                                    }}
+                                >
+                                    {couponSuccessMsg}
+                                </span>
+                            )}
+                            {couponErrorMsg && (
+                                <span style={{ fontSize: '12px', color: '#D93025', marginBottom: '12px', display: 'block' }}>
+                                    {couponErrorMsg}
+                                </span>
+                            )}
+
                             {/* Financial Breakdown with UAE VAT 5% */}
                             <div className="totals-breakdown">
                                 <div className="total-row">

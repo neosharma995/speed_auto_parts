@@ -25,7 +25,7 @@ import { useWishlist } from '@/Context/WishlistContext';
 import SearchDropdown from './SearchDropdown';
 
 export default function Header() {
-    const { auth, navCategories = [], navBrands = [], settings = {}, activeVehicle } = usePage().props;
+    const { auth, navBrands = [], settings = {}, activeVehicle } = usePage().props;
     const { itemCount, setIsCartOpen } = useCart();
     const { activeCurrency, availableCurrencies, setSelectedCurrency } = useCurrency();
     const { wishlist = [] } = useWishlist();
@@ -172,23 +172,32 @@ export default function Header() {
         }
     };
 
-    // Build instant local search suggestions from shared categories & brands (staging catalog-only)
+    // Fetch search suggestions (empty query returns popular & categories/brands)
     const fetchSuggestions = (query = '') => {
-        const q = query.trim().toLowerCase();
-        const popular = ['Brake Rotors', 'Pilot Sport 5', 'Cold Air Intake', 'Coilovers', 'Cat-Back Exhaust', 'Brembo'];
-        const matchedCategories = (navCategories || []).filter(
-            (c) => !q || String(c.name || '').toLowerCase().includes(q)
-        );
-        const matchedBrands = (navBrands || []).filter(
-            (b) => !q || String(b.name || '').toLowerCase().includes(q)
-        );
-        setSearchResults({
-            popular,
-            categories: matchedCategories.slice(0, 6),
-            brands: matchedBrands.slice(0, 6),
-            products: [],
-        });
-        setSearchLoading(false);
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        abortControllerRef.current = new AbortController();
+
+        setSearchLoading(true);
+        const url = query.trim()
+            ? `/api/search/suggestions?q=${encodeURIComponent(query.trim())}`
+            : `/api/search/suggestions`;
+
+        fetch(url, { signal: abortControllerRef.current.signal })
+            .then((res) => {
+                if (!res.ok) throw new Error('Search suggestions failed');
+                return res.json();
+            })
+            .then((data) => {
+                setSearchResults(data);
+                setSearchLoading(false);
+            })
+            .catch((err) => {
+                if (err.name !== 'AbortError') {
+                    setSearchLoading(false);
+                }
+            });
     };
 
     // Handle input change with debounce
@@ -454,11 +463,17 @@ export default function Header() {
                             </div>
                         </div>
 
+                        <Link href="/track-order" className="utility-link">Track Order</Link>
                         <Link href="/contact-us" className="utility-link">Help & Support</Link>
 
                         {auth?.user?.roles?.includes('admin') && (
                             <Link href="/admin/dashboard" className="utility-link-accent">
                                 Admin
+                            </Link>
+                        )}
+                        {auth?.user?.roles?.includes('supplier') && (
+                            <Link href="/supplier/dashboard" className="utility-link-accent">
+                                Supplier
                             </Link>
                         )}
                     </div>
@@ -575,6 +590,16 @@ export default function Header() {
                                             >
                                                 <Shield size={16} strokeWidth={2} />
                                                 <span>Admin Dashboard</span>
+                                            </Link>
+                                        )}
+                                        {auth.user.roles?.includes('supplier') && (
+                                            <Link
+                                                href="/supplier/dashboard"
+                                                className="site-header-dropdown-item"
+                                                onClick={() => setAccountDropdownOpen(false)}
+                                            >
+                                                <Package size={16} strokeWidth={2} />
+                                                <span>Supplier Dashboard</span>
                                             </Link>
                                         )}
                                         <Link
@@ -831,7 +856,8 @@ export default function Header() {
                                     </Link>
                                     <div className="site-header-dropdown">
                                         <Link href="/contact-us" className="site-header-dropdown-item">Contact Us</Link>
-                                        <Link href="/about" className="site-header-dropdown-item">About Us</Link>
+                                        <Link href="/about-us" className="site-header-dropdown-item">About Us</Link>
+                                        <Link href="/track-order" className="site-header-dropdown-item">Track Order</Link>
                                         <Link href="/shipping-policy" className="site-header-dropdown-item">Shipping Policy</Link>
                                         <Link href="/return-policy" className="site-header-dropdown-item">Return & Refund</Link>
                                         <Link href="/terms" className="site-header-dropdown-item">Terms & Conditions</Link>
@@ -1144,7 +1170,8 @@ export default function Header() {
                                 {expandedSubmenu === 'support' && (
                                     <div className="mobile-drawer-submenu">
                                         <Link href="/contact-us" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Contact Us</Link>
-                                        <Link href="/about" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>About Us</Link>
+                                        <Link href="/about-us" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>About Us</Link>
+                                        <Link href="/track-order" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Track Order</Link>
                                         <Link href="/shipping-policy" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Shipping Policy</Link>
                                         <Link href="/return-policy" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Return & Refund</Link>
                                         <Link href="/terms" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Terms & Conditions</Link>

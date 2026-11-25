@@ -1,13 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { useCart } from '@/Context/CartContext';
 import { useCurrency } from '@/Context/CurrencyContext';
-import { Trash2, ShoppingBag, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Trash2, ShoppingBag, ArrowRight, ArrowLeft, ShieldCheck, Tag } from 'lucide-react';
+import axios from 'axios';
 
 export default function Cart() {
     const { cartItems, itemCount, subtotal, updateQuantity, removeFromCart, clearCart } = useCart();
     const { formatPrice } = useCurrency();
+    const [couponCode, setCouponCode] = useState('');
+    const [couponDiscount, setCouponDiscount] = useState(0);
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [couponError, setCouponError] = useState('');
+    const [couponLoading, setCouponLoading] = useState(false);
+
+    const handleApplyCoupon = async (e) => {
+        e.preventDefault();
+        setCouponError('');
+        if (!couponCode.trim()) return;
+
+        setCouponLoading(true);
+        try {
+            const res = await axios.post('/api/coupons/validate', {
+                code: couponCode.trim(),
+                subtotal: subtotal,
+            });
+
+            if (res.data.success) {
+                setCouponDiscount(res.data.discount_amount);
+                setAppliedCoupon(res.data.code);
+            } else {
+                setCouponError(res.data.message || 'Invalid coupon code');
+            }
+        } catch (err) {
+            setCouponError(err.response?.data?.message || 'Failed to apply coupon');
+        } finally {
+            setCouponLoading(false);
+        }
+    };
+
+    const finalTotal = Math.max(0, subtotal - couponDiscount);
 
     if (cartItems.length === 0) {
         return (
@@ -64,8 +97,8 @@ export default function Cart() {
 
                                 <div style={{ padding: '0 24px' }}>
                                     {cartItems.map((item) => (
-                                        <div
-                                            key={item.id}
+                                        <div 
+                                            key={item.id} 
                                             style={{
                                                 display: 'flex',
                                                 flexWrap: 'wrap',
@@ -77,8 +110,8 @@ export default function Cart() {
                                             }}
                                         >
                                             <div style={{ display: 'flex', gap: '16px', alignItems: 'center', minWidth: '260px' }}>
-                                                <img
-                                                    src={item.image || '/images/products/placeholder.jpg'}
+                                                <img 
+                                                    src={item.image || '/images/products/placeholder.jpg'} 
                                                     alt={item.name}
                                                     style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #EEE' }}
                                                 />
@@ -104,8 +137,8 @@ export default function Cart() {
 
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #DCDCDC', borderRadius: '4px' }}>
-                                                    <button
-                                                        type="button"
+                                                    <button 
+                                                        type="button" 
                                                         style={{ width: '32px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                                     >
@@ -114,8 +147,8 @@ export default function Cart() {
                                                     <span style={{ width: '36px', textAlign: 'center', fontWeight: 700, fontSize: '14px' }}>
                                                         {item.quantity}
                                                     </span>
-                                                    <button
-                                                        type="button"
+                                                    <button 
+                                                        type="button" 
                                                         style={{ width: '32px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                                     >
@@ -127,8 +160,8 @@ export default function Cart() {
                                                     {formatPrice(Number(item.price) * item.quantity)}
                                                 </span>
 
-                                                <button
-                                                    type="button"
+                                                <button 
+                                                    type="button" 
                                                     onClick={() => removeFromCart(item.id)}
                                                     style={{ color: '#888', background: 'none', border: 'none', padding: '6px' }}
                                                     title="Remove item"
@@ -144,8 +177,8 @@ export default function Cart() {
                                     <Link href="/shop" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#252525' }}>
                                         <ArrowLeft size={16} /> Continue Shopping
                                     </Link>
-                                    <button
-                                        type="button"
+                                    <button 
+                                        type="button" 
                                         onClick={clearCart}
                                         style={{ fontSize: '13px', color: '#D93025', fontWeight: 600, background: 'none', border: 'none' }}
                                     >
@@ -154,7 +187,7 @@ export default function Cart() {
                                 </div>
                             </div>
 
-                            {/* Cart Summary */}
+                            {/* Summary & Coupon */}
                             <div style={{
                                 backgroundColor: '#FFFFFF',
                                 border: '1px solid #DCDCDC',
@@ -165,13 +198,51 @@ export default function Cart() {
                                 gap: '16px'
                             }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 800, textTransform: 'uppercase' }}>
-                                    Cart Summary
+                                    Order Summary & Promo Codes
                                 </h3>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '8px', borderTop: '1px solid #EEE' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: 900, color: '#151515', paddingTop: '12px' }}>
-                                        <span>Total</span>
-                                        <span>{formatPrice(subtotal)}</span>
+                                <form onSubmit={handleApplyCoupon} style={{ display: 'flex', gap: '8px' }}>
+                                    <input 
+                                        type="text" 
+                                        className="form-input"
+                                        placeholder="Promo code (e.g. SPEED10, TRACKDAY)"
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value)}
+                                        style={{ textTransform: 'uppercase' }}
+                                    />
+                                    <button 
+                                        type="submit" 
+                                        className="btn btn-dark"
+                                        disabled={couponLoading}
+                                    >
+                                        Apply
+                                    </button>
+                                </form>
+
+                                {couponError && (
+                                    <span style={{ fontSize: '12px', color: '#D93025' }}>{couponError}</span>
+                                )}
+
+                                {appliedCoupon && (
+                                    <span style={{ fontSize: '12px', color: '#168A35', fontWeight: 700 }}>
+                                        ✓ Coupon {appliedCoupon} applied: -{formatPrice(couponDiscount)}
+                                    </span>
+                                )}
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '16px', borderTop: '1px solid #EEE' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#666' }}>
+                                        <span>Estimated Item Subtotal</span>
+                                        <strong>{formatPrice(subtotal)}</strong>
+                                    </div>
+                                    {couponDiscount > 0 && (
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#168A35', fontWeight: 600 }}>
+                                            <span>Coupon Discount</span>
+                                            <span>-{formatPrice(couponDiscount)}</span>
+                                        </div>
+                                    )}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: 900, color: '#151515', paddingTop: '12px', borderTop: '1px solid #DCDCDC' }}>
+                                        <span>Order Total (Excl. Tax & Shipping)</span>
+                                        <span>{formatPrice(finalTotal)}</span>
                                     </div>
                                 </div>
 

@@ -6,14 +6,14 @@ import MobileBottomBar from '@/Components/MobileBottomBar';
 import CartDrawer from '@/Components/CartDrawer';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 
-export default function AppLayout({ title, children }) {
+export default function AppLayout({ title, children, showHeader = true, showFooter = true }) {
     const { flash } = usePage().props;
 
     return (
         <div className="site-wrap">
-            <Head title={title ? `${title} | Speed Autos Parts` : 'Speed Autos Parts | Performance Spare Parts'} />
+            <Head title={title ? `${title} | SPEED AUTOS PARTS` : 'SPEED AUTOS PARTS | Performance Spare Parts'} />
 
-            <Header />
+            {showHeader && <Header />}
 
             {/* Flash Toaster */}
             {flash?.success && (
@@ -58,9 +58,8 @@ export default function AppLayout({ title, children }) {
                 {children}
             </main>
 
-            <CartDrawer />
-            <MobileBottomBar />
-            <Footer />
+            {showFooter && <CartDrawer />}
+            {showFooter && <Footer />}
         </div>
     );
 }

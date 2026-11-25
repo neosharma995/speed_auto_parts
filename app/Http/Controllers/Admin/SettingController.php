@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Models\TaxClass;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,12 +14,18 @@ use Inertia\Response;
 
 class SettingController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $settingsList = Setting::all()->pluck('value', 'key')->toArray();
+        $taxClasses = TaxClass::query()
+            ->with(['rates'])
+            ->withCount('products')
+            ->get();
 
         return Inertia::render('Admin/Settings/Index', [
             'settings' => $settingsList,
+            'taxClasses' => $taxClasses,
+            'initialTab' => $request->query('tab', 'store'),
         ]);
     }
 

@@ -20,14 +20,24 @@ class ProductController extends Controller
 
     public function show(string $slug, Request $request): Response
     {
+        $aliases = [
+            'performance-summer-tire' => 'pilot-sport-5-performance-tire',
+            'high-flow-cold-air-intake-system' => 'cold-air-intake-system',
+            'track-spec-adjustable-coilover-kit' => 'b16-pss10-coilover-suspension-kit',
+        ];
+
+        $targetSlug = $aliases[$slug] ?? $slug;
+
         $product = Product::published()
-            ->where('slug', $slug)
+            ->where('slug', $targetSlug)
             ->with([
                 'brand',
                 'category',
+                'taxClass.rates',
                 'variations',
                 'attributes.values',
                 'productVehicles.vehicle',
+                'reviews' => fn ($q) => $q->orderByDesc('created_at'),
             ])
             ->firstOrFail();
 
@@ -52,6 +62,7 @@ class ProductController extends Controller
             'product' => $product,
             'variations' => $product->variations,
             'compatibleVehicles' => $product->productVehicles,
+            'reviews' => $product->reviews,
             'relatedProducts' => $relatedProducts,
             'activeVehicle' => $activeVehicle,
             'fitmentStatus' => $fitmentStatus,

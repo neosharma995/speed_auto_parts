@@ -54,13 +54,6 @@ class CheckoutController extends Controller
 
     public function validateCoupon(Request $request): JsonResponse
     {
-        if (! class_exists(Coupon::class) || ! Schema::hasTable('coupons')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Promotional coupons are not enabled.',
-            ], 422);
-        }
-
         $code = trim((string) $request->input('code'));
         $subtotal = (float) $request->input('subtotal', 0);
 
