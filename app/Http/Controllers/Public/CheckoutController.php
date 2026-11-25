@@ -238,7 +238,20 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.index')->with('error', 'Stripe payment has not been completed yet.');
         }
 
-        $order = $this->finalizeStripeOrder($sessionId, $sessionData['payment_intent'] ?? null);
+        try {
+            $order = $this->finalizeStripeOrder($sessionId, $sessionData['payment_intent'] ?? null, $sessionData);
+        } catch (\Throwable $e) {
+            Log::error('Stripe Order Finalization Error: ' . $e->getMessage(), [
+                'session_id' => $sessionId,
+                'exception' => $e,
+            ]);
+
+            return redirect()->route('checkout.index')->with(
+                'error',
+                'Your payment succeeded, but finalizing the order encountered an issue. Please contact support with reference: ' . $sessionId
+            );
+        }
+
         if (! $order) {
             return redirect()->route('checkout.index')->with('error', 'Checkout session expired. Please contact support with reference: ' . $sessionId);
         }
@@ -359,7 +372,7 @@ class CheckoutController extends Controller
         ]);
     }
 
-    private function finalizeStripeOrder(string $sessionId, ?string $paymentIntentId): ?Order
+    private function finalizeStripeOrder(string $sessionId, ?string $paymentIntentId, array $sessionData = []): ?Order
     {
         $existingOrder = Order::where('stripe_session_id', $sessionId)->first();
         if ($existingOrder) {
@@ -369,7 +382,42 @@ class CheckoutController extends Controller
         $cacheKey = 'pending_ap_stripe_' . $sessionId;
         $pendingData = Cache::get($cacheKey) ?? session()->get($cacheKey);
         if (! $pendingData) {
-            return null;
+            // Fallback for stateless/multi-container production environments when cache/session expired
+            if (empty($sessionData)) {
+                return null;
+            }
+
+            $meta = is_array($sessionData['metadata'] ?? null) ? $sessionData['metadata'] : [];
+            $amount = round(((int) ($sessionData['amount_total'] ?? 0)) / 100, 2);
+
+            $pendingData = [
+                'order_reference' => ($meta['order_reference'] ?? '') !== '' ? $meta['order_reference'] : ($sessionData['client_reference_id'] ?? null),
+                'user_id' => auth()->id(),
+                'customer_name' => $meta['customer_name'] ?? 'Stripe Customer',
+                'customer_email' => $sessionData['customer_email'] ?? 'customer@speedautosparts.ae',
+                'customer_phone' => $meta['customer_phone'] ?? 'N/A',
+                'shipping_address' => 'Dubai, UAE',
+                'apartment' => null,
+                'city' => 'Dubai',
+                'state' => 'Dubai',
+                'pincode' => '00000',
+                'country' => 'United Arab Emirates',
+                'billing_same_as_shipping' => true,
+                'billing_address' => null,
+                'billing_city' => null,
+                'billing_state' => null,
+                'billing_pincode' => null,
+                'shipping_method_title' => 'UAE Express Courier',
+                'shipping_cost' => 0.00,
+                'subtotal' => $amount,
+                'discount_amount' => 0.00,
+                'coupon_code' => null,
+                'tax_amount' => 0.00,
+                'total_amount' => $amount,
+                'currency' => strtoupper((string) ($sessionData['currency'] ?? $this->stripeService->getCurrency())),
+                'order_notes' => 'Recovered from Stripe Checkout Session',
+                'items' => [],
+            ];
         }
 
         return DB::transaction(function () use ($pendingData, $sessionId, $paymentIntentId, $cacheKey) {
@@ -410,8 +458,10 @@ class CheckoutController extends Controller
                 'paid_at' => now(),
             ]);
 
-            $this->createOrderItems($order, $pendingData['items']);
-            $this->inventoryService->deductStockForOrder($pendingData['items']);
+            if (! empty($pendingData['items'])) {
+                $this->createOrderItems($order, $pendingData['items']);
+                $this->inventoryService->deductStockForOrder($pendingData['items']);
+            }
 
             Cache::forget($cacheKey);
             session()->forget($cacheKey);
