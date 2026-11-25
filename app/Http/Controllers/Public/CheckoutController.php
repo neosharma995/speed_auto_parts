@@ -135,7 +135,7 @@ class CheckoutController extends Controller
         $validated = $this->validateCheckoutPayload($request);
 
         $user = $request->user();
-        $currencyRate = $this->getCurrencyRate();
+        ['currency' => $checkoutCurrency, 'rate' => $currencyRate] = $this->resolveCheckoutCurrencyAndRate($validated['currency'] ?? null);
         $scaledItems = $this->scaleItemsForDefaultCurrency($validated['items'], $currencyRate);
         $shippingCost = round(((float) ($validated['shipping_cost'] ?? 0)) * $currencyRate, 2);
         $discountAmount = round(((float) ($validated['discount_amount'] ?? 0)) * $currencyRate, 2);
@@ -180,6 +180,7 @@ class CheckoutController extends Controller
                 'sgst_amount' => 0.00,
                 'igst_amount' => 0.00,
                 'total_amount' => $finalTotal,
+                'currency' => $checkoutCurrency,
                 'order_notes' => $validated['order_notes'] ?? null,
                 'items' => $scaledItems,
             ];
@@ -285,12 +286,12 @@ class CheckoutController extends Controller
         $validated = $this->validateCheckoutPayload($request);
 
         $user = $request->user();
-        $currencyRate = $this->getCurrencyRate();
+        ['currency' => $checkoutCurrency, 'rate' => $currencyRate] = $this->resolveCheckoutCurrencyAndRate($validated['currency'] ?? null);
         $scaledItems = $this->scaleItemsForDefaultCurrency($validated['items'], $currencyRate);
         $shippingCost = round(((float) ($validated['shipping_cost'] ?? 0)) * $currencyRate, 2);
         $discountAmount = round(((float) ($validated['discount_amount'] ?? 0)) * $currencyRate, 2);
 
-        return DB::transaction(function () use ($validated, $scaledItems, $user, $shippingCost, $discountAmount) {
+        return DB::transaction(function () use ($validated, $scaledItems, $user, $shippingCost, $discountAmount, $checkoutCurrency) {
             $subtotal = 0.0;
             foreach ($scaledItems as $item) {
                 $subtotal += ((float) $item['price']) * ((int) $item['quantity']);
@@ -327,7 +328,7 @@ class CheckoutController extends Controller
                 'sgst_amount' => 0.00,
                 'igst_amount' => 0.00,
                 'total_amount' => $finalTotal,
-                'currency' => $this->stripeService->getCurrency(),
+                'currency' => $checkoutCurrency,
                 'payment_method' => 'cod',
                 'payment_status' => 'pending',
                 'delivery_status' => 'pending',
@@ -399,7 +400,7 @@ class CheckoutController extends Controller
                 'sgst_amount' => 0.00,
                 'igst_amount' => 0.00,
                 'total_amount' => $pendingData['total_amount'],
-                'currency' => $this->stripeService->getCurrency(),
+                'currency' => $pendingData['currency'] ?? $this->stripeService->getCurrency(),
                 'payment_method' => 'stripe',
                 'payment_status' => 'paid',
                 'delivery_status' => 'pending',
@@ -464,24 +465,69 @@ class CheckoutController extends Controller
             'coupon_code' => ['nullable', 'string', 'max:50'],
             'discount_amount' => ['nullable', 'numeric', 'min:0'],
             'order_notes' => ['nullable', 'string', 'max:1000'],
+            'currency' => ['nullable', 'string', 'max:10'],
             'items' => ['required', 'array', 'min:1'],
         ]);
     }
 
-    private function getCurrencyRate(): float
+    /**
+     * Resolve the active checkout currency and combined conversion multiplier
+     * from Admin Settings (default currency + rate) and the frontend currency switcher.
+     *
+     * @return array{currency: string, rate: float}
+     */
+    private function resolveCheckoutCurrencyAndRate(?string $requestedCurrency): array
     {
+        $defaultCode = 'AED';
+        $baseRate = 1.0;
+        $rates = [
+            'AED' => 1.0,
+            'USD' => 0.2723,
+            'EUR' => 0.2510,
+        ];
+
         try {
             if (Schema::hasTable('settings')) {
-                $rate = (float) Setting::get('currency_rate', 1.0);
-                if ($rate > 0) {
-                    return $rate;
+                $storedCode = strtoupper(trim((string) Setting::get('currency_code', 'AED')));
+                if ($storedCode !== '') {
+                    $defaultCode = $storedCode;
+                }
+
+                $storedBaseRate = (float) Setting::get('currency_rate', 1.0);
+                if ($storedBaseRate > 0) {
+                    $baseRate = $storedBaseRate;
+                }
+
+                $rawRates = Setting::get('currency_rates', '');
+                $decoded = is_array($rawRates) ? $rawRates : json_decode((string) $rawRates, true);
+                if (is_array($decoded)) {
+                    foreach ($decoded as $k => $v) {
+                        $upper = strtoupper((string) $k);
+                        $num = (float) $v;
+                        if ($num > 0 && array_key_exists($upper, $rates)) {
+                            $rates[$upper] = $num;
+                        }
+                    }
                 }
             }
         } catch (\Throwable) {
-            // Fallback to 1.0 during initial setup/migrations
+            // Fallback to defaults during initial setup/migrations
         }
 
-        return 1.0;
+        $rates[$defaultCode] = 1.0;
+
+        $selected = strtoupper(trim((string) ($requestedCurrency ?? '')));
+        if ($selected !== '' && isset($rates[$selected])) {
+            return [
+                'currency' => $selected,
+                'rate' => $baseRate * (float) $rates[$selected],
+            ];
+        }
+
+        return [
+            'currency' => $defaultCode,
+            'rate' => $baseRate,
+        ];
     }
 
     private function scaleItemsForDefaultCurrency(array $items, float $currencyRate): array
