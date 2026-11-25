@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
+import CustomerSidebar from '@/Components/CustomerSidebar';
 import { useCurrency } from '@/Context/CurrencyContext';
-import { LayoutDashboard, ShoppingBag, MapPin, Heart, LogOut, Package, Truck, ExternalLink } from 'lucide-react';
+import { Package, Truck } from 'lucide-react';
 
 export default function CustomerOrders({ orders = [] }) {
     const { formatPrice } = useCurrency();
@@ -12,31 +13,10 @@ export default function CustomerOrders({ orders = [] }) {
             <div className="customer-portal">
                 <div className="container">
                     <div className="customer-portal-layout">
-                        {/* Sidebar */}
-                        <aside className="customer-portal-sidebar">
-                            <nav className="portal-nav">
-                                <Link href="/customer/dashboard" className="portal-nav-link">
-                                    <LayoutDashboard size={18} />
-                                    <span>Dashboard Overview</span>
-                                </Link>
-                                <Link href="/customer/orders" className="portal-nav-link portal-nav-link--active">
-                                    <ShoppingBag size={18} />
-                                    <span>My Orders</span>
-                                </Link>
-                                <Link href="/customer/addresses" className="portal-nav-link">
-                                    <MapPin size={18} />
-                                    <span>Saved Addresses</span>
-                                </Link>
-                                <Link href="/customer/wishlist" className="portal-nav-link">
-                                    <Heart size={18} />
-                                    <span>My Wishlist</span>
-                                </Link>
-                                <Link href="/logout" method="post" as="button" className="portal-nav-link" style={{ width: '100%', textAlign: 'left', color: '#D93025' }}>
-                                    <LogOut size={18} />
-                                    <span>Sign Out</span>
-                                </Link>
-                            </nav>
-                        </aside>
+                        <CustomerSidebar
+                            activeTab="orders"
+                            ordersCount={orders.length}
+                        />
 
                         {/* Content */}
                         <div className="customer-portal-content">
