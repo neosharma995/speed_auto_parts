@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderStatusUpdatedMail;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -68,6 +71,14 @@ class OrderController extends Controller
             'tracking_carrier' => $validated['tracking_carrier'],
             'tracking_url' => $validated['tracking_url'],
         ]);
+
+        if (! empty($order->customer_email)) {
+            try {
+                Mail::to($order->customer_email)->send(new OrderStatusUpdatedMail($order));
+            } catch (\Throwable $e) {
+                Log::warning('Order status notification email failed: ' . $e->getMessage());
+            }
+        }
 
         return back()->with('success', "Order #{$order->order_number} status updated.");
     }

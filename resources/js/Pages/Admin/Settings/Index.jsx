@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { CURRENCY_CATALOG, formatWithSymbol, getCurrencyMeta } from '@/utils/currency';
-import { Settings, Save, CreditCard, Receipt, Plus, Coins } from 'lucide-react';
+import { Settings, Save, CreditCard, Receipt, Plus, Coins, Globe, Trash2, Edit } from 'lucide-react';
 
 const DEFAULT_STOREFRONT_RATES = {
     AED: '1',
@@ -10,8 +10,38 @@ const DEFAULT_STOREFRONT_RATES = {
     EUR: '0.2510',
 };
 
-export default function AdminSettingsIndex({ settings = {}, taxClasses = [], initialTab = 'store' }) {
-    const [activeTab, setActiveTab] = useState(initialTab === 'tax' ? 'tax' : 'store');
+const EMPTY_REGION_FORM = {
+    id: null,
+    country_code: '',
+    country_name: '',
+    currency_code: 'AED',
+    margin_percent: '0',
+    tax_rate_percent: '5',
+    flat_shipping_cost: '25',
+    free_shipping_threshold: '500',
+    min_order_amount: '0',
+    is_selling_enabled: true,
+    is_default: false,
+    notes: '',
+};
+
+export default function AdminSettingsIndex({
+    settings = {},
+    taxClasses = [],
+    regionalRules = [],
+    initialTab = 'store',
+}) {
+    const { flash, errors } = usePage().props;
+    const validTabs = ['store', 'tax', 'regional'];
+    const [activeTab, setActiveTab] = useState(validTabs.includes(initialTab) ? initialTab : 'store');
+
+    const handleSwitchTab = (nextTab) => {
+        if (!validTabs.includes(nextTab)) return;
+        setActiveTab(nextTab);
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', nextTab);
+        window.history.replaceState(window.history.state, '', url.toString());
+    };
 
     const initialCode = String(settings.currency_code || 'AED').toUpperCase();
     const initialMeta = getCurrencyMeta(initialCode);
@@ -52,6 +82,10 @@ export default function AdminSettingsIndex({ settings = {}, taxClasses = [], ini
     const [taxSlug, setTaxSlug] = useState('');
     const [ratePercent, setRatePercent] = useState('5.00');
     const [savingTax, setSavingTax] = useState(false);
+
+    // Regional Pricing & Country Rules state
+    const [regionForm, setRegionForm] = useState(EMPTY_REGION_FORM);
+    const [savingRegion, setSavingRegion] = useState(false);
 
     const handleDefaultCurrencyChange = (nextCode) => {
         const meta = getCurrencyMeta(nextCode);
@@ -119,26 +153,107 @@ export default function AdminSettingsIndex({ settings = {}, taxClasses = [], ini
         );
     };
 
+    const handleEditRegion = (rule) => {
+        setRegionForm({
+            id: rule.id,
+            country_code: rule.country_code,
+            country_name: rule.country_name,
+            currency_code: rule.currency_code || 'AED',
+            margin_percent: String(rule.margin_percent ?? 0),
+            tax_rate_percent: String(rule.tax_rate_percent ?? 5),
+            flat_shipping_cost: String(rule.flat_shipping_cost ?? 0),
+            free_shipping_threshold: String(rule.free_shipping_threshold ?? 0),
+            min_order_amount: String(rule.min_order_amount ?? 0),
+            is_selling_enabled: Boolean(rule.is_selling_enabled),
+            is_default: Boolean(rule.is_default),
+            notes: rule.notes || '',
+        });
+    };
+
+    const handleSaveRegion = (e) => {
+        e.preventDefault();
+        setSavingRegion(true);
+
+        const payload = {
+            country_code: regionForm.country_code.toUpperCase().trim(),
+            country_name: regionForm.country_name.trim(),
+            currency_code: regionForm.currency_code,
+            margin_percent: Number(regionForm.margin_percent || 0),
+            tax_rate_percent: Number(regionForm.tax_rate_percent || 0),
+            flat_shipping_cost: Number(regionForm.flat_shipping_cost || 0),
+            free_shipping_threshold: Number(regionForm.free_shipping_threshold || 0),
+            min_order_amount: Number(regionForm.min_order_amount || 0),
+            is_selling_enabled: Boolean(regionForm.is_selling_enabled),
+            is_default: Boolean(regionForm.is_default),
+            notes: regionForm.notes || null,
+        };
+
+        if (regionForm.id) {
+            router.put(`/admin/regional-pricing/${regionForm.id}`, payload, {
+                preserveScroll: true,
+                onSuccess: () => setRegionForm(EMPTY_REGION_FORM),
+                onFinish: () => setSavingRegion(false),
+            });
+        } else {
+            router.post('/admin/regional-pricing', payload, {
+                preserveScroll: true,
+                onSuccess: () => setRegionForm(EMPTY_REGION_FORM),
+                onFinish: () => setSavingRegion(false),
+            });
+        }
+    };
+
+    const handleDeleteRegion = (rule) => {
+        if (confirm(`Delete regional pricing rule for ${rule.country_name} (${rule.country_code})?`)) {
+            router.delete(`/admin/regional-pricing/${rule.id}`, { preserveScroll: true });
+        }
+    };
+
     const previewBase = 1000;
     const previewMultiplier = parseFloat(currencyRate) > 0 ? parseFloat(currencyRate) : 1;
-    const previewFormatted = formatWithSymbol(previewBase * previewMultiplier, currencySymbol, currencyLocale);
+    const previewFormatted = formatWithSymbol(previewBase * previewMultiplier, currencyCode, currencyLocale);
 
     return (
         <AdminLayout title="Settings">
+            {errors && Object.keys(errors).length > 0 && (
+                <div
+                    style={{
+                        backgroundColor: '#FFF1F2',
+                        color: '#D93025',
+                        padding: '12px 16px',
+                        borderRadius: '4px',
+                        marginBottom: '16px',
+                        fontSize: '13px',
+                    }}
+                >
+                    {Object.values(errors).map((err, idx) => (
+                        <div key={idx}>{err}</div>
+                    ))}
+                </div>
+            )}
+
             <div className="admin-card" style={{ padding: 0 }}>
                 <div className="product-form-tabs">
                     <button
                         type="button"
                         className={activeTab === 'store' ? 'active' : ''}
-                        onClick={() => setActiveTab('store')}
+                        onClick={() => handleSwitchTab('store')}
                     >
                         <Settings size={15} style={{ display: 'inline', marginRight: '6px' }} />
                         Store &amp; Currency Settings
                     </button>
                     <button
                         type="button"
+                        className={activeTab === 'regional' ? 'active' : ''}
+                        onClick={() => handleSwitchTab('regional')}
+                    >
+                        <Globe size={15} style={{ display: 'inline', marginRight: '6px' }} />
+                        Regional Pricing &amp; Country Rules ({regionalRules.length})
+                    </button>
+                    <button
+                        type="button"
                         className={activeTab === 'tax' ? 'active' : ''}
-                        onClick={() => setActiveTab('tax')}
+                        onClick={() => handleSwitchTab('tax')}
                     >
                         <Receipt size={15} style={{ display: 'inline', marginRight: '6px' }} />
                         UAE VAT &amp; Tax Settings ({taxClasses.length})
@@ -218,7 +333,8 @@ export default function AdminSettingsIndex({ settings = {}, taxClasses = [], ini
                                         </strong>
                                     </div>
                                     <p style={{ fontSize: '12px', color: '#475569', margin: 0 }}>
-                                        The Default Currency is applied across the entire Admin Dashboard, Supplier Portal, and Storefront. All product prices are automatically calculated using your base price multiplied by the Default Price Rate.
+                                        The Default Currency is applied across the entire Admin Dashboard, Supplier Portal, and Storefront.
+                                        All product prices are automatically calculated using your base price multiplied by the Default Price Rate.
                                     </p>
 
                                     <div
@@ -237,7 +353,7 @@ export default function AdminSettingsIndex({ settings = {}, taxClasses = [], ini
                                             >
                                                 {CURRENCY_CATALOG.map((c) => (
                                                     <option key={c.code} value={c.code}>
-                                                        {c.code} — {c.name} ({c.symbol})
+                                                        {c.code} — {c.name}
                                                     </option>
                                                 ))}
                                             </select>
@@ -342,11 +458,12 @@ export default function AdminSettingsIndex({ settings = {}, taxClasses = [], ini
                                     <CreditCard size={24} color="#F36B16" />
                                     <div>
                                         <strong style={{ fontSize: '13px' }}>
-                                            Stripe Payment Gateway ({currencyCode})
+                                            Stripe Payment Gateway (Dynamic AED / USD / EUR)
                                         </strong>
                                         <p style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
                                             Configured via <code>STRIPE_KEY</code>, <code>STRIPE_SECRET</code>, and{' '}
-                                            <code>STRIPE_WEBHOOK_SECRET</code> in <code>.env</code> • Checkout Sessions API &amp; Webhook Signature Verification enabled.
+                                            <code>STRIPE_WEBHOOK_SECRET</code> in <code>.env</code> • Checkout Sessions API &amp; Webhook
+                                            Signature Verification enabled.
                                         </p>
                                     </div>
                                 </div>
@@ -357,6 +474,261 @@ export default function AdminSettingsIndex({ settings = {}, taxClasses = [], ini
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    )}
+
+                    {activeTab === 'regional' && (
+                        <div
+                            style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+                                gap: '20px',
+                            }}
+                        >
+                            <div className="admin-card" style={{ marginBottom: 0 }}>
+                                <div className="admin-card-header">
+                                    <h3>
+                                        {regionForm.id
+                                            ? `Edit Country Rule (${regionForm.country_code})`
+                                            : 'Add Country Pricing, Margin & Tax Rule'}
+                                    </h3>
+                                </div>
+                                <div className="admin-card-body">
+                                    <form onSubmit={handleSaveRegion} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '10px' }}>
+                                            <div className="form-group">
+                                                <label className="form-label">ISO Code *</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-input"
+                                                    required
+                                                    maxLength={5}
+                                                    disabled={Boolean(regionForm.id)}
+                                                    placeholder="AE"
+                                                    value={regionForm.country_code}
+                                                    onChange={(e) =>
+                                                        setRegionForm({ ...regionForm, country_code: e.target.value.toUpperCase() })
+                                                    }
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Country Name *</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-input"
+                                                    required
+                                                    placeholder="United Arab Emirates"
+                                                    value={regionForm.country_name}
+                                                    onChange={(e) => setRegionForm({ ...regionForm, country_name: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+                                            <div className="form-group">
+                                                <label className="form-label">Currency *</label>
+                                                <select
+                                                    className="form-select"
+                                                    value={regionForm.currency_code}
+                                                    onChange={(e) => setRegionForm({ ...regionForm, currency_code: e.target.value })}
+                                                >
+                                                    <option value="AED">AED</option>
+                                                    <option value="USD">USD</option>
+                                                    <option value="EUR">EUR</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Margin Adj. (%)</label>
+                                                <input
+                                                    type="number"
+                                                    step="0.1"
+                                                    className="form-input"
+                                                    required
+                                                    value={regionForm.margin_percent}
+                                                    onChange={(e) => setRegionForm({ ...regionForm, margin_percent: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Tax / VAT (%)</label>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    className="form-input"
+                                                    required
+                                                    value={regionForm.tax_rate_percent}
+                                                    onChange={(e) => setRegionForm({ ...regionForm, tax_rate_percent: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+                                            <div className="form-group">
+                                                <label className="form-label">Flat Shipping</label>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    className="form-input"
+                                                    required
+                                                    value={regionForm.flat_shipping_cost}
+                                                    onChange={(e) => setRegionForm({ ...regionForm, flat_shipping_cost: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Free Ship Over</label>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    className="form-input"
+                                                    required
+                                                    value={regionForm.free_shipping_threshold}
+                                                    onChange={(e) =>
+                                                        setRegionForm({ ...regionForm, free_shipping_threshold: e.target.value })
+                                                    }
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Min Order</label>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    className="form-input"
+                                                    value={regionForm.min_order_amount}
+                                                    onChange={(e) => setRegionForm({ ...regionForm, min_order_amount: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group">
+                                            <label className="form-label">Selling Rules / Notes</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                placeholder="e.g. GCC Express Courier, VAT 15%"
+                                                value={regionForm.notes}
+                                                onChange={(e) => setRegionForm({ ...regionForm, notes: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                                            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={regionForm.is_selling_enabled}
+                                                    onChange={(e) =>
+                                                        setRegionForm({ ...regionForm, is_selling_enabled: e.target.checked })
+                                                    }
+                                                />
+                                                <span>Selling Enabled</span>
+                                            </label>
+                                            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={regionForm.is_default}
+                                                    onChange={(e) => setRegionForm({ ...regionForm, is_default: e.target.checked })}
+                                                />
+                                                <span>Default Country</span>
+                                            </label>
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            {regionForm.id && (
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline"
+                                                    onClick={() => setRegionForm(EMPTY_REGION_FORM)}
+                                                >
+                                                    Cancel Edit
+                                                </button>
+                                            )}
+                                            <button type="submit" className="btn btn-primary" disabled={savingRegion}>
+                                                <Save size={15} /> {regionForm.id ? 'Update Country Rule' : 'Save Country Rule'}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div className="admin-card" style={{ marginBottom: 0 }}>
+                                <div className="admin-card-header">
+                                    <h3>Configured Regional Pricing &amp; Selling Rules</h3>
+                                </div>
+                                <div className="admin-card-body" style={{ padding: 0, overflowX: 'auto' }}>
+                                    <table className="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Country</th>
+                                                <th>Margin / VAT</th>
+                                                <th>Shipping</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {regionalRules.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="5" style={{ textAlign: 'center', color: '#64748B', padding: '20px' }}>
+                                                        No regional pricing rules configured yet.
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                regionalRules.map((rule) => (
+                                                    <tr key={rule.id}>
+                                                        <td>
+                                                            <strong>
+                                                                {rule.country_name} ({rule.country_code})
+                                                            </strong>
+                                                            <small style={{ display: 'block', color: '#64748B' }}>
+                                                                Currency: {rule.currency_code}
+                                                                {rule.is_default ? ' • Default' : ''}
+                                                            </small>
+                                                        </td>
+                                                        <td>
+                                                            <div>Margin: {rule.margin_percent}%</div>
+                                                            <small style={{ color: '#64748B' }}>Tax/VAT: {rule.tax_rate_percent}%</small>
+                                                        </td>
+                                                        <td>
+                                                            <div>Flat: {rule.flat_shipping_cost}</div>
+                                                            <small style={{ color: '#64748B' }}>
+                                                                Free over: {rule.free_shipping_threshold}
+                                                            </small>
+                                                        </td>
+                                                        <td>
+                                                            <span
+                                                                className={`badge ${rule.is_selling_enabled ? 'badge-success' : 'badge-danger'
+                                                                    }`}
+                                                            >
+                                                                {rule.is_selling_enabled ? 'Selling On' : 'Disabled'}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div style={{ display: 'flex', gap: '6px' }}>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-outline btn-sm"
+                                                                    onClick={() => handleEditRegion(rule)}
+                                                                >
+                                                                    <Edit size={13} />
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-outline btn-sm"
+                                                                    style={{ color: '#D93025' }}
+                                                                    onClick={() => handleDeleteRegion(rule)}
+                                                                >
+                                                                    <Trash2 size={13} />
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     )}
 

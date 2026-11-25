@@ -7,7 +7,9 @@ export default function AdminCustomersIndex({ customers, filters = {} }) {
     const [search, setSearch] = useState(filters.search || '');
 
     const handleSearch = () => {
-        router.get('/admin/customers', { search }, { preserveState: true });
+        const params = {};
+        if (search && search.trim()) params.search = search.trim();
+        router.get('/admin/customers', params, { preserveState: true, replace: true });
     };
 
     const items = customers.data || [];

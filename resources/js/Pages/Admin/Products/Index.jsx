@@ -11,16 +11,42 @@ export default function AdminProductsIndex({ products, categories = [], brands =
     const [selectedCat, setSelectedCat] = useState(filters.category || '');
     const [selectedBrand, setSelectedBrand] = useState(filters.brand || '');
 
-    const handleSearch = () => {
-        router.get(
-            '/admin/products',
-            {
-                search: searchTerm,
-                category: selectedCat,
-                brand: selectedBrand,
-            },
-            { preserveState: true }
-        );
+    const hasActiveFilters = Boolean(
+        (filters.search && String(filters.search).trim() !== '') ||
+        filters.category ||
+        filters.brand
+    );
+
+    const applyFilters = (next = {}) => {
+        const nextSearch = next.search !== undefined ? next.search : searchTerm;
+        const nextCat = next.category !== undefined ? next.category : selectedCat;
+        const nextBrand = next.brand !== undefined ? next.brand : selectedBrand;
+
+        const params = {};
+        if (nextSearch && nextSearch.trim()) params.search = nextSearch.trim();
+        if (nextCat) params.category = nextCat;
+        if (nextBrand) params.brand = nextBrand;
+
+        router.get('/admin/products', params, { preserveState: true, replace: true });
+    };
+
+    const handleSearch = () => applyFilters();
+
+    const handleCategoryChange = (val) => {
+        setSelectedCat(val);
+        applyFilters({ category: val });
+    };
+
+    const handleBrandChange = (val) => {
+        setSelectedBrand(val);
+        applyFilters({ brand: val });
+    };
+
+    const handleResetFilters = () => {
+        setSearchTerm('');
+        setSelectedCat('');
+        setSelectedBrand('');
+        router.get('/admin/products', {}, { preserveState: true, replace: true });
     };
 
     const handleDelete = (id, name) => {
@@ -179,20 +205,22 @@ export default function AdminProductsIndex({ products, categories = [], brands =
                     {
                         key: 'category',
                         value: selectedCat,
-                        onChange: setSelectedCat,
+                        onChange: handleCategoryChange,
                         placeholder: 'All Categories',
                         options: categories.map((c) => ({ value: String(c.id), label: c.name })),
                     },
                     {
                         key: 'brand',
                         value: selectedBrand,
-                        onChange: setSelectedBrand,
+                        onChange: handleBrandChange,
                         placeholder: 'All Brands',
                         options: brands.map((b) => ({ value: String(b.id), label: b.name })),
                     },
                 ]}
                 onSearch={handleSearch}
                 searchButtonLabel="Filter"
+                hasActiveFilters={hasActiveFilters}
+                onReset={handleResetFilters}
                 actions={
                     <Link href="/admin/products/create" className="btn btn-primary btn-sm">
                         <Plus size={16} /> Add New Product

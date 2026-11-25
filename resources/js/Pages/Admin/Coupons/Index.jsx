@@ -46,13 +46,27 @@ export default function AdminCouponsIndex({ coupons, filters = {} }) {
         safeFilters.status
     );
 
-    const handleFilter = () => {
+    const handleFilter = (next = {}) => {
+        const nextSearch = next.search !== undefined ? next.search : search;
+        const nextType = next.type !== undefined ? next.type : typeFilter;
+        const nextStatus = next.status !== undefined ? next.status : statusFilter;
+
         const params = {};
-        if (search.trim()) params.search = search.trim();
-        if (typeFilter) params.type = typeFilter;
-        if (statusFilter) params.status = statusFilter;
+        if (nextSearch && nextSearch.trim()) params.search = nextSearch.trim();
+        if (nextType) params.type = nextType;
+        if (nextStatus) params.status = nextStatus;
 
         router.get('/admin/coupons', params, { preserveState: true, replace: true });
+    };
+
+    const handleTypeChange = (val) => {
+        setTypeFilter(val);
+        handleFilter({ type: val });
+    };
+
+    const handleStatusChange = (val) => {
+        setStatusFilter(val);
+        handleFilter({ status: val });
     };
 
     const handleResetFilters = () => {
@@ -247,7 +261,7 @@ export default function AdminCouponsIndex({ coupons, filters = {} }) {
                     {
                         key: 'type',
                         value: typeFilter,
-                        onChange: setTypeFilter,
+                        onChange: handleTypeChange,
                         placeholder: 'All Types',
                         options: [
                             { value: 'percentage', label: 'Percentage (%)' },
@@ -257,7 +271,7 @@ export default function AdminCouponsIndex({ coupons, filters = {} }) {
                     {
                         key: 'status',
                         value: statusFilter,
-                        onChange: setStatusFilter,
+                        onChange: handleStatusChange,
                         placeholder: 'All Statuses',
                         options: [
                             { value: 'active', label: 'Active' },
@@ -265,7 +279,7 @@ export default function AdminCouponsIndex({ coupons, filters = {} }) {
                         ],
                     },
                 ]}
-                onSearch={handleFilter}
+                onSearch={() => handleFilter()}
                 searchButtonLabel="Filter"
                 hasActiveFilters={hasActiveFilters}
                 onReset={handleResetFilters}

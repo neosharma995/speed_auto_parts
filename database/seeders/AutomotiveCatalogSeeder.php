@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Coupon;
@@ -16,12 +17,19 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductReview;
 use App\Models\ProductVariation;
 use App\Models\ProductVehicle;
+use App\Models\RegionalPricingRule;
 use App\Models\StockTransfer;
+use App\Models\SupplierConnector;
+use App\Models\SupplierOffer;
+use App\Models\SupplierProfile;
 use App\Models\TaxClass;
 use App\Models\TaxRate;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Services\SupplierSelectionService;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
 
 class AutomotiveCatalogSeeder extends Seeder
@@ -667,5 +675,218 @@ class AutomotiveCatalogSeeder extends Seeder
                 ]
             );
         }
+
+        // 12. Regional Pricing Rules (Country-specific margins, taxes & selling rules)
+        $regionalSeed = [
+            [
+                'country_code' => 'AE',
+                'country_name' => 'United Arab Emirates',
+                'currency_code' => 'AED',
+                'margin_percent' => 0.00,
+                'tax_rate_percent' => 5.00,
+                'flat_shipping_cost' => 25.00,
+                'free_shipping_threshold' => 500.00,
+                'min_order_amount' => 0.00,
+                'is_selling_enabled' => true,
+                'is_default' => true,
+                'notes' => 'Domestic Dubai/UAE fulfillment with 5% Federal VAT.',
+            ],
+            [
+                'country_code' => 'SA',
+                'country_name' => 'Saudi Arabia',
+                'currency_code' => 'AED',
+                'margin_percent' => 5.00,
+                'tax_rate_percent' => 15.00,
+                'flat_shipping_cost' => 65.00,
+                'free_shipping_threshold' => 1200.00,
+                'min_order_amount' => 100.00,
+                'is_selling_enabled' => true,
+                'is_default' => false,
+                'notes' => 'GCC cross-border Aramex freight with 15% KSA VAT.',
+            ],
+            [
+                'country_code' => 'US',
+                'country_name' => 'United States',
+                'currency_code' => 'USD',
+                'margin_percent' => 8.00,
+                'tax_rate_percent' => 0.00,
+                'flat_shipping_cost' => 120.00,
+                'free_shipping_threshold' => 2500.00,
+                'min_order_amount' => 150.00,
+                'is_selling_enabled' => true,
+                'is_default' => false,
+                'notes' => 'Zero-rated UAE export; DHL Express air freight.',
+            ],
+            [
+                'country_code' => 'DE',
+                'country_name' => 'Germany',
+                'currency_code' => 'EUR',
+                'margin_percent' => 6.00,
+                'tax_rate_percent' => 19.00,
+                'flat_shipping_cost' => 110.00,
+                'free_shipping_threshold' => 2200.00,
+                'min_order_amount' => 150.00,
+                'is_selling_enabled' => true,
+                'is_default' => false,
+                'notes' => 'EU import with 19% German MwSt.',
+            ],
+            [
+                'country_code' => 'GB',
+                'country_name' => 'United Kingdom',
+                'currency_code' => 'EUR',
+                'margin_percent' => 7.00,
+                'tax_rate_percent' => 20.00,
+                'flat_shipping_cost' => 115.00,
+                'free_shipping_threshold' => 2300.00,
+                'min_order_amount' => 150.00,
+                'is_selling_enabled' => true,
+                'is_default' => false,
+                'notes' => 'UK air courier with 20% VAT.',
+            ],
+        ];
+
+        foreach ($regionalSeed as $ruleData) {
+            RegionalPricingRule::updateOrCreate(
+                ['country_code' => $ruleData['country_code']],
+                $ruleData
+            );
+        }
+
+        // 13. Enrich Supplier Profiles, Seed Competing Multi-Supplier Offers & Sample B2B Connector
+        $supplierRole = Role::firstOrCreate(['name' => UserRole::Supplier->value, 'guard_name' => 'web']);
+
+        $supplier2 = User::updateOrCreate(
+            ['email' => 'gulf.supplier@autosparts.com'],
+            [
+                'name' => 'Rami Al Khoury',
+                'company_name' => 'Gulf Performance Parts Trading LLC',
+                'phone' => '+971 4 512 0099',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'status' => 'active',
+            ]
+        );
+        $supplier2->syncRoles([$supplierRole]);
+
+        if ($supplier) {
+            SupplierProfile::updateOrCreate(
+                ['user_id' => $supplier->id],
+                [
+                    'approval_status' => 'approved',
+                    'approved_at' => now()->subDays(14),
+                    'country_code' => 'AE',
+                    'country_name' => 'United Arab Emirates',
+                    'tax_id' => 'TRN-100294857100003',
+                    'registration_number' => 'DED-DXB-882419',
+                    'website' => 'https://apexmotorsport.ae',
+                    'address' => 'Warehouse 12, Al Quoz Industrial Area 3, Dubai, UAE',
+                    'secondary_contact_name' => 'Nadia Haddad',
+                    'secondary_contact_email' => 'orders@apexmotorsport.ae',
+                    'secondary_contact_phone' => '+971 50 512 0014',
+                    'payment_terms' => 'Net 30',
+                    'default_discount_percent' => 5.00,
+                    'minimum_order_value' => 500.00,
+                    'currency_code' => 'AED',
+                    'commercial_conditions' => '5% volume rebate on monthly orders over AED 25,000.',
+                    'shipping_methods' => 'Dubai Same-Day Van, Aramex UAE',
+                    'default_shipping_cost' => 20.00,
+                    'lead_time_days' => 2,
+                    'return_policy' => '30-day unopened return with 5% restocking waiver for defective parts.',
+                    'warranty_terms' => '12-month manufacturer direct replacement warranty.',
+                    'reliability_score' => 92.50,
+                    'priority_rank' => 15,
+                    'is_preferred' => true,
+                ]
+            );
+        }
+
+        SupplierProfile::updateOrCreate(
+            ['user_id' => $supplier2->id],
+            [
+                'approval_status' => 'approved',
+                'approved_at' => now()->subDays(7),
+                'country_code' => 'AE',
+                'country_name' => 'United Arab Emirates',
+                'tax_id' => 'TRN-100482910300003',
+                'registration_number' => 'JAFZA-991042',
+                'website' => 'https://gulfperformance.ae',
+                'address' => 'Jebel Ali Free Zone South, Plot S204, Dubai, UAE',
+                'secondary_contact_name' => 'Karim Mansour',
+                'secondary_contact_email' => 'b2b@gulfperformance.ae',
+                'secondary_contact_phone' => '+971 55 881 2201',
+                'payment_terms' => 'Net 45',
+                'default_discount_percent' => 8.00,
+                'minimum_order_value' => 1000.00,
+                'currency_code' => 'AED',
+                'commercial_conditions' => '8% partner trade discount; consolidated container freight.',
+                'shipping_methods' => 'DHL Express, JAFZA Fleet',
+                'default_shipping_cost' => 35.00,
+                'lead_time_days' => 4,
+                'return_policy' => '14-day RMA for sealed items.',
+                'warranty_terms' => '24-month OEM warranty on performance hardware.',
+                'reliability_score' => 86.00,
+                'priority_rank' => 30,
+                'is_preferred' => false,
+            ]
+        );
+
+        // Seed competing multi-supplier offers for published catalog products
+        $publishedProducts = Product::where('status', 'published')->take(5)->get();
+        foreach ($publishedProducts as $idx => $prod) {
+            $base = (float) $prod->base_price;
+
+            if ($supplier) {
+                SupplierOffer::updateOrCreate(
+                    ['product_id' => $prod->id, 'supplier_id' => $supplier->id],
+                    [
+                        'supplier_sku' => 'APEX-' . $prod->sku,
+                        'purchase_price' => round($base * 0.64, 2),
+                        'currency_code' => 'AED',
+                        'stock_quantity' => 35 + ($idx * 5),
+                        'preparation_days' => 1,
+                        'delivery_days' => 1,
+                        'shipping_cost' => 20.00,
+                        'commercial_discount_percent' => 5.00,
+                        'commercial_terms' => 'Net 30 • 5% Trade Rebate',
+                        'reliability_score' => 92.50,
+                        'is_active' => true,
+                        'last_synced_at' => now(),
+                    ]
+                );
+            }
+
+            SupplierOffer::updateOrCreate(
+                ['product_id' => $prod->id, 'supplier_id' => $supplier2->id],
+                [
+                    'supplier_sku' => 'GULF-' . $prod->sku,
+                    'purchase_price' => round($base * ($idx % 2 === 0 ? 0.59 : 0.68), 2),
+                    'currency_code' => 'AED',
+                    'stock_quantity' => 60,
+                    'preparation_days' => 1,
+                    'delivery_days' => 3,
+                    'shipping_cost' => 35.00,
+                    'commercial_discount_percent' => 8.00,
+                    'commercial_terms' => 'Net 45 • 8% Partner Discount',
+                    'reliability_score' => 86.00,
+                    'is_active' => true,
+                    'last_synced_at' => now(),
+                ]
+            );
+        }
+
+        SupplierConnector::updateOrCreate(
+            ['supplier_id' => $supplier2->id, 'name' => 'Gulf Performance B2B Sandbox API'],
+            [
+                'driver' => 'mock_b2b',
+                'endpoint_url' => 'https://api.gulfperformance.ae/v2/b2b/offers',
+                'auth_type' => 'bearer',
+                'sync_frequency' => 'daily',
+                'is_active' => true,
+                'last_status' => 'connected',
+                'last_message' => 'Authorized B2B sandbox connector ready for sync.',
+            ]
+        );
+
+        app(SupplierSelectionService::class)->recalculateAll();
     }
 }

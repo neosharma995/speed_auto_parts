@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\RegionalPricingRule;
 use App\Models\Setting;
 use App\Models\TaxClass;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,9 +24,14 @@ class SettingController extends Controller
             ->withCount('products')
             ->get();
 
+        $regionalRules = Schema::hasTable('regional_pricing_rules')
+            ? RegionalPricingRule::orderByDesc('is_default')->orderBy('country_name')->get()
+            : collect();
+
         return Inertia::render('Admin/Settings/Index', [
             'settings' => $settingsList,
             'taxClasses' => $taxClasses,
+            'regionalRules' => $regionalRules,
             'initialTab' => $request->query('tab', 'store'),
         ]);
     }

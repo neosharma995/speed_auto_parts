@@ -11,16 +11,42 @@ export default function AdminOrdersIndex({ orders, filters = {} }) {
     const [selectedStatus, setSelectedStatus] = useState(filters.status || '');
     const [selectedPayment, setSelectedPayment] = useState(filters.payment || '');
 
-    const handleSearch = () => {
-        router.get(
-            '/admin/orders',
-            {
-                search: searchTerm,
-                status: selectedStatus,
-                payment: selectedPayment,
-            },
-            { preserveState: true }
-        );
+    const hasActiveFilters = Boolean(
+        (filters.search && String(filters.search).trim() !== '') ||
+        filters.status ||
+        filters.payment
+    );
+
+    const applyFilters = (next = {}) => {
+        const nextSearch = next.search !== undefined ? next.search : searchTerm;
+        const nextStatus = next.status !== undefined ? next.status : selectedStatus;
+        const nextPayment = next.payment !== undefined ? next.payment : selectedPayment;
+
+        const params = {};
+        if (nextSearch && nextSearch.trim()) params.search = nextSearch.trim();
+        if (nextStatus) params.status = nextStatus;
+        if (nextPayment) params.payment = nextPayment;
+
+        router.get('/admin/orders', params, { preserveState: true, replace: true });
+    };
+
+    const handleSearch = () => applyFilters();
+
+    const handleStatusChange = (val) => {
+        setSelectedStatus(val);
+        applyFilters({ status: val });
+    };
+
+    const handlePaymentChange = (val) => {
+        setSelectedPayment(val);
+        applyFilters({ payment: val });
+    };
+
+    const handleResetFilters = () => {
+        setSearchTerm('');
+        setSelectedStatus('');
+        setSelectedPayment('');
+        router.get('/admin/orders', {}, { preserveState: true, replace: true });
     };
 
     const items = orders.data || [];
@@ -97,7 +123,7 @@ export default function AdminOrdersIndex({ orders, filters = {} }) {
                     {
                         key: 'status',
                         value: selectedStatus,
-                        onChange: setSelectedStatus,
+                        onChange: handleStatusChange,
                         placeholder: 'All Fulfillment Statuses',
                         options: [
                             { value: 'pending', label: 'Pending' },
@@ -110,7 +136,7 @@ export default function AdminOrdersIndex({ orders, filters = {} }) {
                     {
                         key: 'payment',
                         value: selectedPayment,
-                        onChange: setSelectedPayment,
+                        onChange: handlePaymentChange,
                         placeholder: 'All Payment Statuses',
                         options: [
                             { value: 'paid', label: 'Paid' },
@@ -120,6 +146,8 @@ export default function AdminOrdersIndex({ orders, filters = {} }) {
                     },
                 ]}
                 onSearch={handleSearch}
+                hasActiveFilters={hasActiveFilters}
+                onReset={handleResetFilters}
                 columns={columns}
                 rows={items}
                 emptyMessage="No orders found."
