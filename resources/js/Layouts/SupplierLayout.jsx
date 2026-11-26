@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import SupplierSidebar from '@/Components/Supplier/SupplierSidebar';
-import { CheckCircle2, AlertCircle, ChevronDown, LogOut, Menu, User } from 'lucide-react';
+import FlashToast from '@/Components/Common/FlashToast';
+import { ChevronDown, LogOut, Menu, User } from 'lucide-react';
 
 export default function SupplierLayout({ title = 'Supplier Portal', children }) {
-    const { auth, flash } = usePage().props;
+    const { auth } = usePage().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
@@ -120,43 +121,7 @@ export default function SupplierLayout({ title = 'Supplier Portal', children }) 
                     </div>
                 </header>
 
-                {flash?.success && (
-                    <div
-                        style={{
-                            backgroundColor: '#ECFDF5',
-                            color: '#059669',
-                            borderBottom: '1px solid #A7F3D0',
-                            padding: '12px 24px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            fontSize: '13px',
-                            fontWeight: 600,
-                        }}
-                    >
-                        <CheckCircle2 size={16} />
-                        <span>{flash.success}</span>
-                    </div>
-                )}
-
-                {flash?.error && (
-                    <div
-                        style={{
-                            backgroundColor: '#FFF1F2',
-                            color: '#E11D48',
-                            borderBottom: '1px solid #FECDD3',
-                            padding: '12px 24px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            fontSize: '13px',
-                            fontWeight: 600,
-                        }}
-                    >
-                        <AlertCircle size={16} />
-                        <span>{flash.error}</span>
-                    </div>
-                )}
+                <FlashToast />
 
                 <div className="admin-shell-main-body">{children}</div>
             </div>

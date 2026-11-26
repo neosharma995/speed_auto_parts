@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { useCart } from '@/Context/CartContext';
 import { useCurrency } from '@/Context/CurrencyContext';
@@ -17,12 +17,23 @@ const UAE_EMIRATES = [
 ];
 
 export default function Checkout({ savedAddresses = [], user = null }) {
+    const { regionalRules = [] } = usePage().props;
     const { cartItems, subtotal, clearCart } = useCart();
     const { formatPrice, activeCurrency } = useCurrency();
 
     const defaultAddr = savedAddresses.find((a) => a.is_default) || savedAddresses[0] || null;
+    const defaultRegion = regionalRules.find((r) => r.is_default) || regionalRules[0] || {
+        country_code: 'AE',
+        country_name: 'United Arab Emirates',
+        tax_rate_percent: 5,
+        flat_shipping_cost: 0,
+        free_shipping_threshold: 500,
+    };
 
-    // Customer & Shipping Info (Dubai / UAE)
+    // Customer & Shipping Info (Regional Country Support)
+    const [countryCode, setCountryCode] = useState(defaultRegion.country_code || 'AE');
+    const selectedRegion =
+        regionalRules.find((r) => r.country_code === countryCode) || defaultRegion;
     const [name, setName] = useState(user?.name || defaultAddr?.full_name || '');
     const [email, setEmail] = useState(user?.email || '');
     const [phone, setPhone] = useState(user?.phone || defaultAddr?.phone || '');
@@ -39,9 +50,11 @@ export default function Checkout({ savedAddresses = [], user = null }) {
     const [billingState] = useState('');
     const [billingPincode] = useState('');
 
-    // Shipping Method
-    const [shippingCost] = useState(0);
-    const shippingMethodTitle = `UAE Express Courier (Free over ${formatPrice(500)})`;
+    // Shipping Method (dynamically updated from regional pricing rule)
+    const [shippingCost, setShippingCost] = useState(0);
+    const shippingMethodTitle = `${selectedRegion.country_name || 'UAE'} Express Courier (Free over ${formatPrice(
+        Number(selectedRegion.free_shipping_threshold || 500)
+    )})`;
 
     // Coupon
     const [couponCode, setCouponCode] = useState('');
@@ -53,11 +66,12 @@ export default function Checkout({ savedAddresses = [], user = null }) {
     const [paymentMethod, setPaymentMethod] = useState('stripe');
     const [orderNotes, setOrderNotes] = useState('');
 
-    // Dynamic UAE VAT Calculation state
+    // Dynamic Country VAT / Tax & Shipping Calculation state
     const [taxData, setTaxData] = useState({
         tax_amount: 0,
         vat_amount: 0,
-        tax_rate_percent: 5,
+        tax_rate_percent: Number(selectedRegion.tax_rate_percent ?? 5),
+        country_name: selectedRegion.country_name || 'United Arab Emirates',
     });
     const [processingOrder, setProcessingOrder] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -69,16 +83,20 @@ export default function Checkout({ savedAddresses = [], user = null }) {
             .post('/api/checkout/calculate-tax', {
                 items: cartItems,
                 customer_state: state,
+                country_code: countryCode,
             })
             .then((res) => {
                 if (res.data.success) {
                     setTaxData(res.data);
+                    if (res.data.shipping_cost !== undefined) {
+                        setShippingCost(Number(res.data.shipping_cost || 0));
+                    }
                 }
             })
             .catch((err) => {
                 console.error('VAT calculation error', err);
             });
-    }, [cartItems, state]);
+    }, [cartItems, state, countryCode]);
 
     const handleApplyCoupon = async (e) => {
         e.preventDefault();
@@ -277,14 +295,35 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                 </div>
                             </div>
 
-                            {/* Step 2: Shipping Address (UAE) */}
+                            {/* Step 2: Shipping Address */}
                             <div className="checkout-page-form-section">
                                 <h2 className="section-title">
                                     <span className="step-num">2</span>
-                                    <span>Shipping Address (United Arab Emirates)</span>
+                                    <span>Shipping Address ({selectedRegion.country_name || 'United Arab Emirates'})</span>
                                 </h2>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
+                                    {regionalRules.length > 0 && (
+                                        <div className="form-group">
+                                            <label className="form-label">
+                                                Destination Country <span className="required">*</span>
+                                            </label>
+                                            <select
+                                                className="form-select"
+                                                value={countryCode}
+                                                onChange={(e) => setCountryCode(e.target.value)}
+                                            >
+                                                {regionalRules
+                                                    .filter((r) => r.is_selling_enabled)
+                                                    .map((r) => (
+                                                        <option key={r.country_code} value={r.country_code}>
+                                                            {r.country_name} ({r.country_code}) — VAT/Tax {r.tax_rate_percent}%
+                                                        </option>
+                                                    ))}
+                                            </select>
+                                        </div>
+                                    )}
+
                                     <div className="form-group">
                                         <label className="form-label">
                                             Street / Building / Villa &amp; Area <span className="required">*</span>
@@ -480,12 +519,14 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                 )}
 
                                 <div className="total-row">
-                                    <span>Shipping</span>
-                                    <span>{shippingCost === 0 ? 'FREE UAE Delivery' : formatPrice(shippingCost)}</span>
+                                    <span>Shipping ({selectedRegion.country_code || 'AE'})</span>
+                                    <span>{shippingCost === 0 ? 'FREE Delivery' : formatPrice(shippingCost)}</span>
                                 </div>
 
                                 <div className="total-row">
-                                    <span>UAE VAT ({taxData.tax_rate_percent ?? 5}%)</span>
+                                    <span>
+                                        {selectedRegion.country_code || 'AE'} VAT / Tax ({taxData.tax_rate_percent ?? 5}%)
+                                    </span>
                                     <span>{formatPrice(taxData.tax_amount || 0)}</span>
                                 </div>
 

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class Product extends Model
@@ -110,6 +111,16 @@ class Product extends Model
     public function stockTransfers(): HasMany
     {
         return $this->hasMany(StockTransfer::class);
+    }
+
+    public function supplierOffers(): HasMany
+    {
+        return $this->hasMany(SupplierOffer::class);
+    }
+
+    public function selectedSupplierOffer(): HasOne
+    {
+        return $this->hasOne(SupplierOffer::class)->where('is_selected', true);
     }
 
     public function variations(): HasMany

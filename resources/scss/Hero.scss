@@ -131,8 +131,16 @@
       margin: 2px 0;
     }
 
-    @include respond-to('xl') {
+    @include respond-to('lg') {
       font-size: 56px;
+    }
+
+    @include respond-to('xl') {
+      font-size: 68px;
+    }
+
+    @include respond-to('2xl') {
+      font-size: 76px;
     }
 
     .heading-white {

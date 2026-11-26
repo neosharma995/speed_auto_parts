@@ -39,13 +39,27 @@ export default function AdminVehiclesIndex({ vehicles, makes = [], years = [], f
         filters?.year
     );
 
-    const handleFilter = () => {
+    const handleFilter = (next = {}) => {
+        const nextSearch = next.search !== undefined ? next.search : search;
+        const nextMake = next.make !== undefined ? next.make : makeFilter;
+        const nextYear = next.year !== undefined ? next.year : yearFilter;
+
         const params = {};
-        if (search.trim()) params.search = search.trim();
-        if (makeFilter) params.make = makeFilter;
-        if (yearFilter) params.year = yearFilter;
+        if (nextSearch && nextSearch.trim()) params.search = nextSearch.trim();
+        if (nextMake) params.make = nextMake;
+        if (nextYear) params.year = nextYear;
 
         router.get('/admin/vehicles', params, { preserveState: true, replace: true });
+    };
+
+    const handleMakeChange = (val) => {
+        setMakeFilter(val);
+        handleFilter({ make: val });
+    };
+
+    const handleYearChange = (val) => {
+        setYearFilter(val);
+        handleFilter({ year: val });
     };
 
     const handleResetFilters = () => {
@@ -212,19 +226,19 @@ export default function AdminVehiclesIndex({ vehicles, makes = [], years = [], f
                     {
                         key: 'make',
                         value: makeFilter,
-                        onChange: setMakeFilter,
+                        onChange: handleMakeChange,
                         placeholder: 'All Makes',
                         options: makes.map((m) => ({ value: m, label: m })),
                     },
                     {
                         key: 'year',
                         value: yearFilter,
-                        onChange: setYearFilter,
+                        onChange: handleYearChange,
                         placeholder: 'All Years',
                         options: years.map((y) => ({ value: String(y), label: String(y) })),
                     },
                 ]}
-                onSearch={handleFilter}
+                onSearch={() => handleFilter()}
                 searchButtonLabel="Filter"
                 hasActiveFilters={hasActiveFilters}
                 onReset={handleResetFilters}

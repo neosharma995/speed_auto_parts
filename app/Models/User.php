@@ -8,6 +8,7 @@ use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -117,6 +118,31 @@ class User extends Authenticatable
     public function stockTransfers(): HasMany
     {
         return $this->hasMany(StockTransfer::class, 'supplier_id');
+    }
+
+    public function supplierProfile(): HasOne
+    {
+        return $this->hasOne(SupplierProfile::class, 'user_id');
+    }
+
+    public function supplierDocuments(): HasMany
+    {
+        return $this->hasMany(SupplierDocument::class, 'supplier_id');
+    }
+
+    public function supplierOffers(): HasMany
+    {
+        return $this->hasMany(SupplierOffer::class, 'supplier_id');
+    }
+
+    public function supplierConnectors(): HasMany
+    {
+        return $this->hasMany(SupplierConnector::class, 'supplier_id');
+    }
+
+    public function supplierImportLogs(): HasMany
+    {
+        return $this->hasMany(SupplierImportLog::class, 'supplier_id');
     }
 
     public function updateProfile(array $attributes): void

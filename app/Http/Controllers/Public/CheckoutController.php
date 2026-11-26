@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderConfirmationMail;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Setting;
 use App\Services\InventoryService;
+use App\Services\RegionalPricingService;
 use App\Services\StripeService;
 use App\Services\TaxCalculationService;
 use Exception;
@@ -19,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -31,7 +34,8 @@ class CheckoutController extends Controller
     public function __construct(
         protected StripeService $stripeService,
         protected TaxCalculationService $taxService,
-        protected InventoryService $inventoryService
+        protected InventoryService $inventoryService,
+        protected RegionalPricingService $regionalPricingService
     ) {}
 
     public function index(Request $request): Response
@@ -119,14 +123,46 @@ class CheckoutController extends Controller
         $validated = $request->validate([
             'items' => ['required', 'array'],
             'customer_state' => ['nullable', 'string'],
+            'country_code' => ['nullable', 'string', 'max:5'],
         ]);
+
+        $countryCode = strtoupper(trim((string) ($validated['country_code'] ?? 'AE')));
+        if ($countryCode !== '' && $countryCode !== 'AE') {
+            $subtotal = 0.0;
+            foreach ($validated['items'] as $item) {
+                $subtotal += ((float) ($item['price'] ?? 0)) * ((int) ($item['quantity'] ?? 1));
+            }
+            $regional = $this->regionalPricingService->calculateForCountry(round($subtotal, 2), $countryCode);
+
+            return response()->json([
+                'success' => true,
+                'tax_amount' => $regional['tax_amount'],
+                'vat_amount' => $regional['tax_amount'],
+                'tax_rate_percent' => $regional['tax_rate_percent'],
+                'shipping_cost' => $regional['shipping_cost'],
+                'margin_percent' => $regional['margin_percent'],
+                'country_code' => $regional['country_code'],
+                'country_name' => $regional['country_name'],
+                'is_selling_enabled' => $regional['is_selling_enabled'],
+            ]);
+        }
 
         $emirate = $validated['customer_state'] ?? 'Dubai';
         $taxData = $this->taxService->calculate($validated['items'], $emirate);
+        $subtotal = 0.0;
+        foreach ($validated['items'] as $item) {
+            $subtotal += ((float) ($item['price'] ?? 0)) * ((int) ($item['quantity'] ?? 1));
+        }
+        $regional = $this->regionalPricingService->calculateForCountry(round($subtotal, 2), 'AE');
 
         return response()->json([
             'success' => true,
             ...$taxData,
+            'shipping_cost' => $regional['shipping_cost'],
+            'margin_percent' => $regional['margin_percent'],
+            'country_code' => $regional['country_code'],
+            'country_name' => $regional['country_name'],
+            'is_selling_enabled' => $regional['is_selling_enabled'],
         ]);
     }
 
@@ -353,6 +389,8 @@ class CheckoutController extends Controller
 
             session()->forget('cart');
 
+            $this->sendOrderConfirmationEmail($order);
+
             return response()->json([
                 'success' => true,
                 'order_number' => $order->order_number,
@@ -466,8 +504,25 @@ class CheckoutController extends Controller
             Cache::forget($cacheKey);
             session()->forget($cacheKey);
 
+            $this->sendOrderConfirmationEmail($order);
+
             return $order;
         });
+    }
+
+    private function sendOrderConfirmationEmail(Order $order): void
+    {
+        if (empty($order->customer_email)) {
+            return;
+        }
+
+        try {
+            Mail::to($order->customer_email)->send(new OrderConfirmationMail($order));
+        } catch (\Throwable $e) {
+            Log::warning('Order confirmation email failed: ' . $e->getMessage(), [
+                'order_number' => $order->order_number,
+            ]);
+        }
     }
 
     private function createOrderItems(Order $order, array $items): void

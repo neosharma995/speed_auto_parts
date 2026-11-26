@@ -6,12 +6,15 @@ namespace App\Http\Controllers\Auth;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Mail\CustomerWelcomeMail;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -46,6 +49,12 @@ class RegisteredUserController extends Controller
         $user->assignRole($customerRole);
 
         event(new Registered($user));
+
+        try {
+            Mail::to($user->email)->send(new CustomerWelcomeMail($user));
+        } catch (\Throwable $e) {
+            Log::warning('Customer welcome email failed: ' . $e->getMessage());
+        }
 
         Auth::login($user);
 

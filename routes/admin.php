@@ -12,10 +12,12 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\RegionalPricingController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RolePermissionController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\SupplierOfferController;
 use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\Admin\WarehouseController;
@@ -38,12 +40,33 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
     });
 
-    // Supply Chain: Suppliers Management
+    // Supply Chain: Suppliers Management, Offers Comparison, Catalog Import & B2B Connectors
     Route::middleware('role_or_permission:admin|manage suppliers')->group(function () {
         Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
         Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
         Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
         Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+        Route::post('/suppliers/{supplier}/approve', [SupplierController::class, 'approve'])->name('suppliers.approve');
+        Route::post('/suppliers/{supplier}/reject', [SupplierController::class, 'reject'])->name('suppliers.reject');
+        Route::post('/suppliers/{supplier}/documents', [SupplierController::class, 'uploadDocument'])->name('suppliers.documents.store');
+        Route::delete('/suppliers/documents/{document}', [SupplierController::class, 'deleteDocument'])->name('suppliers.documents.destroy');
+
+        // Multi-Supplier Offers, Auto-Selection Rules & Manual Override
+        Route::post('/suppliers/offers', [SupplierOfferController::class, 'store'])->name('suppliers.offers.store');
+        Route::delete('/suppliers/offers/{offer}', [SupplierOfferController::class, 'destroy'])->name('suppliers.offers.destroy');
+        Route::post('/suppliers/selection-rules', [SupplierOfferController::class, 'saveRules'])->name('suppliers.selection-rules.save');
+        Route::post('/suppliers/offers/{product}/{offer}/override', [SupplierOfferController::class, 'override'])->name('suppliers.offers.override');
+        Route::post('/suppliers/offers/{product}/clear-override', [SupplierOfferController::class, 'clearOverride'])->name('suppliers.offers.clear-override');
+
+        // Catalog Import (CSV, XML, Excel)
+        Route::post('/suppliers/import', [SupplierOfferController::class, 'import'])->name('suppliers.import');
+        Route::get('/suppliers/import-template/{format}', [SupplierOfferController::class, 'downloadTemplate'])->name('suppliers.import-template');
+
+        // Supplier B2B API Connectors
+        Route::post('/suppliers/connectors', [SupplierOfferController::class, 'storeConnector'])->name('suppliers.connectors.store');
+        Route::delete('/suppliers/connectors/{connector}', [SupplierOfferController::class, 'destroyConnector'])->name('suppliers.connectors.destroy');
+        Route::post('/suppliers/connectors/{connector}/test', [SupplierOfferController::class, 'testConnector'])->name('suppliers.connectors.test');
+        Route::post('/suppliers/connectors/{connector}/sync', [SupplierOfferController::class, 'syncConnector'])->name('suppliers.connectors.sync');
     });
 
     // Supply Chain: Shared Supplier Incoming Lots & Warehouse Logs
@@ -141,11 +164,14 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         Route::delete('/roles/staff/{staff}', [RolePermissionController::class, 'destroyStaff'])->name('roles.staff.destroy');
     });
 
-    // Store & GST Tax Settings
+    // Store, UAE VAT Tax & Regional Pricing Settings
     Route::middleware('role_or_permission:admin|manage settings')->group(function () {
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'store'])->name('settings.store');
         Route::get('/taxes', [TaxController::class, 'index'])->name('taxes.index');
         Route::post('/taxes', [TaxController::class, 'store'])->name('taxes.store');
+        Route::post('/regional-pricing', [RegionalPricingController::class, 'store'])->name('regional-pricing.store');
+        Route::put('/regional-pricing/{rule}', [RegionalPricingController::class, 'update'])->name('regional-pricing.update');
+        Route::delete('/regional-pricing/{rule}', [RegionalPricingController::class, 'destroy'])->name('regional-pricing.destroy');
     });
 });

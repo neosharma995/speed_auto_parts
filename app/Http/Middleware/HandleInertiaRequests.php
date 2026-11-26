@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\RegionalPricingRule;
 use App\Models\Setting;
 use App\Models\StockTransfer;
 use App\Models\Wishlist;
@@ -121,9 +122,9 @@ class HandleInertiaRequests extends Middleware
                 }
 
                 $currencyCode = strtoupper((string) ($db['currency_code'] ?? 'AED'));
-                $currencySymbol = (string) ($db['currency_symbol'] ?? ($currencyCode === 'AED' ? 'د.إ' : $currencyCode));
-                if ($currencyCode === 'AED' && ($currencySymbol === 'AED' || empty($currencySymbol))) {
-                    $currencySymbol = 'د.إ';
+                $currencySymbol = (string) ($db['currency_symbol'] ?? $currencyCode);
+                if (empty($currencySymbol) || $currencySymbol === 'د.إ') {
+                    $currencySymbol = $currencyCode;
                 }
                 $currencyLocale = (string) ($db['currency_locale'] ?? ($currencyCode === 'AED' ? 'en-AE' : 'en-US'));
                 $currencyRate = (float) ($db['currency_rate'] ?? 1.0);
@@ -145,6 +146,26 @@ class HandleInertiaRequests extends Middleware
                     'currency_rate' => $currencyRate,
                     'currency_rates' => $rates,
                 ];
+            },
+            'regionalRules' => function () {
+                if (! Schema::hasTable('regional_pricing_rules')) {
+                    return [];
+                }
+
+                return RegionalPricingRule::where('is_selling_enabled', true)
+                    ->orderByDesc('is_default')
+                    ->orderBy('country_name')
+                    ->get([
+                        'country_code',
+                        'country_name',
+                        'currency_code',
+                        'margin_percent',
+                        'tax_rate_percent',
+                        'flat_shipping_cost',
+                        'free_shipping_threshold',
+                        'min_order_amount',
+                        'is_default',
+                    ]);
             },
         ];
     }
