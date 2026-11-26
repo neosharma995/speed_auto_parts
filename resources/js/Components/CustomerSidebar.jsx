@@ -10,6 +10,7 @@ import {
     ChevronLeft,
     X,
 } from 'lucide-react';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function CustomerSidebar({
     activeTab = 'dashboard',
@@ -18,6 +19,7 @@ export default function CustomerSidebar({
     wishlistCount: propWishlistCount = null,
 }) {
     const { auth, wishlistCount: sharedWishlistCount } = usePage().props;
+    const { t } = useLanguage();
     const [mobileModalOpen, setMobileModalOpen] = useState(false);
 
     const user = propUser || auth?.user;
@@ -35,29 +37,29 @@ export default function CustomerSidebar({
         {
             key: 'dashboard',
             href: '/customer/dashboard',
-            label: 'Dashboard Overview',
-            mobileLabel: 'Dashboard',
+            label: t('cust_dashboard_overview'),
+            mobileLabel: t('cust_dashboard_short'),
             icon: LayoutDashboard,
         },
         {
             key: 'orders',
             href: '/customer/orders',
-            label: ordersCount !== null ? `My Orders (${ordersCount})` : 'My Orders',
-            mobileLabel: ordersCount !== null ? `Orders (${ordersCount})` : 'My Orders',
+            label: ordersCount !== null ? `${t('cust_my_orders')} (${ordersCount})` : t('cust_my_orders'),
+            mobileLabel: ordersCount !== null ? `${t('cust_orders_short')} (${ordersCount})` : t('cust_my_orders'),
             icon: ShoppingBag,
         },
         {
             key: 'addresses',
             href: '/customer/addresses',
-            label: 'Saved Addresses',
-            mobileLabel: 'Saved Addresses',
+            label: t('cust_saved_addresses'),
+            mobileLabel: t('cust_saved_addresses'),
             icon: MapPin,
         },
         {
             key: 'wishlist',
             href: '/customer/wishlist',
-            label: wishlistCount !== undefined && wishlistCount !== null ? `My Wishlist (${wishlistCount})` : 'My Wishlist',
-            mobileLabel: wishlistCount !== undefined && wishlistCount !== null ? `Wishlist (${wishlistCount})` : 'My Wishlist',
+            label: wishlistCount !== undefined && wishlistCount !== null ? `${t('cust_my_wishlist')} (${wishlistCount})` : t('cust_my_wishlist'),
+            mobileLabel: wishlistCount !== undefined && wishlistCount !== null ? `${t('mob_wishlist')} (${wishlistCount})` : t('cust_my_wishlist'),
             icon: Heart,
         },
     ];
