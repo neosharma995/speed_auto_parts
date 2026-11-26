@@ -599,6 +599,7 @@ export default function ProductShow({
                                                     <td><strong>{item.vehicle?.year}</strong></td>
                                                     <td>{item.vehicle?.make} {item.vehicle?.model}</td>
                                                     <td>{item.vehicle?.engine}</td>
+                                                    <td>{item.notes || t('pdp_direct_oem')}</td>
                                                     <td>{item.notes ? translateTerm(item.notes) : t('pdp_direct_oem')}</td>
                                                 </tr>
                                             ))
