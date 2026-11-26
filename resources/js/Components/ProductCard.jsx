@@ -3,11 +3,13 @@ import { Link } from '@inertiajs/react';
 import { Star, ShoppingCart, Heart, Check, ChevronDown } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useCurrency } from '@/Context/CurrencyContext';
+import { useLanguage } from '@/Context/LanguageContext';
 import { useWishlist } from '@/Context/WishlistContext';
 
 export default function ProductCard({ product }) {
     const { addToCart } = useCart();
     const { formatPrice } = useCurrency();
+    const { t } = useLanguage();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const [quantity, setQuantity] = useState(1);
     const [added, setAdded] = useState(false);
@@ -99,7 +101,7 @@ export default function ProductCard({ product }) {
                 {/* Stock Status */}
                 <div className="product-card-stock">
                     <span className="stock-dot">●</span>
-                    <span className="stock-text">{inStock ? 'In Stock' : 'Out of Stock'}</span>
+                    <span className="stock-text">{inStock ? t('in_stock') : t('out_of_stock')}</span>
                 </div>
 
                 {/* Price */}
@@ -140,11 +142,11 @@ export default function ProductCard({ product }) {
                 >
                     {added ? (
                         <>
-                            <Check size={15} /> Added
+                            <Check size={15} /> {t('added')}
                         </>
                     ) : (
                         <>
-                            <ShoppingCart size={15} /> Add to Cart
+                            <ShoppingCart size={15} /> {t('add_to_cart')}
                         </>
                     )}
                 </button>

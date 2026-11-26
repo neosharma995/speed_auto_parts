@@ -44,7 +44,7 @@ class VehicleController extends Controller
             ->orderBy('make')
             ->orderBy('model')
             ->orderBy('id', 'desc')
-            ->paginate(8)
+            ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Admin/Vehicles/Index', [

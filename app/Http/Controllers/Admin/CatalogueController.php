@@ -39,7 +39,12 @@ class CatalogueController extends Controller
             default => null,
         };
 
-        $products = $query->orderByDesc('warehouse_stock')->latest()->get();
+        $products = $query->orderByDesc('warehouse_stock')->latest()->paginate(10)->withQueryString();
+
+        $bulkProducts = Product::query()
+            ->where('warehouse_stock', '>', 0)
+            ->orderByDesc('warehouse_stock')
+            ->get();
 
         $transfersCount = StockTransfer::query()
             ->whereIn('direction', ['warehouse_to_catalogue', 'catalogue_to_warehouse'])
@@ -47,6 +52,7 @@ class CatalogueController extends Controller
 
         return Inertia::render('Admin/Catalogue/Index', [
             'products' => $products,
+            'bulkProducts' => $bulkProducts,
             'transfersCount' => $transfersCount,
             'filters' => (object) $request->only(['search', 'filter']),
             'stats' => [
@@ -84,7 +90,7 @@ class CatalogueController extends Controller
             $query->where('status', (string) $request->input('status'));
         }
 
-        $transfers = $query->latest()->paginate(15)->withQueryString();
+        $transfers = $query->latest()->paginate(10)->withQueryString();
 
         return Inertia::render('Admin/Transfers/Logs', [
             'transfers' => $transfers,

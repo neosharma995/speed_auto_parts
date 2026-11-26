@@ -43,11 +43,11 @@ class Coupon extends Model
             return ['valid' => false, 'message' => 'This coupon is no longer active.'];
         }
 
-        if ($this->starts_at && now()->lt($this->starts_at)) {
+        if ($this->starts_at && now()->lt($this->starts_at->copy()->startOfDay())) {
             return ['valid' => false, 'message' => 'This coupon is not active yet.'];
         }
 
-        if ($this->expires_at && now()->gt($this->expires_at)) {
+        if ($this->expires_at && now()->gt($this->expires_at->copy()->endOfDay())) {
             return ['valid' => false, 'message' => 'This coupon has expired.'];
         }
 

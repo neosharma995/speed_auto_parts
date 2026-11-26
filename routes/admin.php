@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\RegionalPricingController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RolePermissionController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\SupplierOfferController;
 use App\Http\Controllers\Admin\TaxController;
@@ -132,9 +133,14 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         Route::delete('/vehicles/{vehicle}', [VehicleController::class, 'destroy'])->name('vehicles.destroy');
     });
 
-    // Customers Directory
+    // Customers Directory & Newsletter Subscribers
     Route::middleware('role_or_permission:admin|manage customers')->group(function () {
         Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+        Route::get('/subscribers', [SubscriberController::class, 'index'])->name('subscribers.index');
+        Route::post('/subscribers', [SubscriberController::class, 'store'])->name('subscribers.store');
+        Route::post('/subscribers/{subscriber}/toggle-status', [SubscriberController::class, 'toggleStatus'])->name('subscribers.toggle-status');
+        Route::get('/subscribers/export', [SubscriberController::class, 'export'])->name('subscribers.export');
+        Route::delete('/subscribers/{subscriber}', [SubscriberController::class, 'destroy'])->name('subscribers.destroy');
     });
 
     // Coupons & Promotional Discounts

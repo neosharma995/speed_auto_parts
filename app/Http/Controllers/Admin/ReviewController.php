@@ -17,7 +17,8 @@ class ReviewController extends Controller
         $reviews = ProductReview::query()
             ->with(['product', 'user'])
             ->latest()
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Admin/Reviews/Index', [
             'reviews' => $reviews,

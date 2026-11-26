@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Enums\UserRole;
 use App\Mail\CustomerWelcomeMail;
+use App\Mail\EmailOtpMail;
 use App\Mail\OrderConfirmationMail;
 use App\Mail\OrderStatusUpdatedMail;
 use App\Mail\SupplierInvitationMail;
@@ -330,13 +331,32 @@ class Milestone2DeliverablesTest extends TestCase
     {
         Mail::fake();
 
-        // 1. Customer Welcome Email on registration
+        // 1. Registration Email OTP + Customer Welcome Email on registration
+        $sentOtp = null;
+        $this->postJson('/register/send-otp', [
+            'name' => 'Rami Al-Farsi',
+            'email' => 'rami.alfarsi@example.com',
+            'phone' => '+971 55 123 4567',
+            'password' => 'SecretPass123!',
+            'password_confirmation' => 'SecretPass123!',
+        ])->assertOk()->assertJson(['success' => true]);
+
+        Mail::assertSent(EmailOtpMail::class, function (EmailOtpMail $mail) use (&$sentOtp) {
+            if ($mail->hasTo('rami.alfarsi@example.com') && $mail->purpose === 'register') {
+                $sentOtp = $mail->otp;
+                return true;
+            }
+            return false;
+        });
+        $this->assertNotNull($sentOtp);
+
         $this->post('/register', [
             'name' => 'Rami Al-Farsi',
             'email' => 'rami.alfarsi@example.com',
             'phone' => '+971 55 123 4567',
             'password' => 'SecretPass123!',
             'password_confirmation' => 'SecretPass123!',
+            'otp' => $sentOtp,
         ])->assertRedirect();
 
         Mail::assertSent(CustomerWelcomeMail::class, fn ($m) => $m->hasTo('rami.alfarsi@example.com'));
@@ -382,5 +402,80 @@ class Milestone2DeliverablesTest extends TestCase
             ->assertRedirect();
 
         Mail::assertSent(OrderStatusUpdatedMail::class, fn ($m) => $m->hasTo('rami.alfarsi@example.com') && $m->order->id === $order->id);
+    }
+
+    public function test_forgot_password_otp_sends_email_and_resets_password(): void
+    {
+        Mail::fake();
+
+        $customer = User::where('email', 'customer@autosparts.com')->firstOrFail();
+
+        $resetOtp = null;
+        $this->postJson('/forgot-password', [
+            'email' => $customer->email,
+        ])->assertOk()->assertJson(['success' => true]);
+
+        Mail::assertSent(EmailOtpMail::class, function (EmailOtpMail $mail) use ($customer, &$resetOtp) {
+            if ($mail->hasTo($customer->email) && $mail->purpose === 'forgot_password') {
+                $resetOtp = $mail->otp;
+                return true;
+            }
+            return false;
+        });
+        $this->assertNotNull($resetOtp);
+
+        // Wrong OTP fails validation
+        $this->post('/forgot-password/reset', [
+            'email' => $customer->email,
+            'otp' => '000000',
+            'password' => 'NewSecurePass99!',
+            'password_confirmation' => 'NewSecurePass99!',
+        ])->assertSessionHasErrors('otp');
+
+        // Correct OTP resets password and redirects to login
+        $this->post('/forgot-password/reset', [
+            'email' => $customer->email,
+            'otp' => $resetOtp,
+            'password' => 'NewSecurePass99!',
+            'password_confirmation' => 'NewSecurePass99!',
+        ])->assertRedirect(route('login'));
+
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('NewSecurePass99!', $customer->fresh()->password));
+    }
+
+    public function test_newsletter_subscription_saves_and_admin_can_manage_subscribers(): void
+    {
+        $this->postJson('/api/newsletter/subscribe', [
+            'email' => 'trackfan@example.com',
+        ])->assertOk()->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('newsletter_subscribers', [
+            'email' => 'trackfan@example.com',
+            'status' => 'subscribed',
+            'source' => 'footer',
+        ]);
+
+        $subscriber = \App\Models\NewsletterSubscriber::where('email', 'trackfan@example.com')->firstOrFail();
+
+        $this->actingAs($this->admin)
+            ->get('/admin/subscribers')
+            ->assertOk();
+
+        $this->actingAs($this->admin)
+            ->post("/admin/subscribers/{$subscriber->id}/toggle-status")
+            ->assertRedirect();
+
+        $this->assertSame('unsubscribed', $subscriber->fresh()->status);
+
+        $this->actingAs($this->admin)
+            ->get('/admin/subscribers/export')
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+
+        $this->actingAs($this->admin)
+            ->delete("/admin/subscribers/{$subscriber->id}")
+            ->assertRedirect();
+
+        $this->assertDatabaseMissing('newsletter_subscribers', ['id' => $subscriber->id]);
     }
 }

@@ -82,6 +82,7 @@ class CheckoutController extends Controller
 
         return response()->json([
             'success' => true,
+            'code' => $coupon->code,
             'coupon' => [
                 'id' => $coupon->id,
                 'code' => $coupon->code,
@@ -387,6 +388,10 @@ class CheckoutController extends Controller
             $this->createOrderItems($order, $scaledItems);
             $this->inventoryService->deductStockForOrder($scaledItems);
 
+            if (! empty($order->coupon_code)) {
+                Coupon::where('code', strtoupper((string) $order->coupon_code))->increment('times_used');
+            }
+
             session()->forget('cart');
 
             $this->sendOrderConfirmationEmail($order);
@@ -499,6 +504,10 @@ class CheckoutController extends Controller
             if (! empty($pendingData['items'])) {
                 $this->createOrderItems($order, $pendingData['items']);
                 $this->inventoryService->deductStockForOrder($pendingData['items']);
+            }
+
+            if (! empty($order->coupon_code)) {
+                Coupon::where('code', strtoupper((string) $order->coupon_code))->increment('times_used');
             }
 
             Cache::forget($cacheKey);

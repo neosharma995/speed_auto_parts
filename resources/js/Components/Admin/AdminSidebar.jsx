@@ -14,9 +14,9 @@ import {
     Settings,
     Shield,
     X,
-    Wrench,
     Store,
     Truck,
+    Mail,
 } from 'lucide-react';
 
 export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
@@ -121,6 +121,13 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                     active: isCurrent('/admin/customers'),
                 },
                 {
+                    label: 'Subscribers',
+                    href: '/admin/subscribers',
+                    icon: Mail,
+                    permission: 'manage customers',
+                    active: isCurrent('/admin/subscribers'),
+                },
+                {
                     label: 'Coupons',
                     href: '/admin/coupons',
                     icon: Percent,
@@ -167,29 +174,21 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
             )}
             <aside className={`admin-shell-sidebar ${sidebarOpen ? 'admin-shell-sidebar--open' : ''}`}>
                 <div className="admin-shell-sidebar-brand">
-                    <div
-                        style={{
-                            width: '32px',
-                            height: '32px',
-                            borderRadius: '4px',
-                            backgroundColor: '#F36B16',
-                            color: '#FFF',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
+                    <Link
+                        href="/admin/dashboard"
+                        style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', minWidth: 0 }}
                     >
-                        <Wrench size={18} />
-                    </div>
-                    <span>
-                        SPEED <span style={{ color: '#F36B16' }}>AUTOS PARTS</span>{' '}
-                        <small style={{ fontSize: '10px', color: '#888' }}>ADMIN</small>
-                    </span>
+                        <img
+                            src="/assets/images/logo/speedautoparts-official.png"
+                            alt="Speed Autos Parts"
+                            style={{ height: '36px', width: 'auto', maxWidth: '220px', objectFit: 'contain' }}
+                        />
+                    </Link>
                     <button
                         type="button"
                         onClick={onCloseSidebar}
-                        style={{ marginLeft: 'auto', color: '#888', background: 'none', border: 'none', display: 'flex' }}
                         className="mobile-close"
+                        aria-label="Close navigation"
                     >
                         <X size={20} />
                     </button>

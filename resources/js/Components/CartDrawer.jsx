@@ -3,9 +3,11 @@ import { Link } from '@inertiajs/react';
 import { X, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useCurrency } from '@/Context/CurrencyContext';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function CartDrawer() {
     const { formatPrice } = useCurrency();
+    const { t } = useLanguage();
     const { 
         cartItems, 
         itemCount, 
@@ -25,7 +27,7 @@ export default function CartDrawer() {
                 <div className="cart-drawer-header">
                     <h3>
                         <ShoppingBag size={20} color="#F36B16" />
-                        <span>Shopping Cart ({itemCount})</span>
+                        <span>{t('shopping_cart')} ({itemCount})</span>
                     </h3>
                     <button 
                         type="button" 
@@ -41,13 +43,13 @@ export default function CartDrawer() {
                     {cartItems.length === 0 ? (
                         <div className="cart-drawer-empty">
                             <ShoppingBag size={48} />
-                            <p>Your shopping cart is currently empty.</p>
+                            <p>{t('cart_empty')}</p>
                             <button 
                                 type="button" 
                                 className="btn btn-primary"
                                 onClick={() => setIsCartOpen(false)}
                             >
-                                Continue Shopping
+                                {t('continue_shopping')}
                             </button>
                         </div>
                     ) : (
@@ -104,11 +106,11 @@ export default function CartDrawer() {
                 {cartItems.length > 0 && (
                     <div className="cart-drawer-footer">
                         <div className="cart-subtotal">
-                            <span>Estimated Subtotal</span>
+                            <span>{t('estimated_subtotal')}</span>
                             <strong>{formatPrice(subtotal)}</strong>
                         </div>
                         <p style={{ fontSize: '11px', color: '#888', marginTop: '-4px' }}>
-                            Taxes and shipping calculated at checkout.
+                            {t('taxes_shipping_checkout')}
                         </p>
                         <Link 
                             href="/checkout" 

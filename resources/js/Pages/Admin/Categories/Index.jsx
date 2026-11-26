@@ -5,6 +5,8 @@ import AdminDataTable from '@/Components/Admin/AdminDataTable';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 export default function AdminCategoriesIndex({ categories = [] }) {
+    const rows = Array.isArray(categories) ? categories : (categories?.data || []);
+    const totalCount = Array.isArray(categories) ? categories.length : (categories?.total ?? rows.length);
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [name, setName] = useState('');
@@ -125,14 +127,16 @@ export default function AdminCategoriesIndex({ categories = [] }) {
         <AdminLayout title="Category Management">
             <AdminDataTable
                 title="All Product Categories"
-                count={categories.length}
+                count={totalCount}
                 actions={
                     <button type="button" className="btn btn-primary btn-sm" onClick={openCreate}>
                         <Plus size={16} /> Add Category
                     </button>
                 }
                 columns={columns}
-                rows={categories}
+                rows={rows}
+                pagination={Array.isArray(categories) ? null : categories}
+                itemLabel="categories"
                 emptyMessage="No categories found."
             />
 

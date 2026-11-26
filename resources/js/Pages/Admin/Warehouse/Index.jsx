@@ -19,14 +19,17 @@ import {
     History,
 } from 'lucide-react';
 
-export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [], transfersCount = 0, stats = {} }) {
+export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [], bulkProducts = null, transfersCount = 0, stats = {} }) {
+    const productRows = Array.isArray(products) ? products : (products?.data || []);
+    const totalProducts = Array.isArray(products) ? products.length : (products?.total ?? productRows.length);
+    const bulkSource = Array.isArray(bulkProducts) ? bulkProducts : productRows;
     const { errors } = usePage().props;
     const { formatAdminPrice, defaultCurrency } = useCurrency();
     const [showStats, setShowStats] = useState(false);
 
     const [warehouseEdits, setWarehouseEdits] = useState(() => {
         const map = {};
-        products.forEach((p) => {
+        productRows.forEach((p) => {
             map[p.id] = p.warehouse_stock;
         });
         return map;
@@ -34,7 +37,7 @@ export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [
 
     const [catalogueEdits, setCatalogueEdits] = useState(() => {
         const map = {};
-        products.forEach((p) => {
+        productRows.forEach((p) => {
             map[p.id] = p.stock_quantity;
         });
         return map;
@@ -54,8 +57,8 @@ export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [
     const [submitting, setSubmitting] = useState(false);
 
     const warehouseAvailableProducts = useMemo(
-        () => products.filter((p) => Number(p.warehouse_stock) > 0),
-        [products]
+        () => bulkSource.filter((p) => Number(p.warehouse_stock) > 0),
+        [bulkSource]
     );
 
     const handleAdjustWarehouse = (productId) => {
@@ -203,7 +206,7 @@ export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [
             {/* Warehouse Stock Pipeline */}
             <AdminDataTable
                 title="Warehouse Inventory & Stock Management"
-                count={products.length}
+                count={totalProducts}
                 actions={
                     <button
                         type="button"
@@ -333,7 +336,9 @@ export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [
                         ),
                     },
                 ]}
-                rows={products}
+                rows={productRows}
+                pagination={Array.isArray(products) ? null : products}
+                itemLabel="products"
                 emptyMessage="No warehouse products found."
             />
 
@@ -448,7 +453,7 @@ export default function AdminWarehouseIndex({ pendingLotsCount = 0, products = [
             <BulkCatalogueTransferModal
                 isOpen={showBulkModal}
                 onClose={() => setShowBulkModal(false)}
-                products={products}
+                products={bulkSource}
             />
         </AdminLayout>
     );

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { CURRENCY_CATALOG, formatWithSymbol, getCurrencyMeta } from '@/utils/currency';
-import { Settings, Save, CreditCard, Receipt, Plus, Coins, Globe, Trash2, Edit } from 'lucide-react';
+import { Settings, Save, CreditCard, Receipt, Plus, Coins, Globe, Trash2, Edit, Layout } from 'lucide-react';
 
 const DEFAULT_STOREFRONT_RATES = {
     AED: '1',
@@ -32,7 +32,7 @@ export default function AdminSettingsIndex({
     initialTab = 'store',
 }) {
     const { flash, errors } = usePage().props;
-    const validTabs = ['store', 'tax', 'regional'];
+    const validTabs = ['store', 'header_footer', 'tax', 'regional'];
     const [activeTab, setActiveTab] = useState(validTabs.includes(initialTab) ? initialTab : 'store');
 
     const handleSwitchTab = (nextTab) => {
@@ -87,11 +87,65 @@ export default function AdminSettingsIndex({
     const [regionForm, setRegionForm] = useState(EMPTY_REGION_FORM);
     const [savingRegion, setSavingRegion] = useState(false);
 
+    // Dynamic Header & Footer state
+    const [hfForm, setHfForm] = useState({
+        site_logo: settings.site_logo || '/assets/images/logo/speedautoparts-official.png',
+        footer_logo: settings.footer_logo || settings.site_logo || '/assets/images/logo/speedautoparts-official.png',
+        header_announcement:
+            settings.header_announcement || 'Free UAE Delivery on Orders Over AED 500 — Dubai Express Dispatch',
+        header_hotline_label: settings.header_hotline_label || 'Dubai Hotline:',
+        footer_description:
+            settings.footer_description ||
+            'Your trusted global source for premium automotive spare parts, performance upgrades, and genuine replacement components.',
+        footer_hours: settings.footer_hours || 'Mon – Sat, 9:00 AM – 7:00 PM (Dubai / GST)',
+        footer_newsletter_eyebrow: settings.footer_newsletter_eyebrow || 'STAY IN THE LOOP',
+        footer_newsletter_heading: settings.footer_newsletter_heading || 'Get Exclusive Deals & Performance Updates',
+        footer_newsletter_desc:
+            settings.footer_newsletter_desc ||
+            'Subscribe to our newsletter and be the first to know about new products, special offers, and expert automotive insights.',
+        footer_copyright: settings.footer_copyright || `© ${new Date().getFullYear()} Speed Autos Parts. All Rights Reserved.`,
+        social_facebook: settings.social_facebook ?? 'https://facebook.com',
+        social_instagram: settings.social_instagram ?? 'https://instagram.com',
+        social_youtube: settings.social_youtube ?? 'https://youtube.com',
+        social_linkedin: settings.social_linkedin ?? 'https://linkedin.com',
+        social_twitter: settings.social_twitter ?? 'https://twitter.com',
+    });
+    const [siteLogoFile, setSiteLogoFile] = useState(null);
+    const [footerLogoFile, setFooterLogoFile] = useState(null);
+    const [savingHf, setSavingHf] = useState(false);
+
+    const handleSaveHeaderFooter = (e) => {
+        e.preventDefault();
+        setSavingHf(true);
+
+        const payload = { ...hfForm };
+        if (siteLogoFile) payload.site_logo_file = siteLogoFile;
+        if (footerLogoFile) payload.footer_logo_file = footerLogoFile;
+
+        router.post('/admin/settings', payload, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                setSiteLogoFile(null);
+                setFooterLogoFile(null);
+            },
+            onFinish: () => setSavingHf(false),
+        });
+    };
+
     const handleDefaultCurrencyChange = (nextCode) => {
         const meta = getCurrencyMeta(nextCode);
         setCurrencyCode(meta.code);
-        setCurrencySymbol(meta.symbol);
+        setCurrencySymbol(meta.code);
         setCurrencyLocale(meta.locale);
+
+        const baseUsd = { AED: 3.6725, USD: 1.0, EUR: 0.9218 };
+        const denom = baseUsd[meta.code] || 1;
+        setCurrencyRates({
+            AED: meta.code === 'AED' ? '1' : String(Number((baseUsd.AED / denom).toFixed(4))),
+            USD: meta.code === 'USD' ? '1' : String(Number((baseUsd.USD / denom).toFixed(4))),
+            EUR: meta.code === 'EUR' ? '1' : String(Number((baseUsd.EUR / denom).toFixed(4))),
+        });
     };
 
     const handleSaveStore = (e) => {
@@ -241,6 +295,14 @@ export default function AdminSettingsIndex({
                     >
                         <Settings size={15} style={{ display: 'inline', marginRight: '6px' }} />
                         Store &amp; Currency Settings
+                    </button>
+                    <button
+                        type="button"
+                        className={activeTab === 'header_footer' ? 'active' : ''}
+                        onClick={() => handleSwitchTab('header_footer')}
+                    >
+                        <Layout size={15} style={{ display: 'inline', marginRight: '6px' }} />
+                        Header &amp; Footer
                     </button>
                     <button
                         type="button"
@@ -471,6 +533,260 @@ export default function AdminSettingsIndex({
                                 <div>
                                     <button type="submit" className="btn btn-primary btn-lg" disabled={savingStore}>
                                         <Save size={16} /> {savingStore ? 'Saving...' : 'Save Configuration'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {activeTab === 'header_footer' && (
+                        <div style={{ maxWidth: '860px' }}>
+                            <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px' }}>
+                                Dynamic Header, Footer, Logos &amp; Social Media Links
+                            </h3>
+                            <form onSubmit={handleSaveHeaderFooter} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                {/* Header Section */}
+                                <div
+                                    style={{
+                                        padding: '18px',
+                                        backgroundColor: '#F8FAFC',
+                                        border: '1px solid #E2E8F0',
+                                        borderRadius: '6px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '14px',
+                                    }}
+                                >
+                                    <strong style={{ fontSize: '13px', color: '#F36B16', textTransform: 'uppercase' }}>
+                                        1. Header Branding &amp; Top Utility Bar
+                                    </strong>
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px', alignItems: 'end' }}>
+                                        <div className="form-group">
+                                            <label className="form-label">Upload New Header Logo (PNG / SVG / WebP)</label>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="form-input"
+                                                onChange={(e) => setSiteLogoFile(e.target.files?.[0] || null)}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Or Header Logo URL / Path</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={hfForm.site_logo}
+                                                onChange={(e) => setHfForm({ ...hfForm, site_logo: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {hfForm.site_logo && (
+                                        <div style={{ backgroundColor: '#111827', padding: '12px 16px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', width: 'fit-content' }}>
+                                            <img
+                                                src={siteLogoFile ? URL.createObjectURL(siteLogoFile) : hfForm.site_logo}
+                                                alt="Header Logo Preview"
+                                                style={{ maxHeight: '36px', width: 'auto' }}
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
+                                        <div className="form-group">
+                                            <label className="form-label">Top Bar Announcement Text</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={hfForm.header_announcement}
+                                                onChange={(e) => setHfForm({ ...hfForm, header_announcement: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Hotline Label</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={hfForm.header_hotline_label}
+                                                onChange={(e) => setHfForm({ ...hfForm, header_hotline_label: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Footer Section */}
+                                <div
+                                    style={{
+                                        padding: '18px',
+                                        backgroundColor: '#F8FAFC',
+                                        border: '1px solid #E2E8F0',
+                                        borderRadius: '6px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '14px',
+                                    }}
+                                >
+                                    <strong style={{ fontSize: '13px', color: '#F36B16', textTransform: 'uppercase' }}>
+                                        2. Footer Branding, Newsletter &amp; Copyright
+                                    </strong>
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
+                                        <div className="form-group">
+                                            <label className="form-label">Upload Footer Logo (Optional)</label>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="form-input"
+                                                onChange={(e) => setFooterLogoFile(e.target.files?.[0] || null)}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Or Footer Logo URL / Path</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={hfForm.footer_logo}
+                                                onChange={(e) => setHfForm({ ...hfForm, footer_logo: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="form-label">Footer Brand Description</label>
+                                        <textarea
+                                            className="form-textarea"
+                                            style={{ minHeight: '65px' }}
+                                            value={hfForm.footer_description}
+                                            onChange={(e) => setHfForm({ ...hfForm, footer_description: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                        <div className="form-group">
+                                            <label className="form-label">Support Hours</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={hfForm.footer_hours}
+                                                onChange={(e) => setHfForm({ ...hfForm, footer_hours: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Copyright Line</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={hfForm.footer_copyright}
+                                                onChange={(e) => setHfForm({ ...hfForm, footer_copyright: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '12px' }}>
+                                        <div className="form-group">
+                                            <label className="form-label">Newsletter Eyebrow</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={hfForm.footer_newsletter_eyebrow}
+                                                onChange={(e) => setHfForm({ ...hfForm, footer_newsletter_eyebrow: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Newsletter Heading</label>
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={hfForm.footer_newsletter_heading}
+                                                onChange={(e) => setHfForm({ ...hfForm, footer_newsletter_heading: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="form-label">Newsletter Description</label>
+                                        <textarea
+                                            className="form-textarea"
+                                            style={{ minHeight: '55px' }}
+                                            value={hfForm.footer_newsletter_desc}
+                                            onChange={(e) => setHfForm({ ...hfForm, footer_newsletter_desc: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Social Links Section */}
+                                <div
+                                    style={{
+                                        padding: '18px',
+                                        backgroundColor: '#F8FAFC',
+                                        border: '1px solid #E2E8F0',
+                                        borderRadius: '6px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '14px',
+                                    }}
+                                >
+                                    <strong style={{ fontSize: '13px', color: '#F36B16', textTransform: 'uppercase' }}>
+                                        3. Social Media Links (Leave blank to hide icon)
+                                    </strong>
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px' }}>
+                                        <div className="form-group">
+                                            <label className="form-label">Facebook URL</label>
+                                            <input
+                                                type="url"
+                                                className="form-input"
+                                                placeholder="https://facebook.com/yourpage"
+                                                value={hfForm.social_facebook}
+                                                onChange={(e) => setHfForm({ ...hfForm, social_facebook: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Instagram URL</label>
+                                            <input
+                                                type="url"
+                                                className="form-input"
+                                                placeholder="https://instagram.com/yourpage"
+                                                value={hfForm.social_instagram}
+                                                onChange={(e) => setHfForm({ ...hfForm, social_instagram: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">YouTube URL</label>
+                                            <input
+                                                type="url"
+                                                className="form-input"
+                                                placeholder="https://youtube.com/@yourchannel"
+                                                value={hfForm.social_youtube}
+                                                onChange={(e) => setHfForm({ ...hfForm, social_youtube: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">LinkedIn URL</label>
+                                            <input
+                                                type="url"
+                                                className="form-input"
+                                                placeholder="https://linkedin.com/company/yourcompany"
+                                                value={hfForm.social_linkedin}
+                                                onChange={(e) => setHfForm({ ...hfForm, social_linkedin: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">X (Twitter) URL</label>
+                                            <input
+                                                type="url"
+                                                className="form-input"
+                                                placeholder="https://x.com/yourhandle"
+                                                value={hfForm.social_twitter}
+                                                onChange={(e) => setHfForm({ ...hfForm, social_twitter: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <button type="submit" className="btn btn-primary btn-lg" disabled={savingHf}>
+                                        <Save size={16} /> {savingHf ? 'Saving...' : 'Save Header & Footer Settings'}
                                     </button>
                                 </div>
                             </form>

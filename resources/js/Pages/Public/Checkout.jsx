@@ -3,6 +3,7 @@ import { Link, router, usePage } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { useCart } from '@/Context/CartContext';
 import { useCurrency } from '@/Context/CurrencyContext';
+import { useLanguage } from '@/Context/LanguageContext';
 import { Lock, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 
@@ -20,6 +21,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
     const { regionalRules = [] } = usePage().props;
     const { cartItems, subtotal, clearCart } = useCart();
     const { formatPrice, activeCurrency } = useCurrency();
+    const { t } = useLanguage();
 
     const defaultAddr = savedAddresses.find((a) => a.is_default) || savedAddresses[0] || null;
     const defaultRegion = regionalRules.find((r) => r.is_default) || regionalRules[0] || {
@@ -56,8 +58,15 @@ export default function Checkout({ savedAddresses = [], user = null }) {
         Number(selectedRegion.free_shipping_threshold || 500)
     )})`;
 
-    // Coupon
-    const [couponCode, setCouponCode] = useState('');
+    // Coupon (auto-carries over any promo code applied on /cart)
+    const [couponCode, setCouponCode] = useState(() => {
+        try {
+            const saved = JSON.parse(sessionStorage.getItem('sap_applied_coupon') || 'null');
+            return saved?.code || '';
+        } catch {
+            return '';
+        }
+    });
     const [discountAmount, setDiscountAmount] = useState(0);
     const [couponSuccessMsg, setCouponSuccessMsg] = useState('');
     const [couponErrorMsg, setCouponErrorMsg] = useState('');
@@ -98,27 +107,75 @@ export default function Checkout({ savedAddresses = [], user = null }) {
             });
     }, [cartItems, state, countryCode]);
 
+    useEffect(() => {
+        if (subtotal <= 0) return;
+        try {
+            const saved = JSON.parse(sessionStorage.getItem('sap_applied_coupon') || 'null');
+            if (saved?.code && discountAmount === 0) {
+                axios
+                    .post('/api/coupons/validate', {
+                        code: saved.code,
+                        subtotal,
+                    })
+                    .then((res) => {
+                        if (res.data.success) {
+                            const disc = Number(res.data.discount_amount ?? res.data.discount ?? 0);
+                            const resolvedCode = res.data.code || res.data.coupon?.code || saved.code;
+                            setCouponCode(resolvedCode);
+                            setDiscountAmount(disc);
+                            setCouponSuccessMsg(`Coupon ${resolvedCode} applied: -${formatPrice(disc)}`);
+                        }
+                    })
+                    .catch(() => {
+                        sessionStorage.removeItem('sap_applied_coupon');
+                    });
+            }
+        } catch {
+            // ignore storage errors
+        }
+    }, [subtotal]);
+
     const handleApplyCoupon = async (e) => {
         e.preventDefault();
         setCouponErrorMsg('');
         setCouponSuccessMsg('');
-        if (!couponCode.trim()) return;
+        const normalizedCode = couponCode.trim().toUpperCase();
+        if (!normalizedCode) return;
 
         try {
             const res = await axios.post('/api/coupons/validate', {
-                code: couponCode.trim(),
+                code: normalizedCode,
                 subtotal,
             });
 
             if (res.data.success) {
                 const disc = Number(res.data.discount_amount ?? res.data.discount ?? 0);
+                const resolvedCode = res.data.code || res.data.coupon?.code || normalizedCode;
+                setCouponCode(resolvedCode);
                 setDiscountAmount(disc);
-                setCouponSuccessMsg(`Coupon applied: -${formatPrice(disc)}`);
+                setCouponSuccessMsg(`Coupon ${resolvedCode} applied: -${formatPrice(disc)}`);
+                try {
+                    sessionStorage.setItem('sap_applied_coupon', JSON.stringify({ code: resolvedCode, discount: disc }));
+                } catch {
+                    // ignore
+                }
             } else {
                 setCouponErrorMsg(res.data.message || 'Invalid coupon');
             }
         } catch (err) {
             setCouponErrorMsg(err.response?.data?.message || 'Error validating coupon');
+        }
+    };
+
+    const handleRemoveCoupon = () => {
+        setCouponCode('');
+        setDiscountAmount(0);
+        setCouponSuccessMsg('');
+        setCouponErrorMsg('');
+        try {
+            sessionStorage.removeItem('sap_applied_coupon');
+        } catch {
+            // ignore
         }
     };
 
@@ -172,6 +229,11 @@ export default function Checkout({ savedAddresses = [], user = null }) {
             try {
                 const res = await axios.post('/checkout/cod', orderPayload);
                 if (res.data.success) {
+                    try {
+                        sessionStorage.removeItem('sap_applied_coupon');
+                    } catch {
+                        // ignore
+                    }
                     clearCart();
                     router.visit(`/order-success/${res.data.order_number}`);
                 } else {
@@ -218,7 +280,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
             <div className="checkout-page bg-light">
                 <div className="container">
                     <h1 style={{ fontSize: '28px', fontWeight: 900, textTransform: 'uppercase', marginBottom: '24px' }}>
-                        Secure Checkout
+                        {t('secure_checkout')}
                     </h1>
 
                     {errorMessage && (
@@ -486,17 +548,26 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                             </form>
 
                             {couponSuccessMsg && (
-                                <span
+                                <div
                                     style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
                                         fontSize: '12px',
                                         color: '#168A35',
                                         fontWeight: 700,
                                         marginBottom: '12px',
-                                        display: 'block',
                                     }}
                                 >
-                                    {couponSuccessMsg}
-                                </span>
+                                    <span>✓ {couponSuccessMsg}</span>
+                                    <button
+                                        type="button"
+                                        onClick={handleRemoveCoupon}
+                                        style={{ background: 'none', border: 'none', color: '#D93025', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
                             )}
                             {couponErrorMsg && (
                                 <span style={{ fontSize: '12px', color: '#D93025', marginBottom: '12px', display: 'block' }}>

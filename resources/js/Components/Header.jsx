@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useCurrency } from '@/Context/CurrencyContext';
+import { useLanguage } from '@/Context/LanguageContext';
 import { useWishlist } from '@/Context/WishlistContext';
 import SearchDropdown from './SearchDropdown';
 
@@ -28,11 +29,11 @@ export default function Header() {
     const { auth, navBrands = [], settings = {}, activeVehicle } = usePage().props;
     const { itemCount, setIsCartOpen } = useCart();
     const { activeCurrency, availableCurrencies, setSelectedCurrency } = useCurrency();
+    const { language: selectedLang, availableLanguages, setLanguage: setSelectedLang, t } = useLanguage();
     const { wishlist = [] } = useWishlist();
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
-    const [selectedLang, setSelectedLang] = useState('EN');
     const selectedCurrency = activeCurrency.code;
     const [langOpen, setLangOpen] = useState(false);
     const [currencyOpen, setCurrencyOpen] = useState(false);
@@ -73,13 +74,8 @@ export default function Header() {
     const debounceTimerRef = useRef(null);
     const abortControllerRef = useRef(null);
 
-    // Language & Currency available options
-    const languageOptions = [
-        { code: 'EN', name: 'English' },
-        { code: 'AR', name: 'العربية' },
-        { code: 'DE', name: 'Deutsch' },
-        { code: 'FR', name: 'Français' },
-    ];
+    // Language & Currency available options (3 languages matching our 3 currencies: EN/USD, AR/AED, FR/EUR)
+    const languageOptions = availableLanguages;
 
     const currencyOptions = availableCurrencies;
 
@@ -351,7 +347,7 @@ export default function Header() {
                 <div className="container site-header-utility-inner">
                     <div className="site-header-utility-left">
                         <CarFront size={17} strokeWidth={2.2} className="utility-car-icon" />
-                        <span>Free UAE Delivery on Orders Over AED 500 — Dubai Express Dispatch</span>
+                        <span>{settings.header_announcement || t('free_delivery_banner')}</span>
                     </div>
 
                     <div className="site-header-utility-right">
@@ -463,17 +459,17 @@ export default function Header() {
                             </div>
                         </div>
 
-                        <Link href="/track-order" className="utility-link">Track Order</Link>
-                        <Link href="/contact-us" className="utility-link">Help & Support</Link>
+                        <Link href="/track-order" className="utility-link">{t('track_order')}</Link>
+                        <Link href="/contact-us" className="utility-link">{t('help_support')}</Link>
 
                         {auth?.user?.roles?.includes('admin') && (
                             <Link href="/admin/dashboard" className="utility-link-accent">
-                                Admin
+                                {t('admin')}
                             </Link>
                         )}
                         {auth?.user?.roles?.includes('supplier') && (
                             <Link href="/supplier/dashboard" className="utility-link-accent">
-                                Supplier
+                                {t('supplier')}
                             </Link>
                         )}
                     </div>
@@ -492,8 +488,8 @@ export default function Header() {
                         {/* Official Speed Autos Parts Logo Image */}
                         <Link href="/" className="site-header-logo">
                             <img
-                                src="/assets/images/logo/speedautoparts-official.png"
-                                alt="Speed Autos Parts - Performance Spare Parts"
+                                src={settings.site_logo || '/assets/images/logo/speedautoparts-official.png'}
+                                alt={settings.store_name || 'Speed Autos Parts - Performance Spare Parts'}
                                 className="site-header-logo-img"
                             />
                         </Link>
@@ -507,7 +503,7 @@ export default function Header() {
                         >
                             <input
                                 type="text"
-                                placeholder="Search by part number, product, brand..."
+                                placeholder={t('search_placeholder')}
                                 value={searchQuery}
                                 onChange={(e) => handleSearchChange(e.target.value)}
                                 onFocus={handleSearchFocus}
@@ -558,7 +554,7 @@ export default function Header() {
                                     >
                                         <UserIcon size={24} strokeWidth={1.8} className="action-user-icon" />
                                         <div className="action-user-text">
-                                            <span className="user-sub">Account</span>
+                                            <span className="user-sub">{t('account')}</span>
                                             <strong className="user-name">{auth.user.name.split(' ')[0]}</strong>
                                         </div>
                                         {accountDropdownOpen ? (
@@ -571,8 +567,8 @@ export default function Header() {
                                     <Link href="/login" className="site-header-action-user">
                                         <UserIcon size={24} strokeWidth={1.8} className="action-user-icon" />
                                         <div className="action-user-text">
-                                            <span className="user-sub">Account</span>
-                                            <strong className="user-name">Sign In / Register</strong>
+                                            <span className="user-sub">{t('account')}</span>
+                                            <strong className="user-name">{t('sign_in_register')}</strong>
                                         </div>
                                     </Link>
                                 )}
@@ -781,7 +777,7 @@ export default function Header() {
                             <div className="site-header-nav-categories">
                                 <Link href="/categories" className="categories-trigger-link">
                                     <List size={17} strokeWidth={2.4} className="categories-list-icon" />
-                                    <span>All Categories</span>
+                                    <span>{t('all_categories')}</span>
                                 </Link>
                             </div>
 
@@ -789,7 +785,7 @@ export default function Header() {
                             <nav className="site-header-nav-list">
                                 <div className="site-header-nav-item">
                                     <Link href="/" className="site-header-nav-link active">
-                                        <span>Home</span>
+                                        <span>{t('home')}</span>
                                         <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
                                     <div className="site-header-dropdown">
@@ -804,7 +800,7 @@ export default function Header() {
 
                                 <div className="site-header-nav-item">
                                     <Link href="/shop" className="site-header-nav-link">
-                                        <span>Performance</span>
+                                        <span>{t('performance')}</span>
                                         <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
                                     <div className="site-header-dropdown">
@@ -819,7 +815,7 @@ export default function Header() {
                                 <div className="site-header-nav-item">
                                     <Link href="/vehicle-finder" className="site-header-nav-link">
                                         <span className="vehicle-nav-text">
-                                            Shop By Vehicle
+                                            {t('shop_by_vehicle')}
                                             {activeVehicle && (
                                                 <span
                                                     className="vehicle-active-dot"
@@ -832,7 +828,7 @@ export default function Header() {
 
                                 <div className="site-header-nav-item">
                                     <Link href="/brands" className="site-header-nav-link">
-                                        <span>Brands</span>
+                                        <span>{t('brands')}</span>
                                         <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
                                     <div className="site-header-dropdown">
@@ -845,13 +841,13 @@ export default function Header() {
                                 <div className="site-header-nav-item">
                                     <Link href="/shop?filter=deals" className="site-header-nav-link deals-link">
                                         <span className="site-header-deals-icon">%</span>
-                                        <span>Deals</span>
+                                        <span>{t('deals')}</span>
                                     </Link>
                                 </div>
 
                                 <div className="site-header-nav-item">
                                     <Link href="/contact-us" className="site-header-nav-link">
-                                        <span>Support</span>
+                                        <span>{t('support')}</span>
                                         <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
                                     <div className="site-header-dropdown">
@@ -970,7 +966,7 @@ export default function Header() {
                             <a href={`tel:${settings.store_phone || '+97145128900'}`} className="nav-contact-link">
                                 <Phone size={14} strokeWidth={2.2} className="nav-contact-icon" />
                                 <span className="nav-contact-text">
-                                    <span className="nav-contact-label">Dubai Hotline:</span>
+                                    <span className="nav-contact-label">{settings.header_hotline_label || 'Dubai Hotline:'}</span>
                                     <strong className="nav-contact-val">{settings.store_phone || '+971 4 512 8900'}</strong>
                                 </span>
                             </a>
@@ -992,8 +988,8 @@ export default function Header() {
                     <div className="mobile-drawer">
                         <div className="mobile-drawer-header">
                             <img
-                                src="/assets/images/logo/speedautoparts-official.png"
-                                alt="Speed Autos Parts"
+                                src={settings.site_logo || '/assets/images/logo/speedautoparts-official.png'}
+                                alt={settings.store_name || 'Speed Autos Parts'}
                                 style={{ height: '30px', width: 'auto' }}
                             />
                             <button

@@ -38,10 +38,25 @@ class SettingController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $inputs = $request->except(['_token']);
+        $request->validate([
+            'site_logo_file' => ['nullable', 'image', 'max:4096'],
+            'footer_logo_file' => ['nullable', 'image', 'max:4096'],
+        ]);
+
+        $inputs = $request->except(['_token', 'site_logo_file', 'footer_logo_file']);
+
+        if ($request->hasFile('site_logo_file')) {
+            $path = $request->file('site_logo_file')->store('branding', 'public');
+            $inputs['site_logo'] = '/storage/' . $path;
+        }
+
+        if ($request->hasFile('footer_logo_file')) {
+            $path = $request->file('footer_logo_file')->store('branding', 'public');
+            $inputs['footer_logo'] = '/storage/' . $path;
+        }
 
         foreach ($inputs as $key => $value) {
-            Setting::set($key, $value);
+            Setting::set($key, $value ?? '');
         }
 
         return back()->with('success', 'Store configuration settings saved.');
