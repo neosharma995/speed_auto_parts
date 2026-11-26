@@ -41,7 +41,7 @@ export default function ProductShow({
     const { addToCart } = useCart();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const { formatPrice } = useCurrency();
-    const { t, localize } = useLanguage();
+    const { t, localize, translateTerm } = useLanguage();
 
     const displayName = localize(product, 'name');
     const displayDescription = localize(product, 'description');
@@ -341,11 +341,13 @@ export default function ProductShow({
                                         return (
                                             <div key={group.slug} className="variations-selector-wrap">
                                                 <span className="selector-title">
-                                                    {group.label}: {selectedValue && <strong>{selectedValue}</strong>}
+                                                    {translateTerm(group.label)}: {selectedValue && <strong dir="auto">{translateTerm(selectedValue)}</strong>}
                                                 </span>
                                                 <div className="selector-pills-row">
                                                     {group.values.map((val) => {
                                                         const isActive = selectedValue === val;
+                                                        const translatedVal = translateTerm(val);
+                                                        const isMeasurement = /^\d/.test(translatedVal);
                                                         return (
                                                             <button
                                                                 key={val}
@@ -353,7 +355,7 @@ export default function ProductShow({
                                                                 className={`pill-option ${isActive ? 'pill-option--active' : ''}`}
                                                                 onClick={() => handleSelectAttributeValue(group.slug, val)}
                                                             >
-                                                                {val}
+                                                                <span dir={isMeasurement ? 'ltr' : 'auto'}>{translatedVal}</span>
                                                             </button>
                                                         );
                                                     })}
@@ -381,7 +383,7 @@ export default function ProductShow({
                                                         }
                                                     }}
                                                 >
-                                                    {variation.name}
+                                                    {translateTerm(variation.name)}
                                                 </button>
                                             ))}
                                         </div>
@@ -597,7 +599,7 @@ export default function ProductShow({
                                                     <td><strong>{item.vehicle?.year}</strong></td>
                                                     <td>{item.vehicle?.make} {item.vehicle?.model}</td>
                                                     <td>{item.vehicle?.engine}</td>
-                                                    <td>{item.notes || t('pdp_direct_oem')}</td>
+                                                    <td>{item.notes ? translateTerm(item.notes) : t('pdp_direct_oem')}</td>
                                                 </tr>
                                             ))
                                         )}

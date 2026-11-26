@@ -1010,6 +1010,85 @@ const TRANSLATIONS = {
     },
 };
 
+const ATTRIBUTE_TERM_TRANSLATIONS = {
+    AR: {
+        'rotor diameter': 'قطر القرص',
+        'position': 'الموقع',
+        'front axle': 'المحور الأمامي',
+        'rear axle': 'المحور الخلفي',
+        'front': 'أمامي',
+        'rear': 'خلفي',
+        'tire size': 'مقاس الإطار',
+        'wheel size': 'مقاس الجنط',
+        'size': 'المقاس',
+        'diameter': 'القطر',
+        'color': 'اللون',
+        'finish': 'التشطيب',
+        'material': 'المادة',
+        'spring rate': 'قوة النابض',
+        'exhaust tip': 'فوهة العادم',
+        'pipe diameter': 'قطر الأنبوب',
+        'filter type': 'نوع الفلتر',
+        'street': 'للطرق',
+        'track': 'للحلبات',
+        'standard': 'قياسي',
+        'performance': 'رياضي',
+        'polished': 'مصقول',
+        'matte black': 'أسود مطفي',
+        'gloss black': 'أسود لامع',
+        'carbon fiber': 'ألياف الكربون',
+        'titanium': 'تيتانيوم',
+        'stainless steel': 'فولاذ مقاوم للصدأ',
+        'red': 'أحمر',
+        'black': 'أسود',
+        'silver': 'فضي',
+        'gold': 'ذهبي',
+        'direct oem fitment for factory wheel sizes.': 'توافق أصلي مباشر (OEM) مع مقاسات الجنوط القياسية للمصنع.',
+        'requires 18-inch or larger diameter wheels for caliper clearance.': 'يتطلب جنوط بمقاس 18 بوصة أو أكبر لتوفير خلوص كافٍ لملاقط الفرامل.',
+        'direct bolt-on cat-back connection. fits factory active exhaust valves.': 'تركيب مباشر لنظام الكات-باك. متوافق مع صمامات العادم النشطة الأصلية.',
+        'direct fit with mass airflow sensor housing.': 'توافق مباشر مع وحدة حساس تدفق الهواء (MAF).',
+        'compatible with edc adaptive suspension bypass modules.': 'متوافق مع وحدات تجاوز نظام التعليق التكيفي (EDC).',
+    },
+    FR: {
+        'rotor diameter': 'Diamètre du disque',
+        'position': 'Position',
+        'front axle': 'Essieu avant',
+        'rear axle': 'Essieu arrière',
+        'front': 'Avant',
+        'rear': 'Arrière',
+        'tire size': 'Dimension pneu',
+        'wheel size': 'Dimension jante',
+        'size': 'Taille',
+        'diameter': 'Diamètre',
+        'color': 'Couleur',
+        'finish': 'Finition',
+        'material': 'Matériau',
+        'spring rate': 'Tarage ressort',
+        'exhaust tip': 'Sortie d’échappement',
+        'pipe diameter': 'Diamètre tube',
+        'filter type': 'Type de filtre',
+        'street': 'Route',
+        'track': 'Piste',
+        'standard': 'Standard',
+        'performance': 'Performance',
+        'polished': 'Poli',
+        'matte black': 'Noir mat',
+        'gloss black': 'Noir brillant',
+        'carbon fiber': 'Fibre de carbone',
+        'titanium': 'Titane',
+        'stainless steel': 'Acier inoxydable',
+        'red': 'Rouge',
+        'black': 'Noir',
+        'silver': 'Argent',
+        'gold': 'Or',
+        'direct oem fitment for factory wheel sizes.': 'Montage OEM direct pour les dimensions de jantes d’origine.',
+        'requires 18-inch or larger diameter wheels for caliper clearance.': 'Nécessite des jantes de 18 pouces ou plus pour le dégagement de l’étrier.',
+        'direct bolt-on cat-back connection. fits factory active exhaust valves.': 'Montage direct cat-back. Compatible avec les valves d’échappement actives d’origine.',
+        'direct fit with mass airflow sensor housing.': 'Montage direct avec le boîtier de débitmètre d’air massique (MAF).',
+        'compatible with edc adaptive suspension bypass modules.': 'Compatible avec les modules de suppression de suspension adaptative EDC.',
+    },
+};
+
 const LanguageContext = createContext(null);
 
 export function LanguageProvider({ children }) {
@@ -1085,6 +1164,20 @@ export function LanguageProvider({ children }) {
             }
             return entity[field] ?? fallback ?? '';
         };
+        const translateTerm = (rawText) => {
+            const text = String(rawText ?? '').trim();
+            if (!text || language === 'EN') return text;
+            const termMap = ATTRIBUTE_TERM_TRANSLATIONS[language] || {};
+            const direct = termMap[text.toLowerCase()];
+            if (direct) return direct;
+            if (text.includes(' / ')) {
+                return text
+                    .split(' / ')
+                    .map((part) => termMap[part.trim().toLowerCase()] || part.trim())
+                    .join(' / ');
+            }
+            return text;
+        };
 
         return {
             language,
@@ -1094,6 +1187,7 @@ export function LanguageProvider({ children }) {
             setLanguage,
             t,
             localize,
+            translateTerm,
         };
     }, [language, activeMeta]);
 
@@ -1111,6 +1205,7 @@ export function useLanguage() {
             setLanguage: () => {},
             t: (key, fallback = '') => TRANSLATIONS.EN[key] || fallback || key,
             localize: (entity, field, fallback = '') => (entity && typeof entity === 'object' ? entity[field] ?? fallback ?? '' : fallback || ''),
+            translateTerm: (rawText) => String(rawText ?? ''),
         };
     }
     return ctx;
