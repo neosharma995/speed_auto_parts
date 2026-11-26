@@ -24,7 +24,10 @@ function getDefaultRatesForBase(baseCode) {
 function normalizeSettings(rawSettings = {}) {
     const code = String(rawSettings?.currency_code || 'AED').toUpperCase();
     const meta = getCurrencyMeta(code);
-    const symbol = code;
+    let symbol = String(rawSettings?.currency_symbol || meta.symbol || code);
+    if (code === 'AED' && symbol === 'AED') {
+        symbol = 'د.إ';
+    }
     const locale = String(rawSettings?.currency_locale || meta.locale || 'en-AE');
     const rateNum = Number(rawSettings?.currency_rate ?? 1);
     const rate = Number.isFinite(rateNum) && rateNum > 0 ? rateNum : 1;
@@ -141,9 +144,9 @@ export function CurrencyProvider({ initialSettings = {}, children }) {
         const formatAdminPrice = (baseAmount, options = {}) =>
             formatWithSymbol(convertToDefault(baseAmount), defaultCurrency.code, defaultCurrency.locale, options);
 
-        // Format price for Public Storefront (uses Default Currency * visitor's selected currency shortform)
+        // Format price for Public Storefront (uses Default Currency * visitor's selected currency rate)
         const formatPrice = (baseAmount, options = {}) =>
-            formatWithSymbol(convertForDisplay(baseAmount), activeCode, activeLocale, options);
+            formatWithSymbol(convertForDisplay(baseAmount), activeSymbol, activeLocale, options);
 
         // Available currencies for storefront switcher (always puts default currency first)
         const rateKeys = Object.keys(config.rates);
@@ -183,19 +186,19 @@ export function useCurrency() {
     const ctx = useContext(CurrencyContext);
     if (!ctx) {
         return {
-            defaultCurrency: { code: 'AED', symbol: 'AED', locale: 'en-AE', rate: 1 },
-            activeCurrency: { code: 'AED', symbol: 'AED', locale: 'en-AE', rate: 1 },
+            defaultCurrency: { code: 'AED', symbol: 'د.إ', locale: 'en-AE', rate: 1 },
+            activeCurrency: { code: 'AED', symbol: 'د.إ', locale: 'en-AE', rate: 1 },
             availableCurrencies: [
-                { code: 'AED', symbol: 'AED', name: 'AED', rate: 1 },
-                { code: 'USD', symbol: 'USD', name: 'USD', rate: 0.2723 },
-                { code: 'EUR', symbol: 'EUR', name: 'EUR', rate: 0.251 },
+                { code: 'AED', symbol: 'د.إ', name: 'AED (د.إ)', rate: 1 },
+                { code: 'USD', symbol: '$', name: 'USD ($)', rate: 0.2723 },
+                { code: 'EUR', symbol: '€', name: 'EUR (€)', rate: 0.251 },
             ],
             currencyCatalog: CURRENCY_CATALOG,
             setSelectedCurrency: () => { },
             convertToDefault: (v) => Number(v || 0),
             convertForDisplay: (v) => Number(v || 0),
-            formatAdminPrice: (v, opts) => formatWithSymbol(v, 'AED', 'en-AE', opts),
-            formatPrice: (v, opts) => formatWithSymbol(v, 'AED', 'en-AE', opts),
+            formatAdminPrice: (v, opts) => formatWithSymbol(v, 'د.إ', 'en-AE', opts),
+            formatPrice: (v, opts) => formatWithSymbol(v, 'د.إ', 'en-AE', opts),
         };
     }
     return ctx;

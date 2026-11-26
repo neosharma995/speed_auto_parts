@@ -37,6 +37,7 @@
 
       &--open {
         transform: translateX(0);
+        overflow: visible;
       }
     }
 
@@ -54,6 +55,34 @@
 
       span {
         color: $color-primary;
+      }
+
+      .mobile-close {
+        display: none;
+
+        @include respond-below('lg') {
+          display: flex;
+          position: absolute;
+          top: 14px;
+          left: calc(100% + 10px);
+          width: 36px;
+          height: 36px;
+          background-color: rgba(22, 22, 28, 0.85);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          color: #FFFFFF;
+          cursor: pointer;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+          transition: background-color $transition-default, border-color $transition-default, color $transition-default;
+
+          &:hover {
+            background-color: $color-primary;
+            border-color: $color-primary;
+            color: #FFFFFF;
+          }
+        }
       }
     }
 

@@ -122,9 +122,9 @@ class HandleInertiaRequests extends Middleware
                 }
 
                 $currencyCode = strtoupper((string) ($db['currency_code'] ?? 'AED'));
-                $currencySymbol = (string) ($db['currency_symbol'] ?? $currencyCode);
-                if (empty($currencySymbol) || $currencySymbol === 'د.إ') {
-                    $currencySymbol = $currencyCode;
+                $currencySymbol = (string) ($db['currency_symbol'] ?? ($currencyCode === 'AED' ? 'د.إ' : $currencyCode));
+                if ($currencyCode === 'AED' && ($currencySymbol === 'AED' || empty($currencySymbol))) {
+                    $currencySymbol = 'د.إ';
                 }
                 $currencyLocale = (string) ($db['currency_locale'] ?? ($currencyCode === 'AED' ? 'en-AE' : 'en-US'));
                 $currencyRate = (float) ($db['currency_rate'] ?? 1.0);
