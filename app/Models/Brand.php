@@ -18,6 +18,7 @@ class Brand extends Model
         'slug',
         'logo',
         'description',
+        'translations',
         'website',
         'is_featured',
         'is_active',
@@ -26,6 +27,7 @@ class Brand extends Model
     protected function casts(): array
     {
         return [
+            'translations' => 'array',
             'is_featured' => 'boolean',
             'is_active' => 'boolean',
         ];

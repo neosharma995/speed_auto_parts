@@ -40,6 +40,7 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
+            'locale' => fn () => app()->getLocale(),
             'csrf_token' => fn () => csrf_token(),
             'auth' => [
                 'user' => $user ? [
@@ -85,7 +86,7 @@ class HandleInertiaRequests extends Middleware
                     ->whereNull('parent_id')
                     ->orderBy('sort_order')
                     ->take(8)
-                    ->get(['id', 'name', 'slug', 'image']);
+                    ->get(['id', 'name', 'slug', 'image', 'translations']);
             },
             'navBrands' => function () {
                 if (!\Illuminate\Support\Facades\Schema::hasTable('brands')) {
@@ -94,7 +95,7 @@ class HandleInertiaRequests extends Middleware
                 return Brand::where('is_active', true)
                     ->orderBy('name')
                     ->take(12)
-                    ->get(['id', 'name', 'slug', 'logo']);
+                    ->get(['id', 'name', 'slug', 'logo', 'translations']);
             },
             'settings' => function () {
                 $db = Schema::hasTable('settings')

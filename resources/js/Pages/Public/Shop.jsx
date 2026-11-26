@@ -3,6 +3,7 @@ import { Link, router } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import ProductCard from '@/Components/ProductCard';
 import { useCurrency } from '@/Context/CurrencyContext';
+import { useLanguage } from '@/Context/LanguageContext';
 import { 
     SlidersHorizontal, 
     ChevronRight, 
@@ -25,6 +26,7 @@ export default function Shop({
     activeVehicle = null 
 }) {
     const { activeCurrency } = useCurrency();
+    const { t, localize } = useLanguage();
     const safeFilters = filters && !Array.isArray(filters) ? filters : {};
 
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -224,7 +226,7 @@ export default function Shop({
                                                 checked={selectedCategory === cat.slug} 
                                                 onChange={() => { setSelectedCategory(cat.slug); applyFilters({ category: cat.slug }); }}
                                             />
-                                            <span className="filter-option-name">{cat.name}</span>
+                                            <span className="filter-option-name">{localize(cat, 'name')}</span>
                                         </label>
                                     ))}
                                 </div>
@@ -254,7 +256,7 @@ export default function Shop({
                                                 checked={selectedBrand === b.slug} 
                                                 onChange={() => { setSelectedBrand(b.slug); applyFilters({ brand: b.slug }); }}
                                             />
-                                            <span className="filter-option-name">{b.name}</span>
+                                            <span className="filter-option-name">{localize(b, 'name')}</span>
                                         </label>
                                     ))}
                                 </div>

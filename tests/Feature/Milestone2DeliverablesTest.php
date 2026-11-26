@@ -10,6 +10,8 @@ use App\Mail\EmailOtpMail;
 use App\Mail\OrderConfirmationMail;
 use App\Mail\OrderStatusUpdatedMail;
 use App\Mail\SupplierInvitationMail;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\RegionalPricingRule;
@@ -477,5 +479,109 @@ class Milestone2DeliverablesTest extends TestCase
             ->assertRedirect();
 
         $this->assertDatabaseMissing('newsletter_subscribers', ['id' => $subscriber->id]);
+    }
+
+    public function test_localized_url_path_prefixes_work_for_english_arabic_and_french(): void
+    {
+        $product = Product::where('status', 'published')->firstOrFail();
+
+        $this->get('/')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('locale', 'en'));
+
+        $this->get('/ar')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('locale', 'ar'));
+
+        $this->get('/fr')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('locale', 'fr'));
+
+        $this->get('/ar/shop')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('locale', 'ar'));
+
+        $this->get('/fr/brands')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('locale', 'fr'));
+
+        $this->get("/ar/products/{$product->slug}")
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('locale', 'ar')
+                ->where('product.slug', $product->slug)
+            );
+    }
+
+    public function test_admin_can_save_native_translations_on_products_categories_and_brands(): void
+    {
+        $category = Category::firstOrFail();
+        $brand = Brand::firstOrFail();
+        $product = Product::firstOrFail();
+
+        $this->actingAs($this->admin)
+            ->post("/admin/categories/{$category->id}", [
+                '_method' => 'put',
+                'name' => $category->name,
+                'slug' => $category->slug,
+                'description' => $category->description ?? '',
+                'icon' => $category->icon ?? 'Disc',
+                'translations' => json_encode([
+                    'ar' => ['name' => 'إطارات سباق', 'description' => 'وصف عربي'],
+                    'fr' => ['name' => 'Pneus Course', 'description' => 'Description FR'],
+                ]),
+            ])
+            ->assertRedirect();
+
+        $this->assertSame('إطارات سباق', $category->fresh()->translations['ar']['name'] ?? null);
+        $this->assertSame('Pneus Course', $category->fresh()->translations['fr']['name'] ?? null);
+
+        $this->actingAs($this->admin)
+            ->put("/admin/brands/{$brand->id}", [
+                'name' => $brand->name,
+                'slug' => $brand->slug,
+                'description' => $brand->description ?? '',
+                'translations' => [
+                    'ar' => ['name' => 'علامة سباق', 'description' => 'وصف العلامة'],
+                    'fr' => ['name' => 'Marque Course', 'description' => 'Desc Marque'],
+                ],
+            ])
+            ->assertRedirect();
+
+        $this->assertSame('علامة سباق', $brand->fresh()->translations['ar']['name'] ?? null);
+
+        $this->actingAs($this->admin)
+            ->put("/admin/products/{$product->id}", [
+                'name' => $product->name,
+                'slug' => $product->slug,
+                'sku' => $product->sku,
+                'part_number' => $product->part_number,
+                'short_description' => $product->short_description,
+                'description' => $product->description,
+                'product_type' => $product->product_type,
+                'status' => $product->status,
+                'base_price' => $product->base_price,
+                'stock_quantity' => $product->stock_quantity,
+                'stock_status' => $product->stock_status,
+                'category_id' => $product->category_id,
+                'brand_id' => $product->brand_id,
+                'translations' => [
+                    'ar' => [
+                        'name' => 'منتج اختبار عربي',
+                        'short_description' => 'ملخص عربي',
+                        'description' => 'وصف كامل بالعربية',
+                    ],
+                    'fr' => [
+                        'name' => 'Produit Test FR',
+                        'short_description' => 'Résumé FR',
+                        'description' => 'Description complète FR',
+                    ],
+                ],
+            ])
+            ->assertRedirect();
+
+        $freshProduct = $product->fresh();
+        $this->assertSame('منتج اختبار عربي', $freshProduct->translations['ar']['name'] ?? null);
+        $this->assertSame('Produit Test FR', $freshProduct->translations['fr']['name'] ?? null);
     }
 }

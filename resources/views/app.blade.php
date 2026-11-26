@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,44 +19,8 @@
         @viteReactRefresh
         @vite(['resources/js/app.jsx'])
         @inertiaHead
-
-        <style>
-            .goog-te-banner-frame,
-            iframe.goog-te-banner-frame,
-            .skiptranslate,
-            #goog-gt-tt,
-            .goog-te-balloon-frame,
-            .VIpgJd-ZVi9od-ORHb-OEVmcd,
-            .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
-            .VIpgJd-ZVi9od-l4eHX-hSRGPd {
-                display: none !important;
-                visibility: hidden !important;
-            }
-            body {
-                top: 0px !important;
-                position: static !important;
-            }
-            font {
-                background-color: transparent !important;
-                box-shadow: none !important;
-            }
-        </style>
     </head>
     <body class="site-wrap">
-        <div id="google_translate_element" style="display:none !important;"></div>
         @inertia
-
-        <script>
-            window.googleTranslateElementInit = function () {
-                if (window.google && window.google.translate) {
-                    new window.google.translate.TranslateElement({
-                        pageLanguage: 'en',
-                        includedLanguages: 'en,ar,fr',
-                        autoDisplay: false
-                    }, 'google_translate_element');
-                }
-            };
-        </script>
-        <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
     </body>
 </html>

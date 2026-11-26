@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminDataTable from '@/Components/Admin/AdminDataTable';
-import { Plus, Trash2, Download, X, Mail, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, Trash2, Download, X, Mail, CheckCircle2, XCircle, BarChart3, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function AdminSubscribersIndex({ subscribers, filters = {}, stats = {} }) {
     const safeFilters = filters && !Array.isArray(filters) ? filters : {};
@@ -11,6 +11,7 @@ export default function AdminSubscribersIndex({ subscribers, filters = {}, stats
     const items = subscribers?.data || [];
     const totalCount = subscribers?.total ?? items.length;
 
+    const [showStats, setShowStats] = useState(false);
     const [search, setSearch] = useState(safeFilters.search || '');
     const [statusFilter, setStatusFilter] = useState(safeFilters.status || '');
     const [showModal, setShowModal] = useState(false);
@@ -156,35 +157,59 @@ export default function AdminSubscribersIndex({ subscribers, filters = {}, stats
 
     return (
         <AdminLayout title="Newsletter Subscribers">
-            <div className="stats-grid" style={{ marginBottom: '18px' }}>
-                <div className="stat-card">
-                    <div className="stat-info">
-                        <span>Total Subscribers</span>
-                        <strong>{stats.total ?? totalCount}</strong>
-                    </div>
-                    <div className="stat-icon stat-icon--primary">
-                        <Mail size={22} />
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-info">
-                        <span>Active Subscribed</span>
-                        <strong>{stats.subscribed ?? 0}</strong>
-                    </div>
-                    <div className="stat-icon stat-icon--success">
-                        <CheckCircle2 size={22} />
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-info">
-                        <span>Unsubscribed</span>
-                        <strong>{stats.unsubscribed ?? 0}</strong>
-                    </div>
-                    <div className="stat-icon stat-icon--warning">
-                        <XCircle size={22} />
-                    </div>
-                </div>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '10px',
+                    marginBottom: '16px',
+                }}
+            >
+                <button
+                    type="button"
+                    className="btn btn-outline btn-sm"
+                    onClick={() => setShowStats((prev) => !prev)}
+                    aria-expanded={showStats}
+                >
+                    <BarChart3 size={15} />
+                    <span>{showStats ? 'Hide Summary' : 'Expand Summary'}</span>
+                    {showStats ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                </button>
             </div>
+
+            {showStats && (
+                <div className="stats-grid" style={{ marginBottom: '18px', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+                    <div className="stat-card">
+                        <div className="stat-info">
+                            <span>Total Subscribers</span>
+                            <strong>{stats.total ?? totalCount}</strong>
+                        </div>
+                        <div className="stat-icon stat-icon--primary">
+                            <Mail size={22} />
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-info">
+                            <span>Active Subscribed</span>
+                            <strong>{stats.subscribed ?? 0}</strong>
+                        </div>
+                        <div className="stat-icon stat-icon--success">
+                            <CheckCircle2 size={22} />
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-info">
+                            <span>Unsubscribed</span>
+                            <strong>{stats.unsubscribed ?? 0}</strong>
+                        </div>
+                        <div className="stat-icon stat-icon--warning">
+                            <XCircle size={22} />
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <AdminDataTable
                 title="Newsletter Mailing List"

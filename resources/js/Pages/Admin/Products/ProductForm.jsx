@@ -52,13 +52,36 @@ export default function ProductForm({
     const [activeTab, setActiveTab] = useState('general');
 
     // 1. General
+    const [contentLang, setContentLang] = useState('en');
     const [name, setName] = useState(product?.name || '');
     const [slug, setSlug] = useState(product?.slug || '');
     const [sku, setSku] = useState(product?.sku || '');
     const [partNumber, setPartNumber] = useState(product?.part_number || '');
     const [shortDescription, setShortDescription] = useState(product?.short_description || '');
     const [description, setDescription] = useState(product?.description || '');
+    const [translations, setTranslations] = useState(() => ({
+        ar: {
+            name: product?.translations?.ar?.name || '',
+            short_description: product?.translations?.ar?.short_description || '',
+            description: product?.translations?.ar?.description || '',
+        },
+        fr: {
+            name: product?.translations?.fr?.name || '',
+            short_description: product?.translations?.fr?.short_description || '',
+            description: product?.translations?.fr?.description || '',
+        },
+    }));
     const [techSpecs, setTechSpecs] = useState(product?.technical_specifications || '');
+
+    const updateTranslation = (langCode, field, val) => {
+        setTranslations((prev) => ({
+            ...prev,
+            [langCode]: {
+                ...(prev[langCode] || {}),
+                [field]: val,
+            },
+        }));
+    };
     const [productType, setProductType] = useState(product?.product_type || 'simple');
     const [status, setStatus] = useState(product?.status || 'published');
     const [isFeatured, setIsFeatured] = useState(Boolean(product?.is_featured));
@@ -476,6 +499,7 @@ export default function ProductForm({
             part_number: partNumber,
             short_description: shortDescription,
             description,
+            translations,
             technical_specifications: techSpecs,
             product_type: productType,
             status,
@@ -611,17 +635,68 @@ export default function ProductForm({
                         {/* SECTION 1: General Info */}
                         {activeTab === 'general' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <div className="form-group">
-                                    <label className="form-label">Product Name <span className="required">*</span></label>
-                                    <input
-                                        type="text"
-                                        className="form-input"
-                                        required
-                                        placeholder="e.g. Slotted & Drilled Brake Rotor"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                    />
+                                {/* Language Content Switcher */}
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', padding: '10px 14px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '6px' }}>
+                                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>
+                                        Content Language (Name &amp; Descriptions)
+                                    </span>
+                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                        {[
+                                            { code: 'en', label: 'EN (Default)' },
+                                            { code: 'ar', label: 'AR (العربية)' },
+                                            { code: 'fr', label: 'FR (Français)' },
+                                        ].map((item) => {
+                                            const active = contentLang === item.code;
+                                            return (
+                                                <button
+                                                    key={item.code}
+                                                    type="button"
+                                                    onClick={() => setContentLang(item.code)}
+                                                    style={{
+                                                        padding: '5px 12px',
+                                                        borderRadius: '4px',
+                                                        fontSize: '12px',
+                                                        fontWeight: 700,
+                                                        cursor: 'pointer',
+                                                        border: active ? '1px solid #F36B16' : '1px solid #CBD5E1',
+                                                        backgroundColor: active ? '#F36B16' : '#FFFFFF',
+                                                        color: active ? '#FFFFFF' : '#334155',
+                                                    }}
+                                                >
+                                                    {item.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
+
+                                {contentLang === 'en' ? (
+                                    <div className="form-group">
+                                        <label className="form-label">Product Name (English) <span className="required">*</span></label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            required
+                                            placeholder="e.g. Slotted & Drilled Brake Rotor"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="form-group">
+                                        <label className="form-label">
+                                            Product Name ({contentLang === 'ar' ? 'Arabic — العربية' : 'French — Français'})
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            dir={contentLang === 'ar' ? 'rtl' : 'ltr'}
+                                            placeholder={contentLang === 'ar' ? 'أدخل اسم المنتج بالعربية (اختياري)...' : 'Nom du produit en français (optionnel)...'}
+                                            value={translations[contentLang]?.name || ''}
+                                            onChange={(e) => updateTranslation(contentLang, 'name', e.target.value)}
+                                        />
+                                    </div>
+                                )}
 
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
                                     <div className="form-group">
@@ -658,27 +733,61 @@ export default function ProductForm({
                                     </div>
                                 </div>
 
-                                <div className="form-group">
-                                    <label className="form-label">Short Summary Description</label>
-                                    <textarea
-                                        className="form-textarea"
-                                        placeholder="Brief highlight of part engineering..."
-                                        value={shortDescription}
-                                        onChange={(e) => setShortDescription(e.target.value)}
-                                        style={{ minHeight: '60px' }}
-                                    />
-                                </div>
+                                {contentLang === 'en' ? (
+                                    <>
+                                        <div className="form-group">
+                                            <label className="form-label">Short Summary Description (English)</label>
+                                            <textarea
+                                                className="form-textarea"
+                                                placeholder="Brief highlight of part engineering..."
+                                                value={shortDescription}
+                                                onChange={(e) => setShortDescription(e.target.value)}
+                                                style={{ minHeight: '60px' }}
+                                            />
+                                        </div>
 
-                                <div className="form-group">
-                                    <label className="form-label">Full Technical Description</label>
-                                    <textarea
-                                        className="form-textarea"
-                                        placeholder="Full technical copy, metallurgy, dyno notes..."
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                        style={{ minHeight: '120px' }}
-                                    />
-                                </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Full Technical Description (English)</label>
+                                            <textarea
+                                                className="form-textarea"
+                                                placeholder="Full technical copy, metallurgy, dyno notes..."
+                                                value={description}
+                                                onChange={(e) => setDescription(e.target.value)}
+                                                style={{ minHeight: '120px' }}
+                                            />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="form-group">
+                                            <label className="form-label">
+                                                Short Summary Description ({contentLang === 'ar' ? 'Arabic — العربية' : 'French — Français'})
+                                            </label>
+                                            <textarea
+                                                className="form-textarea"
+                                                dir={contentLang === 'ar' ? 'rtl' : 'ltr'}
+                                                placeholder={contentLang === 'ar' ? 'ملخص قصير للمنتج بالعربية...' : 'Description courte en français...'}
+                                                value={translations[contentLang]?.short_description || ''}
+                                                onChange={(e) => updateTranslation(contentLang, 'short_description', e.target.value)}
+                                                style={{ minHeight: '60px' }}
+                                            />
+                                        </div>
+
+                                        <div className="form-group">
+                                            <label className="form-label">
+                                                Full Technical Description ({contentLang === 'ar' ? 'Arabic — العربية' : 'French — Français'})
+                                            </label>
+                                            <textarea
+                                                className="form-textarea"
+                                                dir={contentLang === 'ar' ? 'rtl' : 'ltr'}
+                                                placeholder={contentLang === 'ar' ? 'الوصف الفني الكامل بالعربية...' : 'Description technique complète en français...'}
+                                                value={translations[contentLang]?.description || ''}
+                                                onChange={(e) => updateTranslation(contentLang, 'description', e.target.value)}
+                                                style={{ minHeight: '120px' }}
+                                            />
+                                        </div>
+                                    </>
+                                )}
 
                                 <div className="form-group">
                                     <label className="form-label">Engineering Specs (Table format)</label>

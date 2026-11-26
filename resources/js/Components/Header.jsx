@@ -17,7 +17,9 @@ import {
     MapPin,
     LogOut,
     Shield,
-    Package
+    Package,
+    Globe,
+    Coins
 } from 'lucide-react';
 import { useCart } from '@/Context/CartContext';
 import { useCurrency } from '@/Context/CurrencyContext';
@@ -377,7 +379,9 @@ export default function Header() {
                                 }}
                                 aria-expanded={langOpen}
                                 aria-label="Select Language"
+                                title="Language"
                             >
+                                <Globe size={13} strokeWidth={2.1} style={{ color: '#F36B16', flexShrink: 0 }} />
                                 <span>{selectedLang}</span>
                                 <ChevronDown
                                     size={11}
@@ -432,7 +436,9 @@ export default function Header() {
                                 }}
                                 aria-expanded={currencyOpen}
                                 aria-label="Select Currency"
+                                title="Currency"
                             >
+                                <Coins size={13} strokeWidth={2.1} style={{ color: '#F36B16', flexShrink: 0 }} />
                                 <span>{selectedCurrency}</span>
                                 <ChevronDown
                                     size={11}
@@ -887,8 +893,10 @@ export default function Header() {
                                         }}
                                         aria-expanded={stickyLangOpen}
                                         aria-label="Select Language"
+                                        title="Language"
                                     >
-                                        <span>{selectedLang}</span>
+                                        <Globe size={14} strokeWidth={2.1} style={{ color: '#F36B16', flexShrink: 0 }} />
+                                        <span className="notranslate" translate="no">{selectedLang}</span>
                                         <ChevronDown size={12} strokeWidth={2.2} className={`nav-chevron ${stickyLangOpen ? 'is-rotated' : ''}`} />
                                     </button>
 
@@ -936,8 +944,10 @@ export default function Header() {
                                         }}
                                         aria-expanded={stickyCurrencyOpen}
                                         aria-label="Select Currency"
+                                        title="Currency"
                                     >
-                                        <span>{selectedCurrency}</span>
+                                        <Coins size={14} strokeWidth={2.1} style={{ color: '#F36B16', flexShrink: 0 }} />
+                                        <span className="notranslate" translate="no">{selectedCurrency}</span>
                                         <ChevronDown size={12} strokeWidth={2.2} className={`nav-chevron ${stickyCurrencyOpen ? 'is-rotated' : ''}`} />
                                     </button>
 

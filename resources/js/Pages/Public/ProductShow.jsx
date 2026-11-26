@@ -27,6 +27,7 @@ import {
 import { useCart } from '@/Context/CartContext';
 import { useWishlist } from '@/Context/WishlistContext';
 import { useCurrency } from '@/Context/CurrencyContext';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function ProductShow({
     product,
@@ -40,6 +41,12 @@ export default function ProductShow({
     const { addToCart } = useCart();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const { formatPrice } = useCurrency();
+    const { t, localize } = useLanguage();
+
+    const displayName = localize(product, 'name');
+    const displayDescription = localize(product, 'description');
+    const displayCategoryName = product.category ? localize(product.category, 'name') : '';
+    const displayBrandName = product.brand ? localize(product.brand, 'name') : '';
 
     const defaultVar = variations.find(v => v.is_default) || variations[0] || null;
     const [selectedVariation, setSelectedVariation] = useState(defaultVar);
@@ -144,24 +151,24 @@ export default function ProductShow({
     };
 
     return (
-        <AppLayout title={product.name}>
+        <AppLayout title={displayName}>
             <div className="product-single bg-light">
                 <div className="container">
                     {/* Breadcrumbs */}
                     <nav className="product-single-breadcrumbs" aria-label="Breadcrumb">
-                        <Link href="/">Home</Link>
+                        <Link href="/">{t('home')}</Link>
                         <ChevronRight size={13} className="breadcrumb-separator" />
-                        <Link href="/shop">Shop</Link>
+                        <Link href="/shop">{t('shop')}</Link>
                         {product.category && (
                             <>
                                 <ChevronRight size={13} className="breadcrumb-separator" />
                                 <Link href={`/shop?category=${product.category.slug}`}>
-                                    {product.category.name}
+                                    {displayCategoryName}
                                 </Link>
                             </>
                         )}
                         <ChevronRight size={13} className="breadcrumb-separator" />
-                        <span className="breadcrumb-current">{product.name}</span>
+                        <span className="breadcrumb-current">{displayName}</span>
                     </nav>
 
                     {/* Main 60-40 Layout */}
@@ -253,13 +260,13 @@ export default function ProductShow({
                             <div className="product-info-top-row">
                                 <span className="brand-subtitle">
                                     <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
-                                    {product.brand ? `${product.brand.name.toUpperCase()} PRECISION SPARES` : 'PRECISION AUTOMOTIVE HARDWARE'}
+                                    {displayBrandName ? `${displayBrandName.toUpperCase()} PRECISION SPARES` : 'PRECISION AUTOMOTIVE HARDWARE'}
                                 </span>
                             </div>
 
                             {/* Product Title */}
                             <h1 className="product-title">
-                                {product.name}
+                                {displayName}
                             </h1>
 
                             {/* SKU, Part Number, Rating, Sold */}
@@ -498,7 +505,7 @@ export default function ProductShow({
                                     {/* Left: Description & 4 Engineering Pillars */}
                                     <div className="specs-overview-col">
                                         <p className="specs-description">
-                                            {product.description}
+                                            {displayDescription}
                                         </p>
 
                                         {/* 4 Feature Pillars with Orange Icons */}

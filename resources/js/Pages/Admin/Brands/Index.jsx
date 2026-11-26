@@ -9,34 +9,59 @@ export default function AdminBrandsIndex({ brands = [] }) {
     const totalCount = Array.isArray(brands) ? brands.length : (brands?.total ?? rows.length);
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState(null);
+    const [contentLang, setContentLang] = useState('en');
     const [name, setName] = useState('');
     const [slug, setSlug] = useState('');
     const [website, setWebsite] = useState('');
     const [description, setDescription] = useState('');
+    const [translations, setTranslations] = useState({ ar: { name: '', description: '' }, fr: { name: '', description: '' } });
     const [submitting, setSubmitting] = useState(false);
+
+    const updateTranslation = (langCode, field, val) => {
+        setTranslations((prev) => ({
+            ...prev,
+            [langCode]: {
+                ...(prev[langCode] || {}),
+                [field]: val,
+            },
+        }));
+    };
 
     const openCreate = () => {
         setEditingId(null);
+        setContentLang('en');
         setName('');
         setSlug('');
         setWebsite('');
         setDescription('');
+        setTranslations({ ar: { name: '', description: '' }, fr: { name: '', description: '' } });
         setShowModal(true);
     };
 
     const openEdit = (b) => {
         setEditingId(b.id);
+        setContentLang('en');
         setName(b.name);
         setSlug(b.slug);
         setWebsite(b.website || '');
         setDescription(b.description || '');
+        setTranslations({
+            ar: {
+                name: b.translations?.ar?.name || '',
+                description: b.translations?.ar?.description || '',
+            },
+            fr: {
+                name: b.translations?.fr?.name || '',
+                description: b.translations?.fr?.description || '',
+            },
+        });
         setShowModal(true);
     };
 
     const handleSave = (e) => {
         e.preventDefault();
         setSubmitting(true);
-        const data = { name, slug, website, description };
+        const data = { name, slug, website, description, translations };
 
         if (editingId) {
             router.put(`/admin/brands/${editingId}`, data, {
@@ -146,20 +171,64 @@ export default function AdminBrandsIndex({ brands = [] }) {
                             boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
                         }}
                     >
-                        <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '20px' }}>
+                        <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '14px' }}>
                             {editingId ? 'Edit Brand' : 'Create Brand'}
                         </h3>
+                        <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
+                            {[
+                                { code: 'en', label: 'EN (Default)' },
+                                { code: 'ar', label: 'AR (العربية)' },
+                                { code: 'fr', label: 'FR (Français)' },
+                            ].map((item) => {
+                                const active = contentLang === item.code;
+                                return (
+                                    <button
+                                        key={item.code}
+                                        type="button"
+                                        onClick={() => setContentLang(item.code)}
+                                        style={{
+                                            padding: '4px 10px',
+                                            borderRadius: '4px',
+                                            fontSize: '12px',
+                                            fontWeight: 700,
+                                            cursor: 'pointer',
+                                            border: active ? '1px solid #F36B16' : '1px solid #CBD5E1',
+                                            backgroundColor: active ? '#F36B16' : '#FFFFFF',
+                                            color: active ? '#FFFFFF' : '#334155',
+                                        }}
+                                    >
+                                        {item.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
                         <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                            <div className="form-group">
-                                <label className="form-label">Brand Name</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    required
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                />
-                            </div>
+                            {contentLang === 'en' ? (
+                                <div className="form-group">
+                                    <label className="form-label">Brand Name (English)</label>
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        required
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="form-group">
+                                    <label className="form-label">
+                                        Brand Name ({contentLang === 'ar' ? 'Arabic — العربية' : 'French — Français'})
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        dir={contentLang === 'ar' ? 'rtl' : 'ltr'}
+                                        placeholder={contentLang === 'ar' ? 'اسم العلامة التجارية بالعربية...' : 'Nom de la marque...'}
+                                        value={translations[contentLang]?.name || ''}
+                                        onChange={(e) => updateTranslation(contentLang, 'name', e.target.value)}
+                                    />
+                                </div>
+                            )}
                             <div className="form-group">
                                 <label className="form-label">Slug</label>
                                 <input
@@ -180,15 +249,31 @@ export default function AdminBrandsIndex({ brands = [] }) {
                                     placeholder="https://..."
                                 />
                             </div>
-                            <div className="form-group">
-                                <label className="form-label">Description</label>
-                                <textarea
-                                    className="form-textarea"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    style={{ minHeight: '60px' }}
-                                />
-                            </div>
+                            {contentLang === 'en' ? (
+                                <div className="form-group">
+                                    <label className="form-label">Description (English)</label>
+                                    <textarea
+                                        className="form-textarea"
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        style={{ minHeight: '60px' }}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="form-group">
+                                    <label className="form-label">
+                                        Description ({contentLang === 'ar' ? 'Arabic — العربية' : 'French — Français'})
+                                    </label>
+                                    <textarea
+                                        className="form-textarea"
+                                        dir={contentLang === 'ar' ? 'rtl' : 'ltr'}
+                                        placeholder={contentLang === 'ar' ? 'وصف العلامة التجارية بالعربية...' : 'Description en français...'}
+                                        value={translations[contentLang]?.description || ''}
+                                        onChange={(e) => updateTranslation(contentLang, 'description', e.target.value)}
+                                        style={{ minHeight: '60px' }}
+                                    />
+                                </div>
+                            )}
                             <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
                                 <button
                                     type="button"

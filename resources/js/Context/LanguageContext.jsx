@@ -2,39 +2,46 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { router } from '@inertiajs/react';
 
 const STORAGE_KEY = 'sap_selected_language';
+const NON_DEFAULT_PREFIXES = ['ar', 'fr'];
+const EXCLUDED_PATH_PREFIXES = [
+    '/admin',
+    '/supplier',
+    '/api',
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/logout',
+    '/storage',
+    '/checkout/stripe',
+];
 
-function setGoogleTranslateCookie(langCode) {
-    if (typeof document === 'undefined') return;
-    const host = window.location.hostname;
-    const lower = String(langCode || 'EN').toLowerCase();
-
-    if (lower === 'en') {
-        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${host};`;
-        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${host};`;
-    } else {
-        const val = `/en/${lower}`;
-        document.cookie = `googtrans=${val}; path=/;`;
-        document.cookie = `googtrans=${val}; path=/; domain=${host};`;
-    }
+export function detectLocaleFromPath(pathname = '') {
+    const clean = String(pathname || '/');
+    const match = clean.match(/^\/(ar|fr)(?:\/|$)/i);
+    return match ? match[1].toUpperCase() : 'EN';
 }
 
-function triggerGoogleTranslate(langCode, attempt = 0) {
-    if (typeof document === 'undefined') return;
-    const lower = String(langCode || 'EN').toLowerCase();
-    const combo = document.querySelector('select.goog-te-combo');
+export function isLocalizablePath(pathname = '') {
+    const clean = String(pathname || '/');
+    return !EXCLUDED_PATH_PREFIXES.some((prefix) => clean === prefix || clean.startsWith(`${prefix}/`));
+}
 
-    if (combo) {
-        if (combo.value !== lower) {
-            combo.value = lower;
-            combo.dispatchEvent(new Event('change'));
-        }
-        return;
+export function buildLocalizedPath(pathname = '/', targetLang = 'EN') {
+    const clean = String(pathname || '/');
+    if (!isLocalizablePath(clean)) {
+        return clean;
     }
 
-    if (attempt < 20) {
-        setTimeout(() => triggerGoogleTranslate(langCode, attempt + 1), 250);
+    // Strip any existing /ar or /fr prefix
+    const stripped = clean.replace(/^\/(ar|fr)(?=\/|$)/i, '') || '/';
+    const normalized = stripped.startsWith('/') ? stripped : `/${stripped}`;
+    const lower = String(targetLang || 'EN').toLowerCase();
+
+    if (!NON_DEFAULT_PREFIXES.includes(lower)) {
+        return normalized;
     }
+
+    return normalized === '/' ? `/${lower}` : `/${lower}${normalized}`;
 }
 
 export const LANGUAGE_CATALOG = [
@@ -111,6 +118,35 @@ const TRANSLATIONS = {
         all_products: 'All Products',
         quick_links: 'Quick Links',
         customer_service: 'Customer Service',
+
+        // Storefront Sections & Catalog
+        popular_categories: 'Popular Categories',
+        view_all_categories: 'View All Categories',
+        featured_products: 'Featured Products',
+        best_sellers: 'Best Sellers',
+        new_arrivals: 'New Arrivals',
+        all: 'All',
+        view_all: 'View All',
+        certified_brands: 'Certified Performance Brands',
+        certified_brands_desc: 'We partner directly with leading OEM and motorsport manufacturers for 100% genuine guaranteed spares.',
+        browse_categories: 'Product Categories',
+        browse_categories_desc: 'Browse our complete performance spare parts catalog organized by system.',
+        explore_parts: 'Explore Parts',
+        products_count: 'Products',
+        filters: 'Filters',
+        categories: 'Categories',
+        clear_filters: 'Clear Filters',
+        no_products_found: 'No products found matching your criteria.',
+        part_number: 'Part Number',
+        sku: 'SKU',
+        description: 'Description',
+        technical_specs: 'Technical Specifications',
+        vehicle_fitment: 'Vehicle Fitment',
+        customer_reviews: 'Customer Reviews',
+        related_products: 'Related Products',
+        buy_now: 'Buy Now',
+        select_options: 'Select Options',
+        off: 'OFF',
     },
     AR: {
         // Header & Utility Bar
@@ -179,6 +215,35 @@ const TRANSLATIONS = {
         all_products: 'جميع المنتجات',
         quick_links: 'روابط سريعة',
         customer_service: 'خدمة العملاء',
+
+        // Storefront Sections & Catalog
+        popular_categories: 'الفئات الشائعة',
+        view_all_categories: 'عرض جميع الفئات',
+        featured_products: 'المنتجات المميزة',
+        best_sellers: 'الأكثر مبيعاً',
+        new_arrivals: 'وصل حديثاً',
+        all: 'الكل',
+        view_all: 'عرض الكل',
+        certified_brands: 'العلامات التجارية المعتمدة للأداء',
+        certified_brands_desc: 'نتعاون مباشرة مع كبرى الشركات المصنعة لقطع الغيار الأصلية والرياضية بضمان 100%.',
+        browse_categories: 'فئات المنتجات',
+        browse_categories_desc: 'تصفح كتالوج قطع الغيار الرياضية الكامل مرتباً حسب أنظمة المركبة.',
+        explore_parts: 'استعراض القطع',
+        products_count: 'منتجات',
+        filters: 'تصفية',
+        categories: 'الفئات',
+        clear_filters: 'مسح الفلاتر',
+        no_products_found: 'لم يتم العثور على منتجات مطابقة لمعايير البحث.',
+        part_number: 'رقم القطعة',
+        sku: 'رمز المنتج',
+        description: 'الوصف',
+        technical_specs: 'المواصفات الفنية',
+        vehicle_fitment: 'توافق المركبات',
+        customer_reviews: 'تقييمات العملاء',
+        related_products: 'منتجات ذات صلة',
+        buy_now: 'اشترِ الآن',
+        select_options: 'اختر المواصفات',
+        off: 'خصم',
     },
     FR: {
         // Header & Utility Bar
@@ -247,6 +312,35 @@ const TRANSLATIONS = {
         all_products: 'Tous les produits',
         quick_links: 'Liens rapides',
         customer_service: 'Service client',
+
+        // Storefront Sections & Catalog
+        popular_categories: 'Catégories populaires',
+        view_all_categories: 'Voir toutes les catégories',
+        featured_products: 'Produits en vedette',
+        best_sellers: 'Meilleures ventes',
+        new_arrivals: 'Nouveautés',
+        all: 'Tous',
+        view_all: 'Voir tout',
+        certified_brands: 'Marques Performance Certifiées',
+        certified_brands_desc: "Nous travaillons directement avec les plus grands fabricants OEM et motorsport pour des pièces 100% d'origine.",
+        browse_categories: 'Catégories de produits',
+        browse_categories_desc: 'Parcourez notre catalogue complet de pièces performance classé par système.',
+        explore_parts: 'Voir les pièces',
+        products_count: 'Produits',
+        filters: 'Filtres',
+        categories: 'Catégories',
+        clear_filters: 'Réinitialiser',
+        no_products_found: 'Aucun produit ne correspond à votre recherche.',
+        part_number: 'Référence pièce',
+        sku: 'SKU',
+        description: 'Description',
+        technical_specs: 'Spécifications techniques',
+        vehicle_fitment: 'Compatibilité véhicule',
+        customer_reviews: 'Avis clients',
+        related_products: 'Produits similaires',
+        buy_now: 'Acheter maintenant',
+        select_options: 'Choisir les options',
+        off: 'DE RÉDUCTION',
     },
 };
 
@@ -255,13 +349,9 @@ const LanguageContext = createContext(null);
 export function LanguageProvider({ children }) {
     const [language, setLanguageState] = useState(() => {
         if (typeof window !== 'undefined') {
-            try {
-                const saved = window.localStorage.getItem(STORAGE_KEY);
-                if (saved && TRANSLATIONS[saved.toUpperCase()]) {
-                    return saved.toUpperCase();
-                }
-            } catch {
-                // ignore storage errors
+            const urlLang = detectLocaleFromPath(window.location.pathname);
+            if (TRANSLATIONS[urlLang]) {
+                return urlLang;
             }
         }
         return 'EN';
@@ -276,18 +366,16 @@ export function LanguageProvider({ children }) {
         if (typeof document !== 'undefined') {
             document.documentElement.lang = activeMeta.htmlLang;
             document.documentElement.dir = activeMeta.dir;
-            setGoogleTranslateCookie(activeMeta.code);
-            if (activeMeta.code !== 'EN') {
-                triggerGoogleTranslate(activeMeta.code);
-            }
         }
     }, [activeMeta]);
 
-    // Re-apply Google Translate on Inertia SPA navigation when a non-English language is active
+    // Keep state synced with URL prefix on Inertia navigation
     useEffect(() => {
         const offNavigate = router.on('navigate', () => {
-            if (language !== 'EN') {
-                setTimeout(() => triggerGoogleTranslate(language), 150);
+            if (typeof window === 'undefined') return;
+            const urlLang = detectLocaleFromPath(window.location.pathname);
+            if (urlLang !== language && TRANSLATIONS[urlLang]) {
+                setLanguageState(urlLang);
             }
         });
         return () => {
@@ -298,7 +386,6 @@ export function LanguageProvider({ children }) {
     const setLanguage = (code) => {
         const upper = String(code || 'EN').toUpperCase();
         const next = TRANSLATIONS[upper] ? upper : 'EN';
-        const prev = language;
 
         setLanguageState(next);
         if (typeof window !== 'undefined') {
@@ -307,22 +394,31 @@ export function LanguageProvider({ children }) {
             } catch {
                 // ignore storage errors
             }
+
+            if (isLocalizablePath(window.location.pathname)) {
+                const nextPath = buildLocalizedPath(window.location.pathname, next);
+                const targetUrl = `${nextPath}${window.location.search}${window.location.hash}`;
+                if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== targetUrl) {
+                    window.history.replaceState(window.history.state, '', targetUrl);
+                }
+            }
         }
-
-        setGoogleTranslateCookie(next);
-
-        if (next === 'EN' && prev !== 'EN') {
-            // Cleanly restore original English DOM nodes when leaving Google Translate
-            window.location.reload();
-            return;
-        }
-
-        triggerGoogleTranslate(next);
     };
 
     const value = useMemo(() => {
         const dict = TRANSLATIONS[language] || TRANSLATIONS.EN;
+        const lower = String(language || 'EN').toLowerCase();
         const t = (key, fallback = '') => dict[key] || TRANSLATIONS.EN[key] || fallback || key;
+        const localize = (entity, field, fallback = '') => {
+            if (!entity || typeof entity !== 'object') return fallback || '';
+            if (lower !== 'en') {
+                const translated = entity?.translations?.[lower]?.[field];
+                if (typeof translated === 'string' && translated.trim() !== '') {
+                    return translated;
+                }
+            }
+            return entity[field] ?? fallback ?? '';
+        };
 
         return {
             language,
@@ -331,6 +427,7 @@ export function LanguageProvider({ children }) {
             availableLanguages: LANGUAGE_CATALOG,
             setLanguage,
             t,
+            localize,
         };
     }, [language, activeMeta]);
 
@@ -347,6 +444,7 @@ export function useLanguage() {
             availableLanguages: LANGUAGE_CATALOG,
             setLanguage: () => {},
             t: (key, fallback = '') => TRANSLATIONS.EN[key] || fallback || key,
+            localize: (entity, field, fallback = '') => (entity && typeof entity === 'object' ? entity[field] ?? fallback ?? '' : fallback || ''),
         };
     }
     return ctx;

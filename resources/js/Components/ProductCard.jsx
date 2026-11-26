@@ -9,10 +9,16 @@ import { useWishlist } from '@/Context/WishlistContext';
 export default function ProductCard({ product }) {
     const { addToCart } = useCart();
     const { formatPrice } = useCurrency();
-    const { t } = useLanguage();
+    const { t, localize } = useLanguage();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const [quantity, setQuantity] = useState(1);
     const [added, setAdded] = useState(false);
+
+    const displayName = localize(product, 'name');
+    const displayShortDesc = localize(product, 'short_description');
+    const displayBrand = product.brand
+        ? (typeof product.brand === 'object' ? localize(product.brand, 'name') : product.brand)
+        : '';
 
     const isFav = isInWishlist(product.id);
     const regularPrice = Number(product.base_price || product.regular_price || 0);
@@ -37,7 +43,7 @@ export default function ProductCard({ product }) {
             {/* Discount Badge */}
             {hasDiscount && discountPercent > 0 && (
                 <div className="product-card-badge">
-                    <span className="badge-discount">-{discountPercent}% OFF</span>
+                    <span className="badge-discount">-{discountPercent}% {t('off')}</span>
                 </div>
             )}
 
@@ -59,7 +65,7 @@ export default function ProductCard({ product }) {
             <Link href={`/products/${product.slug || ''}`} className="product-card-media">
                 <img 
                     src={product.main_image || '/assets/images/products/performance-tire.webp'} 
-                    alt={product.name} 
+                    alt={displayName} 
                     loading="lazy" 
                     onError={(e) => {
                         e.target.onerror = null;
@@ -70,16 +76,16 @@ export default function ProductCard({ product }) {
 
             {/* Body */}
             <div className="product-card-body">
-                {product.brand && (
-                    <span className="product-card-brand">{product.brand.name || product.brand}</span>
+                {displayBrand && (
+                    <span className="product-card-brand">{displayBrand}</span>
                 )}
 
                 <h3 className="product-card-title">
-                    <Link href={`/products/${product.slug || ''}`}>{product.name}</Link>
+                    <Link href={`/products/${product.slug || ''}`}>{displayName}</Link>
                 </h3>
 
-                {product.short_description && (
-                    <p className="product-card-desc">{product.short_description}</p>
+                {displayShortDesc && (
+                    <p className="product-card-desc">{displayShortDesc}</p>
                 )}
 
                 {/* Rating */}
