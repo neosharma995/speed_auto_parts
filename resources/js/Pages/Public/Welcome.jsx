@@ -214,11 +214,11 @@ export default function Welcome({
 
     // 5 Vehicle types
     const vehicleTypes = [
-        { name: 'Cars', slug: 'cars', img: '/assets/images/vehicles/cars.webp' },
-        { name: 'SUVs', slug: 'suvs', img: '/assets/images/vehicles/suvs.webp' },
-        { name: 'Trucks', slug: 'trucks', img: '/assets/images/vehicles/trucks.webp' },
-        { name: 'Vans', slug: 'vans', img: '/assets/images/vehicles/vans.webp' },
-        { name: 'Motorcycles', slug: 'motorcycles', img: '/assets/images/vehicles/motorcycles.webp' },
+        { name: t('vt_cars'), slug: 'cars', img: '/assets/images/vehicles/cars.webp' },
+        { name: t('vt_suvs'), slug: 'suvs', img: '/assets/images/vehicles/suvs.webp' },
+        { name: t('vt_trucks'), slug: 'trucks', img: '/assets/images/vehicles/trucks.webp' },
+        { name: t('vt_vans'), slug: 'vans', img: '/assets/images/vehicles/vans.webp' },
+        { name: t('vt_motorcycles'), slug: 'motorcycles', img: '/assets/images/vehicles/motorcycles.webp' },
     ];
 
     // 8 Popular Brands with official SVG marks
@@ -235,10 +235,10 @@ export default function Welcome({
 
     // Top picks for your build
     const topPicks = [
-        { title: 'Performance Brakes', slug: 'brakes', img: '/assets/images/categories/brakes.webp' },
-        { title: 'Cold Air Intakes', slug: 'intake', img: '/assets/images/categories/intake.webp' },
-        { title: 'Coilover Kits', slug: 'suspension', img: '/assets/images/categories/suspension.webp' },
-        { title: 'Exhaust Systems', slug: 'exhaust', img: '/assets/images/categories/exhaust.webp' },
+        { title: t('tp_brakes'), slug: 'brakes', img: '/assets/images/categories/brakes.webp' },
+        { title: t('tp_intakes'), slug: 'intake', img: '/assets/images/categories/intake.webp' },
+        { title: t('tp_coilovers'), slug: 'suspension', img: '/assets/images/categories/suspension.webp' },
+        { title: t('tp_exhaust'), slug: 'exhaust', img: '/assets/images/categories/exhaust.webp' },
     ];
 
     return (
@@ -323,17 +323,17 @@ export default function Welcome({
                         {/* Promo Card 1: Tires */}
                         <div className="promo-banner-card">
                             <div className="promo-content">
-                                <span className="promo-eyebrow">UP TO</span>
-                                <h3 className="promo-highlight">20% OFF</h3>
-                                <p className="promo-sub">On Performance Tires</p>
+                                <span className="promo-eyebrow">{t('promo_up_to')}</span>
+                                <h3 className="promo-highlight">{t('promo_20_off')}</h3>
+                                <p className="promo-sub">{t('promo_tires_sub')}</p>
                                 <Link href="/shop?category=tires" className="btn btn-primary promo-btn">
-                                    Shop Tires <ArrowRight size={14} />
+                                    {t('promo_shop_tires')} <ArrowRight size={14} />
                                 </Link>
                             </div>
                             <div className="promo-thumb-wrap">
                                 <img
                                     src="/assets/images/promotions/tire-promotion.webp"
-                                    alt="Performance Tires Promotion"
+                                    alt={t('promo_tires_sub')}
                                     className="promo-thumb"
                                     loading="lazy"
                                 />
@@ -343,16 +343,16 @@ export default function Welcome({
                         {/* Promo Card 2: Brakes */}
                         <div className="promo-banner-card">
                             <div className="promo-content">
-                                <h3 className="promo-heading-white">Brake Upgrade Packages</h3>
-                                <p className="promo-discount-orange">Save up to 15%</p>
+                                <h3 className="promo-heading-white">{t('promo_brakes_title')}</h3>
+                                <p className="promo-discount-orange">{t('promo_save_15')}</p>
                                 <Link href="/shop?category=brakes" className="btn btn-primary promo-btn">
-                                    Shop Brakes <ArrowRight size={14} />
+                                    {t('promo_shop_brakes')} <ArrowRight size={14} />
                                 </Link>
                             </div>
                             <div className="promo-thumb-wrap">
                                 <img
                                     src="/assets/images/promotions/brake-promotion.webp"
-                                    alt="Brake Upgrade Packages"
+                                    alt={t('promo_brakes_title')}
                                     className="promo-thumb"
                                     loading="lazy"
                                 />
@@ -362,16 +362,16 @@ export default function Welcome({
                         {/* Promo Card 3: Engine */}
                         <div className="promo-banner-card">
                             <div className="promo-content">
-                                <h3 className="promo-heading-white">Engine Performance Parts</h3>
-                                <p className="promo-desc-grey">More Power. More Performance.</p>
+                                <h3 className="promo-heading-white">{t('promo_engine_title')}</h3>
+                                <p className="promo-desc-grey">{t('promo_engine_sub')}</p>
                                 <Link href="/shop?category=intake" className="btn btn-primary promo-btn">
-                                    Shop Engine Parts <ArrowRight size={14} />
+                                    {t('promo_shop_engine')} <ArrowRight size={14} />
                                 </Link>
                             </div>
                             <div className="promo-thumb-wrap">
                                 <img
                                     src="/assets/images/promotions/engine-promotion.webp"
-                                    alt="Engine Performance Tuning"
+                                    alt={t('promo_engine_title')}
                                     className="promo-thumb"
                                     loading="lazy"
                                 />
@@ -387,11 +387,11 @@ export default function Welcome({
                     <div className="section-header">
                         <div className="section-header-left">
                             <h2 className="section-header-title">
-                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> Shop by Vehicle Type
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> {t('shop_by_vehicle_type')}
                             </h2>
                         </div>
                         <Link href="/vehicle-finder" className="section-header-link">
-                            View All Vehicle Types <ArrowRight size={15} />
+                            {t('view_all_vehicle_types')} <ArrowRight size={15} />
                         </Link>
                     </div>
 
@@ -428,11 +428,11 @@ export default function Welcome({
                     <div className="section-header">
                         <div className="section-header-left">
                             <h2 className="section-header-title">
-                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> Popular Brands
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> {t('popular_brands')}
                             </h2>
                         </div>
                         <Link href="/brands" className="section-header-link">
-                            View All Brands <ArrowRight size={15} />
+                            {t('view_all_brands')} <ArrowRight size={15} />
                         </Link>
                     </div>
 
@@ -462,8 +462,8 @@ export default function Welcome({
                         <div className="why-choose-brand-col">
                             <img src="/assets/icons/heading-stripe.webp" alt="" className="wc-brand-stripe" />
                             <div className="wc-brand-title">
-                                <span>Why Choose</span>
-                                <span>Speed Autos Parts?</span>
+                                <span>{t('why_choose')}</span>
+                                <span>{t('why_choose_brand')}</span>
                             </div>
                         </div>
 
@@ -472,8 +472,8 @@ export default function Welcome({
                                 <ShieldCheck size={34} strokeWidth={1.8} />
                             </div>
                             <div className="wc-text">
-                                <h4>Genuine Parts</h4>
-                                <p>100% authentic & certified</p>
+                                <h4>{t('wc_genuine_title')}</h4>
+                                <p>{t('wc_genuine_desc')}</p>
                             </div>
                         </div>
 
@@ -482,8 +482,8 @@ export default function Welcome({
                                 <Truck size={34} strokeWidth={1.8} />
                             </div>
                             <div className="wc-text">
-                                <h4>International Shipping</h4>
-                                <p>To 100+ countries</p>
+                                <h4>{t('wc_shipping_title')}</h4>
+                                <p>{t('wc_shipping_desc')}</p>
                             </div>
                         </div>
 
@@ -492,8 +492,8 @@ export default function Welcome({
                                 <RefreshCw size={30} strokeWidth={1.8} />
                             </div>
                             <div className="wc-text">
-                                <h4>30-Day Returns</h4>
-                                <p>Hassle-free & simple</p>
+                                <h4>{t('wc_returns_title')}</h4>
+                                <p>{t('wc_returns_desc')}</p>
                             </div>
                         </div>
 
@@ -502,8 +502,8 @@ export default function Welcome({
                                 <Headphones size={32} strokeWidth={1.8} />
                             </div>
                             <div className="wc-text">
-                                <h4>Expert Support</h4>
-                                <p>Automotive specialists</p>
+                                <h4>{t('wc_support_title')}</h4>
+                                <p>{t('wc_support_desc')}</p>
                             </div>
                         </div>
                     </div>
@@ -516,12 +516,12 @@ export default function Welcome({
                     <div className="section-header">
                         <div className="section-header-left">
                             <h2 className="section-header-title">
-                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> Top Picks for Your Build
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> {t('top_picks_title')}
                             </h2>
                         </div>
                         <div className="top-picks-header-right">
                             <Link href="/shop" className="section-header-link">
-                                View All <ArrowRight size={15} />
+                                {t('view_all')} <ArrowRight size={15} />
                             </Link>
 
                             <div className="slider-nav-arrows">
@@ -571,23 +571,23 @@ export default function Welcome({
                         <div className="rr-left">
                             <div className="rr-eyebrow">
                                 <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
-                                <span>REAL RESULTS</span>
+                                <span>{t('rr_eyebrow')}</span>
                             </div>
                             <h2 className="rr-heading">
-                                BUILT BY ENTHUSIASTS<br />TRUSTED WORLDWIDE
+                                {t('rr_heading_line1')}<br />{t('rr_heading_line2')}
                             </h2>
                             <p className="rr-desc">
-                                See how our parts perform in real builds from customers around the globe.
+                                {t('rr_desc')}
                             </p>
                             <Link href="/shop" className="btn btn-primary rr-btn">
-                                Explore Customer Builds <ArrowRight size={14} />
+                                {t('rr_cta')} <ArrowRight size={14} />
                             </Link>
                         </div>
 
                         <div className="rr-center-car">
                             <img
                                 src="/assets/images/customer/customer-builds.webp"
-                                alt="Customer Performance Build"
+                                alt={t('rr_cta')}
                                 className="rr-car-img"
                                 loading="lazy"
                             />
@@ -599,7 +599,7 @@ export default function Welcome({
                                 <span className="rr-stat-num">
                                     <StatCounter value={100000} suffix="+" isVisible={countersVisible} />
                                 </span>
-                                <span className="rr-stat-label">Happy Customers</span>
+                                <span className="rr-stat-label">{t('rr_happy_customers')}</span>
                             </div>
 
                             <div className="rr-stat-divider" />
@@ -609,7 +609,7 @@ export default function Welcome({
                                 <span className="rr-stat-num">
                                     <StatCounter value={250000} suffix="+" isVisible={countersVisible} />
                                 </span>
-                                <span className="rr-stat-label">Parts In Stock</span>
+                                <span className="rr-stat-label">{t('rr_parts_in_stock')}</span>
                             </div>
 
                             <div className="rr-stat-divider" />
@@ -619,7 +619,7 @@ export default function Welcome({
                                 <span className="rr-stat-num">
                                     <StatCounter value={100} suffix="+" isVisible={countersVisible} />
                                 </span>
-                                <span className="rr-stat-label">Countries Served</span>
+                                <span className="rr-stat-label">{t('rr_countries_served')}</span>
                             </div>
 
                             <div className="rr-stat-divider" />
@@ -629,7 +629,7 @@ export default function Welcome({
                                 <span className="rr-stat-num">
                                     <StatCounter value={4.8} suffix="/5" decimals={1} isVisible={countersVisible} />
                                 </span>
-                                <span className="rr-stat-label">Customer Rating</span>
+                                <span className="rr-stat-label">{t('rr_customer_rating')}</span>
                             </div>
                         </div>
                     </div>

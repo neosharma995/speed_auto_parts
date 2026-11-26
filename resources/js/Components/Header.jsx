@@ -349,7 +349,7 @@ export default function Header() {
                 <div className="container site-header-utility-inner">
                     <div className="site-header-utility-left">
                         <CarFront size={17} strokeWidth={2.2} className="utility-car-icon" />
-                        <span>{settings.header_announcement || t('free_delivery_banner')}</span>
+                        <span>{selectedLang === 'EN' ? (settings.header_announcement || t('free_delivery_banner')) : t('free_delivery_banner')}</span>
                     </div>
 
                     <div className="site-header-utility-right">
@@ -978,7 +978,7 @@ export default function Header() {
                             <a href={`tel:${settings.store_phone || '+97145128900'}`} className="nav-contact-link">
                                 <Phone size={14} strokeWidth={2.2} className="nav-contact-icon" />
                                 <span className="nav-contact-text">
-                                    <span className="nav-contact-label">{settings.header_hotline_label || 'Dubai Hotline:'}</span>
+                                    <span className="nav-contact-label">{selectedLang === 'EN' ? (settings.header_hotline_label || `${t('dubai_hotline')}:`) : `${t('dubai_hotline')}:`}</span>
                                     <strong className="nav-contact-val">{settings.store_phone || '+971 4 512 8900'}</strong>
                                 </span>
                             </a>

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import * as THREE from 'three';
 import VehicleFinder from './VehicleFinder';
+import { useLanguage } from '@/Context/LanguageContext';
 import '../../scss/Hero.scss';
 
 // ============================================================================
@@ -171,9 +172,10 @@ export function HeroVideo({ sceneIndex, isVisible, isReducedMotion, isPlaying = 
 // Component: HeroContent (Brand Content & Left Column)
 // ============================================================================
 export function HeroContent({ banner = null, sceneIndex = 0 }) {
-    const eyebrow = banner?.eyebrow || 'PERFORMANCE PARTS FOR DRIVERS';
-    const description = banner?.subtitle || 'Premium automotive spare parts for street, track, and garage builds.';
-    const ctaText = banner?.button_text || 'Shop Performance';
+    const { language, t } = useLanguage();
+    const eyebrow = (language === 'EN' && banner?.eyebrow) ? banner.eyebrow : t('hero_eyebrow');
+    const description = (language === 'EN' && banner?.subtitle) ? banner.subtitle : t('hero_desc');
+    const ctaText = (language === 'EN' && banner?.button_text) ? banner.button_text : t('hero_shop_cta');
     const ctaLink = banner?.button_link || '/shop';
 
     return (
@@ -186,9 +188,9 @@ export function HeroContent({ banner = null, sceneIndex = 0 }) {
 
             {/* Main Brand Heading */}
             <h1 className="home-hero-heading">
-                <span className="heading-white">BUILD</span>
-                <span className="heading-orange">UPGRADE</span>
-                <span className="heading-white">PERFORM</span>
+                <span className="heading-white">{t('hero_build')}</span>
+                <span className="heading-orange">{t('hero_upgrade')}</span>
+                <span className="heading-white">{t('hero_perform')}</span>
             </h1>
 
             {/* Description */}
@@ -211,7 +213,7 @@ export function HeroContent({ banner = null, sceneIndex = 0 }) {
                     className="hero-btn hero-secondary-btn"
                 >
                     <Car size={17} />
-                    <span>Find By Vehicle</span>
+                    <span>{t('hero_vehicle_cta')}</span>
                 </Link>
             </div>
         </div>

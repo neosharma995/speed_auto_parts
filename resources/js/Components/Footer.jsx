@@ -6,7 +6,7 @@ import axios from 'axios';
 
 export default function Footer() {
     const { settings = {} } = usePage().props;
-    const { t } = useLanguage();
+    const { language, t } = useLanguage();
     const [newsletterEmail, setNewsletterEmail] = useState('');
     const [subscribed, setSubscribed] = useState(false);
     const [subscribeMessage, setSubscribeMessage] = useState('');
@@ -58,13 +58,13 @@ export default function Footer() {
                     <div className="footer-nl-content-col">
                         <div className="footer-nl-eyebrow">
                             <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
-                            <span>{settings.footer_newsletter_eyebrow || t('stay_in_the_loop')}</span>
+                            <span>{language === 'EN' ? (settings.footer_newsletter_eyebrow || t('stay_in_the_loop')) : t('stay_in_the_loop')}</span>
                         </div>
                         <h2 className="footer-nl-heading">
-                            {settings.footer_newsletter_heading || t('newsletter_heading')}
+                            {language === 'EN' ? (settings.footer_newsletter_heading || t('newsletter_heading')) : t('newsletter_heading')}
                         </h2>
                         <p className="footer-nl-desc">
-                            {settings.footer_newsletter_desc || t('newsletter_desc')}
+                            {language === 'EN' ? (settings.footer_newsletter_desc || t('newsletter_desc')) : t('newsletter_desc')}
                         </p>
 
                         {subscribed ? (
@@ -117,7 +117,7 @@ export default function Footer() {
                                 />
                             </Link>
                             <p className="footer-brand-desc">
-                                {settings.footer_description || 'Your trusted global source for premium automotive spare parts, performance upgrades, and genuine replacement components.'}
+                                {language === 'EN' ? (settings.footer_description || t('footer_brand_desc')) : t('footer_brand_desc')}
                             </p>
                             <div className="footer-social-row">
                                 {settings.social_facebook && (
@@ -152,15 +152,15 @@ export default function Footer() {
                         <div className="footer-col">
                             <h3 className="footer-heading">
                                 <ShoppingBag size={16} color="#F97316" strokeWidth={2.2} className="footer-heading-icon" />
-                                <span>Shop</span>
+                                <span>{t('shop')}</span>
                             </h3>
                             <ul className="footer-links">
-                                <li><Link href="/products">All Products</Link></li>
-                                <li><Link href="/category/performance-parts">Performance Parts</Link></li>
-                                <li><Link href="/category/tires">Tires</Link></li>
-                                <li><Link href="/category/brakes">Brakes</Link></li>
-                                <li><Link href="/category/exhaust">Exhaust</Link></li>
-                                <li><Link href="/category/suspension">Suspension</Link></li>
+                                <li><Link href="/products">{t('all_products')}</Link></li>
+                                <li><Link href="/category/performance-parts">{t('footer_performance_parts')}</Link></li>
+                                <li><Link href="/category/tires">{t('footer_tires')}</Link></li>
+                                <li><Link href="/category/brakes">{t('footer_brakes')}</Link></li>
+                                <li><Link href="/category/exhaust">{t('footer_exhaust')}</Link></li>
+                                <li><Link href="/category/suspension">{t('footer_suspension')}</Link></li>
                             </ul>
                         </div>
 
@@ -168,15 +168,15 @@ export default function Footer() {
                         <div className="footer-col">
                             <h3 className="footer-heading">
                                 <Info size={16} color="#F97316" strokeWidth={2.2} className="footer-heading-icon" />
-                                <span>Information</span>
+                                <span>{t('footer_information')}</span>
                             </h3>
                             <ul className="footer-links">
-                                <li><Link href="/about-us">About Us</Link></li>
-                                <li><Link href="/contact-us">Contact Us</Link></li>
-                                <li><Link href="/shipping-delivery">Shipping &amp; Delivery</Link></li>
-                                <li><Link href="/return-policy">Returns &amp; Refunds</Link></li>
-                                <li><Link href="/terms-and-conditions">Terms &amp; Conditions</Link></li>
-                                <li><Link href="/privacy-policy">Privacy Policy</Link></li>
+                                <li><Link href="/about-us">{t('footer_about_us')}</Link></li>
+                                <li><Link href="/contact-us">{t('footer_contact_us')}</Link></li>
+                                <li><Link href="/shipping-delivery">{t('footer_shipping_delivery')}</Link></li>
+                                <li><Link href="/return-policy">{t('footer_returns_refunds')}</Link></li>
+                                <li><Link href="/terms-and-conditions">{t('footer_terms')}</Link></li>
+                                <li><Link href="/privacy-policy">{t('footer_privacy')}</Link></li>
                             </ul>
                         </div>
 
@@ -184,15 +184,15 @@ export default function Footer() {
                         <div className="footer-col">
                             <h3 className="footer-heading">
                                 <Headphones size={16} color="#F97316" strokeWidth={2.2} className="footer-heading-icon" />
-                                <span>Customer Support</span>
+                                <span>{t('footer_customer_support')}</span>
                             </h3>
                             <ul className="footer-links">
-                                <li><Link href="/track-order">Track Your Order</Link></li>
-                                <li><Link href="/help-center">Help Center</Link></li>
-                                <li><Link href="/faqs">FAQs</Link></li>
-                                <li><Link href="/terms-and-conditions">Warranty Information</Link></li>
-                                <li><Link href="/vehicle-finder">Part Compatibility</Link></li>
-                                <li><Link href="/contact-us">Request a Part</Link></li>
+                                <li><Link href="/track-order">{t('footer_track_your_order')}</Link></li>
+                                <li><Link href="/help-center">{t('footer_help_center')}</Link></li>
+                                <li><Link href="/faqs">{t('footer_faqs')}</Link></li>
+                                <li><Link href="/terms-and-conditions">{t('footer_warranty')}</Link></li>
+                                <li><Link href="/vehicle-finder">{t('footer_compatibility')}</Link></li>
+                                <li><Link href="/contact-us">{t('footer_request_part')}</Link></li>
                             </ul>
                         </div>
 
@@ -207,15 +207,15 @@ export default function Footer() {
                                         </svg>
                                     </div>
                                     <div className="help-text-group">
-                                        <span className="help-label">Need Help?</span>
+                                        <span className="help-label">{t('footer_need_help')}</span>
                                         <strong className="help-phone">{settings.store_phone || '+971 4 512 8900'}</strong>
                                     </div>
                                 </div>
                                 <span className="help-hours">
-                                    {settings.footer_hours || 'Mon – Sat, 9:00 AM – 7:00 PM (Dubai / GST)'}
+                                    {language === 'EN' ? (settings.footer_hours || t('footer_hours')) : t('footer_hours')}
                                 </span>
                                 <Link href="/contact-us" className="footer-contact-btn">
-                                    Contact Support
+                                    {t('footer_contact_support')}
                                 </Link>
                             </div>
                         </div>
@@ -227,7 +227,7 @@ export default function Footer() {
                         <div className="footer-corner-flare flare-right" />
                         
                         <span className="footer-bottom-copyright">
-                            {settings.footer_copyright || `© ${new Date().getFullYear()} Speed Autos Parts. All Rights Reserved.`}
+                            {language === 'EN' ? (settings.footer_copyright || `© ${new Date().getFullYear()} Speed Autos Parts. ${t('footer_copyright')}`) : `© ${new Date().getFullYear()} Speed Autos Parts. ${t('footer_copyright')}`}
                         </span>
 
                         <div className="footer-payment-badges">
