@@ -597,9 +597,8 @@ export default function ProductShow({
                                             compatibleVehicles.map((item, idx) => (
                                                 <tr key={idx}>
                                                     <td><strong>{item.vehicle?.year}</strong></td>
-                                                    <td>{item.vehicle?.make} {item.vehicle?.model}</td>
-                                                    <td>{item.vehicle?.engine}</td>
-                                                    <td>{item.notes || t('pdp_direct_oem')}</td>
+                                                    <td>{translateTerm(`${item.vehicle?.make || ''} ${item.vehicle?.model || ''}`.trim())}</td>
+                                                    <td>{translateTerm(item.vehicle?.engine || '')}</td>
                                                     <td>{item.notes ? translateTerm(item.notes) : t('pdp_direct_oem')}</td>
                                                 </tr>
                                             ))
@@ -620,14 +619,14 @@ export default function ProductShow({
                                                     <Star key={i} size={14} className="star-filled" />
                                                 ))}
                                             </div>
-                                            <strong>Benchmark Dry Traction & Crisp Turn-In</strong>
+                                            <strong>{translateTerm('Benchmark Dry Traction & Crisp Turn-In')}</strong>
                                             <span className="badge-verified">{t('pdp_verified_buyer')}</span>
                                         </div>
                                         <p className="review-body">
-                                            Installed these on my 992 GT3 for weekend track sessions. The dry grip is extraordinary right out of the pit box with immediate steering precision.
+                                            {translateTerm('Installed these on my 992 GT3 for weekend track sessions. The dry grip is extraordinary right out of the pit box with immediate steering precision.')}
                                         </p>
                                         <span className="review-author">
-                                            By Rajesh M. on Nov 15, 2026
+                                            {t('pdp_by')} Rajesh M. {t('pdp_on')} Nov 15, 2026
                                         </span>
                                     </div>
                                 ) : (
@@ -639,16 +638,16 @@ export default function ProductShow({
                                                         <Star key={i} size={14} className="star-filled" />
                                                     ))}
                                                 </div>
-                                                <strong>{rev.title || 'Verified Performance'}</strong>
+                                                <strong>{translateTerm(rev.title || 'Verified Performance')}</strong>
                                                 {rev.is_verified_purchase && (
                                                     <span className="badge-verified">{t('pdp_verified_buyer')}</span>
                                                 )}
                                             </div>
                                             <p className="review-body">
-                                                {rev.comment}
+                                                {translateTerm(rev.comment)}
                                             </p>
                                             <span className="review-author">
-                                                By {rev.reviewer_name} on {new Date(rev.created_at).toLocaleDateString()}
+                                                {t('pdp_by')} {rev.reviewer_name} {t('pdp_on')} {new Date(rev.created_at).toLocaleDateString()}
                                             </span>
                                         </div>
                                     ))

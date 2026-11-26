@@ -3,13 +3,15 @@ import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import CustomerSidebar from '@/Components/CustomerSidebar';
 import { useCurrency } from '@/Context/CurrencyContext';
+import { useLanguage } from '@/Context/LanguageContext';
 import { Package, Truck } from 'lucide-react';
 
 export default function CustomerOrders({ orders = [] }) {
     const { formatPrice } = useCurrency();
+    const { t } = useLanguage();
 
     return (
-        <AppLayout title="My Orders">
+        <AppLayout title={t('cust_my_orders')}>
             <div className="customer-portal">
                 <div className="container">
                     <div className="customer-portal-layout">
@@ -22,16 +24,15 @@ export default function CustomerOrders({ orders = [] }) {
                         <div className="customer-portal-content">
                             <div className="portal-card">
                                 <div className="portal-card-header">
-                                    <h2>All Orders History ({orders.length})</h2>
+                                    <h2>{t('cust_all_orders_history')} ({orders.length})</h2>
                                 </div>
 
                                 {orders.length === 0 ? (
                                     <div style={{ textAlign: 'center', padding: '48px 0', color: '#666' }}>
                                         <Package size={48} color="#DCDCDC" style={{ margin: '0 auto 12px' }} />
-                                        <h3>No Orders Placed Yet</h3>
-                                        <p style={{ fontSize: '13px', marginTop: '4px' }}>Browse our catalog for high-performance tires, brakes, intakes, and exhausts.</p>
+                                        <h3>{t('cust_no_orders')}</h3>
                                         <Link href="/shop" className="btn btn-primary btn-sm" style={{ marginTop: '16px' }}>
-                                            Shop Now
+                                            {t('cust_shop_now')}
                                         </Link>
                                     </div>
                                 ) : (

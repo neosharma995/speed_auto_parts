@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import CustomerSidebar from '@/Components/CustomerSidebar';
 import { useCurrency } from '@/Context/CurrencyContext';
+import { useLanguage } from '@/Context/LanguageContext';
 import { 
     ShoppingBag, 
     Heart, 
@@ -17,9 +18,10 @@ export default function CustomerDashboard({
     wishlistCount = 0 
 }) {
     const { formatPrice } = useCurrency();
+    const { t } = useLanguage();
 
     return (
-        <AppLayout title="Customer Dashboard">
+        <AppLayout title={t('cust_dashboard_title')}>
             <div className="customer-portal">
                 <div className="container">
                     <div className="customer-portal-layout">
@@ -39,7 +41,7 @@ export default function CustomerDashboard({
                                         <ShoppingBag size={24} />
                                     </div>
                                     <div>
-                                        <span style={{ fontSize: '12px', color: '#666', textTransform: 'uppercase', fontWeight: 700 }}>Total Orders</span>
+                                        <span style={{ fontSize: '12px', color: '#666', textTransform: 'uppercase', fontWeight: 700 }}>{t('cust_total_orders')}</span>
                                         <h3 style={{ fontSize: '24px', fontWeight: 900, color: '#151515' }}>{ordersCount}</h3>
                                     </div>
                                 </div>
@@ -49,7 +51,7 @@ export default function CustomerDashboard({
                                         <Heart size={24} />
                                     </div>
                                     <div>
-                                        <span style={{ fontSize: '12px', color: '#666', textTransform: 'uppercase', fontWeight: 700 }}>Wishlist Parts</span>
+                                        <span style={{ fontSize: '12px', color: '#666', textTransform: 'uppercase', fontWeight: 700 }}>{t('cust_wishlist_parts')}</span>
                                         <h3 style={{ fontSize: '24px', fontWeight: 900, color: '#151515' }}>{wishlistCount}</h3>
                                     </div>
                                 </div>
@@ -58,18 +60,18 @@ export default function CustomerDashboard({
                             {/* Recent Orders */}
                             <div className="portal-card">
                                 <div className="portal-card-header">
-                                    <h2>Recent Order History</h2>
+                                    <h2>{t('cust_recent_orders')}</h2>
                                     <Link href="/customer/orders" className="btn btn-outline btn-sm">
-                                        View All Orders
+                                        {t('cust_view_all_orders')}
                                     </Link>
                                 </div>
 
                                 {recentOrders.length === 0 ? (
                                     <div style={{ textAlign: 'center', padding: '32px 0', color: '#666' }}>
                                         <Package size={36} color="#DDD" style={{ margin: '0 auto 8px' }} />
-                                        <p>You haven't placed any orders yet.</p>
+                                        <p>{t('cust_no_orders')}</p>
                                         <Link href="/shop" className="btn btn-primary btn-sm" style={{ marginTop: '12px' }}>
-                                            Browse Automotive Catalog
+                                            {t('cust_browse_catalog')}
                                         </Link>
                                     </div>
                                 ) : (
