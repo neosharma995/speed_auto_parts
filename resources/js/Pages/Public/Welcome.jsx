@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import Hero from '@/Components/Hero';
 import ProductCard from '@/Components/ProductCard';
+import { useLanguage } from '@/Context/LanguageContext';
 import {
     ArrowRight,
     Truck,
@@ -64,6 +65,7 @@ export default function Welcome({
     newArrivals = [],
     brands = []
 }) {
+    const { t, localize } = useLanguage();
     const [activeTab, setActiveTab] = useState('All');
     const [countersVisible, setCountersVisible] = useState(false);
     const resultsSectionRef = useRef(null);
@@ -91,19 +93,32 @@ export default function Welcome({
         return () => observer.disconnect();
     }, []);
 
-    // 8 Popular Categories with optimized WebP assets
-    const popularCategories = [
-        { name: 'Tires', slug: 'tires', image: '/assets/images/categories/tires.webp' },
-        { name: 'Brakes', slug: 'brakes', image: '/assets/images/categories/brakes.webp' },
-        { name: 'Exhaust', slug: 'exhaust', image: '/assets/images/categories/exhaust.webp' },
-        { name: 'Intake', slug: 'intake', image: '/assets/images/categories/intake.webp' },
-        { name: 'Suspension', slug: 'suspension', image: '/assets/images/categories/suspension.webp' },
-        { name: 'Engine', slug: 'engine', image: '/assets/images/categories/engine.webp' },
-        { name: 'Cooling', slug: 'cooling', image: '/assets/images/categories/cooling.webp' },
-        { name: 'Lighting', slug: 'lighting', image: '/assets/images/categories/lighting.webp' },
+    // 8 Popular Categories — prefer DB categories (with translations), fill remaining slots with localized defaults
+    const fallbackCategories = [
+        { name: 'Tires', slug: 'tires', image: '/assets/images/categories/tires.webp', translations: { ar: { name: 'الإطارات' }, fr: { name: 'Pneus' } } },
+        { name: 'Brakes', slug: 'brakes', image: '/assets/images/categories/brakes.webp', translations: { ar: { name: 'الفرامل' }, fr: { name: 'Freins' } } },
+        { name: 'Exhaust', slug: 'exhaust', image: '/assets/images/categories/exhaust.webp', translations: { ar: { name: 'العادم' }, fr: { name: 'Échappement' } } },
+        { name: 'Intake', slug: 'intake', image: '/assets/images/categories/intake.webp', translations: { ar: { name: 'سحب الهواء' }, fr: { name: 'Admission' } } },
+        { name: 'Suspension', slug: 'suspension', image: '/assets/images/categories/suspension.webp', translations: { ar: { name: 'نظام التعليق' }, fr: { name: 'Suspension' } } },
+        { name: 'Engine', slug: 'engine', image: '/assets/images/categories/engine.webp', translations: { ar: { name: 'المحرك' }, fr: { name: 'Moteur' } } },
+        { name: 'Cooling', slug: 'cooling', image: '/assets/images/categories/cooling.webp', translations: { ar: { name: 'التبريد' }, fr: { name: 'Refroidissement' } } },
+        { name: 'Lighting', slug: 'lighting', image: '/assets/images/categories/lighting.webp', translations: { ar: { name: 'الإضاءة' }, fr: { name: 'Éclairage' } } },
     ];
+    const dbCategoriesBySlug = Object.fromEntries((categories || []).map((c) => [c.slug, c]));
+    const popularCategories = fallbackCategories.map((fb) => {
+        const dbCat = dbCategoriesBySlug[fb.slug];
+        if (!dbCat) return fb;
+        return {
+            ...fb,
+            ...dbCat,
+            image: dbCat.image && (dbCat.image.startsWith('/assets/') || dbCat.image.startsWith('/storage/') || dbCat.image.startsWith('http'))
+                ? dbCat.image
+                : fb.image,
+            translations: dbCat.translations || fb.translations,
+        };
+    });
 
-    // 5 Featured Products matching 5 performance categories
+    // Featured Products — use DB featuredProducts when available (with translations), fallback to defaults
     const mockupProducts = [
         {
             id: 1,
@@ -182,9 +197,20 @@ export default function Welcome({
         },
     ];
 
+    const sourceFeaturedProducts = Array.isArray(featuredProducts) && featuredProducts.length > 0
+        ? featuredProducts
+        : mockupProducts;
+
     const displayProducts = activeTab === 'All'
-        ? mockupProducts
-        : mockupProducts.filter(p => p.category?.toLowerCase() === activeTab.toLowerCase());
+        ? sourceFeaturedProducts
+        : sourceFeaturedProducts.filter((p) => {
+            const catName = typeof p.category === 'object' ? p.category?.name : p.category;
+            const catSlug = typeof p.category === 'object' ? p.category?.slug : p.category;
+            return (
+                String(catName || '').toLowerCase() === activeTab.toLowerCase() ||
+                String(catSlug || '').toLowerCase() === activeTab.toLowerCase()
+            );
+        });
 
     // 5 Vehicle types
     const vehicleTypes = [
@@ -226,11 +252,11 @@ export default function Welcome({
                     <div className="section-header">
                         <div className="section-header-left">
                             <h2 className="section-header-title">
-                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> Popular Categories
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> {t('popular_categories')}
                             </h2>
                         </div>
                         <Link href="/categories" className="section-header-link">
-                            View All Categories <ArrowRight size={15} />
+                            {t('view_all_categories')} <ArrowRight size={15} />
                         </Link>
                     </div>
 
@@ -244,11 +270,11 @@ export default function Welcome({
                                 <div className="cat-thumb-wrap">
                                     <img
                                         src={cat.image}
-                                        alt={cat.name}
+                                        alt={localize(cat, 'name')}
                                         loading="lazy"
                                     />
                                 </div>
-                                <span className="cat-name">{cat.name}</span>
+                                <span className="cat-name">{localize(cat, 'name')}</span>
                             </Link>
                         ))}
                     </div>
@@ -261,20 +287,24 @@ export default function Welcome({
                     <div className="section-header">
                         <div className="section-header-left">
                             <h2 className="section-header-title">
-                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> Featured Products
+                                <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" /> {t('featured_products')}
                             </h2>
                         </div>
                         <div className="filter-tabs">
-                            {['All', 'Tires', 'Brakes', 'Exhaust', 'Intake', 'Suspension'].map(tab => (
-                                <button
-                                    key={tab}
-                                    type="button"
-                                    className={`tab-pill ${activeTab === tab ? 'active' : ''}`}
-                                    onClick={() => setActiveTab(tab)}
-                                >
-                                    {tab}
-                                </button>
-                            ))}
+                            {['All', 'Tires', 'Brakes', 'Exhaust', 'Intake', 'Suspension'].map(tab => {
+                                const tabCat = popularCategories.find((c) => c.slug === tab.toLowerCase());
+                                const tabLabel = tab === 'All' ? t('all') : (tabCat ? localize(tabCat, 'name') : tab);
+                                return (
+                                    <button
+                                        key={tab}
+                                        type="button"
+                                        className={`tab-pill ${activeTab === tab ? 'active' : ''}`}
+                                        onClick={() => setActiveTab(tab)}
+                                    >
+                                        {tabLabel}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 

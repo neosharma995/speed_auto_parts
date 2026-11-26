@@ -1,31 +1,17 @@
 import '../scss/app.scss';
 import './bootstrap';
 
-// Prevent React reconciler crashes when Google Translate wraps text nodes in <font> tags
-if (typeof Node === 'function' && Node.prototype) {
-    const originalRemoveChild = Node.prototype.removeChild;
-    Node.prototype.removeChild = function (child) {
-        if (child && child.parentNode !== this) {
-            return child;
-        }
-        return originalRemoveChild.apply(this, arguments);
-    };
-
-    const originalInsertBefore = Node.prototype.insertBefore;
-    Node.prototype.insertBefore = function (newNode, referenceNode) {
-        if (referenceNode && referenceNode.parentNode !== this) {
-            return newNode;
-        }
-        return originalInsertBefore.apply(this, arguments);
-    };
-}
-
 import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { CartProvider } from './Context/CartContext';
 import { CurrencyProvider } from './Context/CurrencyContext';
-import { LanguageProvider } from './Context/LanguageContext';
+import {
+    LanguageProvider,
+    buildLocalizedPath,
+    detectLocaleFromPath,
+    isLocalizablePath,
+} from './Context/LanguageContext';
 import { WishlistProvider } from './Context/WishlistContext';
 
 const syncCsrfMeta = (page) => {
@@ -40,6 +26,26 @@ const syncCsrfMeta = (page) => {
         }
     }
 };
+
+router.on('before', (event) => {
+    const visit = event?.detail?.visit;
+    if (!visit || String(visit.method || 'get').toLowerCase() !== 'get') return;
+    if (typeof window === 'undefined') return;
+
+    const activeLang = detectLocaleFromPath(window.location.pathname);
+    if (activeLang === 'EN') return;
+
+    const targetUrl = visit.url;
+    if (!targetUrl || !targetUrl.pathname) return;
+
+    // Only prefix unprefixed localizable storefront routes
+    if (
+        isLocalizablePath(targetUrl.pathname) &&
+        detectLocaleFromPath(targetUrl.pathname) === 'EN'
+    ) {
+        targetUrl.pathname = buildLocalizedPath(targetUrl.pathname, activeLang);
+    }
+});
 
 router.on('navigate', (event) => {
     syncCsrfMeta(event.detail?.page);

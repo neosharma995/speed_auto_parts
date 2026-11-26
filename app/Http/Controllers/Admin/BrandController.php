@@ -33,6 +33,7 @@ class BrandController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:brands,slug'],
             'description' => ['nullable', 'string'],
+            'translations' => ['nullable', 'array'],
             'website' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -51,6 +52,7 @@ class BrandController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', "unique:brands,slug,{$brand->id}"],
             'description' => ['nullable', 'string'],
+            'translations' => ['nullable', 'array'],
             'website' => ['nullable', 'string', 'max:255'],
         ]);
 

@@ -101,6 +101,7 @@ class ProductController extends Controller
             'fitment_notes' => ['nullable', 'string'],
             'seo_title' => ['nullable', 'string'],
             'seo_description' => ['nullable', 'string'],
+            'translations' => ['nullable', 'array'],
         ]);
 
         if (empty($validated['slug'])) {
@@ -197,6 +198,7 @@ class ProductController extends Controller
                 'tax_class_id' => $product->tax_class_id,
                 'seo_title' => $product->seo_title,
                 'seo_description' => $product->seo_description,
+                'translations' => $product->translations ?? [],
                 'attributes' => $product->attributes->pluck('id')->toArray(),
                 'product_attributes' => array_values($productAttributesMap),
                 'variations' => $product->variations->map(fn ($v) => [
@@ -258,6 +260,7 @@ class ProductController extends Controller
             'fitment_notes' => ['nullable', 'string'],
             'seo_title' => ['nullable', 'string'],
             'seo_description' => ['nullable', 'string'],
+            'translations' => ['nullable', 'array'],
         ]);
 
         $product->update($validated);

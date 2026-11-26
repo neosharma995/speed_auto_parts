@@ -19,6 +19,7 @@ class Category extends Model
         'name',
         'slug',
         'description',
+        'translations',
         'image',
         'icon',
         'sort_order',
@@ -29,6 +30,7 @@ class Category extends Model
     protected function casts(): array
     {
         return [
+            'translations' => 'array',
             'is_featured' => 'boolean',
             'is_active' => 'boolean',
             'sort_order' => 'integer',

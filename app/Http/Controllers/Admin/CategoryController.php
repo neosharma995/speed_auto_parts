@@ -33,13 +33,26 @@ class CategoryController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:categories,slug'],
             'description' => ['nullable', 'string'],
+            'translations' => ['nullable'],
             'image' => ['nullable', 'string'],
+            'image_file' => ['nullable', 'image', 'max:4096'],
             'icon' => ['nullable', 'string'],
         ]);
+
+        if (isset($validated['translations']) && is_string($validated['translations'])) {
+            $decoded = json_decode($validated['translations'], true);
+            $validated['translations'] = is_array($decoded) ? $decoded : null;
+        }
 
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['name']);
         }
+
+        if ($request->hasFile('image_file')) {
+            $path = $request->file('image_file')->store('categories', 'public');
+            $validated['image'] = '/storage/' . $path;
+        }
+        unset($validated['image_file']);
 
         Category::create($validated);
 
@@ -52,13 +65,26 @@ class CategoryController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', "unique:categories,slug,{$category->id}"],
             'description' => ['nullable', 'string'],
+            'translations' => ['nullable'],
             'image' => ['nullable', 'string'],
+            'image_file' => ['nullable', 'image', 'max:4096'],
             'icon' => ['nullable', 'string'],
         ]);
+
+        if (isset($validated['translations']) && is_string($validated['translations'])) {
+            $decoded = json_decode($validated['translations'], true);
+            $validated['translations'] = is_array($decoded) ? $decoded : null;
+        }
 
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['name']);
         }
+
+        if ($request->hasFile('image_file')) {
+            $path = $request->file('image_file')->store('categories', 'public');
+            $validated['image'] = '/storage/' . $path;
+        }
+        unset($validated['image_file']);
 
         $category->update($validated);
 

@@ -28,6 +28,7 @@ class Product extends Model
         'part_number',
         'short_description',
         'description',
+        'translations',
         'technical_specifications',
         'main_image',
         'gallery_images',
@@ -54,6 +55,7 @@ class Product extends Model
     ];
 
     protected $casts = [
+        'translations' => 'array',
         'gallery_images' => 'array',
         'dimensions' => 'array',
         'base_price' => 'decimal:2',
