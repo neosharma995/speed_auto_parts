@@ -3,8 +3,10 @@ import { Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import AppLayout from '@/Layouts/AppLayout';
 import { ChevronRight, Search, ArrowRight, RotateCcw, CheckCircle } from 'lucide-react';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function VehicleFinderPage({ activeVehicle = null }) {
+    const { t } = useLanguage();
     const [years, setYears] = useState([]);
     const [makes, setMakes] = useState([]);
     const [models, setModels] = useState([]);
@@ -79,24 +81,24 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
     };
 
     return (
-        <AppLayout title="Select Your Exact Vehicle">
+        <AppLayout title={t('vfp_title')}>
             <div className="support-page vehicle-finder-page">
                 <div className="container">
                     {/* Breadcrumbs matching Track Order, Shop, Brands, Categories */}
                     <div className="breadcrumb-nav">
-                        <Link href="/" className="breadcrumb-link">Home</Link>
+                        <Link href="/" className="breadcrumb-link">{t('home')}</Link>
                         <ChevronRight size={12} className="breadcrumb-arrow" />
-                        <span className="breadcrumb-current">Select Your Vehicle</span>
+                        <span className="breadcrumb-current">{t('vfp_breadcrumb')}</span>
                     </div>
 
                     {/* Left-Aligned Header with official stripe icon matching other pages */}
                     <div className="support-page-header">
                         <h1>
                             <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
-                            Select Your Exact Vehicle
+                            {t('vfp_title')}
                         </h1>
                         <p>
-                            Ensure every tire, brake rotor, suspension kit, and exhaust fits your car without guesswork or return shipping hassle.
+                            {t('vfp_subtitle')}
                         </p>
                     </div>
 
@@ -105,7 +107,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                         <div className="active-vehicle-banner">
                             <div className="active-vehicle-info">
                                 <span className="active-vehicle-badge">
-                                    <CheckCircle size={14} /> Active Vehicle Profile
+                                    <CheckCircle size={14} /> {t('vfp_active_badge')}
                                 </span>
                                 <h3 className="active-vehicle-title">
                                     {activeVehicle.year} {activeVehicle.make} {activeVehicle.model} {activeVehicle.engine ? `(${activeVehicle.engine})` : ''}
@@ -113,7 +115,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                             </div>
                             <div className="active-vehicle-actions">
                                 <Link href={`/shop?vehicle_id=${activeVehicle.id}`} className="btn-shop-car">
-                                    <span>Shop Parts For This Car</span>
+                                    <span>{t('vfp_shop_car')}</span>
                                     <ArrowRight size={14} />
                                 </Link>
                                 <button 
@@ -122,7 +124,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                                     onClick={() => router.post('/vehicles/clear')}
                                 >
                                     <RotateCcw size={13} />
-                                    <span>Clear</span>
+                                    <span>{t('vfp_clear')}</span>
                                 </button>
                             </div>
                         </div>
@@ -134,7 +136,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                             {/* 1. Model Year */}
                             <div className="form-col">
                                 <label className="form-label">
-                                    1. Model Year <span className="required">*</span>
+                                    {t('vfp_step_year')} <span className="required">*</span>
                                 </label>
                                 <select 
                                     className="form-select"
@@ -142,7 +144,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                                     onChange={(e) => handleYearChange(e.target.value)}
                                     disabled={loadingYears}
                                 >
-                                    <option value="">{loadingYears ? 'Loading...' : 'Choose Year'}</option>
+                                    <option value="">{loadingYears ? t('vfp_loading') : t('vfp_choose_year')}</option>
                                     {years.map(y => <option key={y} value={y}>{y}</option>)}
                                 </select>
                             </div>
@@ -150,7 +152,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                             {/* 2. Vehicle Make */}
                             <div className="form-col">
                                 <label className="form-label">
-                                    2. Vehicle Make <span className="required">*</span>
+                                    {t('vfp_step_make')} <span className="required">*</span>
                                 </label>
                                 <select 
                                     className="form-select"
@@ -159,7 +161,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                                     disabled={!selectedYear || loadingMakes}
                                 >
                                     <option value="">
-                                        {loadingMakes ? 'Loading Makes...' : 'Choose Make'}
+                                        {loadingMakes ? t('vfp_loading') : t('vfp_choose_make')}
                                     </option>
                                     {makes.map(m => <option key={m} value={m}>{m}</option>)}
                                 </select>
@@ -168,7 +170,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                             {/* 3. Vehicle Model */}
                             <div className="form-col">
                                 <label className="form-label">
-                                    3. Vehicle Model <span className="required">*</span>
+                                    {t('vfp_step_model')} <span className="required">*</span>
                                 </label>
                                 <select 
                                     className="form-select"
@@ -177,7 +179,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                                     disabled={!selectedMake || loadingModels}
                                 >
                                     <option value="">
-                                        {loadingModels ? 'Loading Models...' : 'Choose Model'}
+                                        {loadingModels ? t('vfp_loading') : t('vfp_choose_model')}
                                     </option>
                                     {models.map(m => <option key={m} value={m}>{m}</option>)}
                                 </select>
@@ -186,7 +188,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                             {/* 4. Engine & Trim */}
                             <div className="form-col">
                                 <label className="form-label">
-                                    4. Engine & Trim <span className="required">*</span>
+                                    {t('vfp_step_engine')} <span className="required">*</span>
                                 </label>
                                 <select 
                                     className="form-select"
@@ -195,7 +197,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                                     disabled={!selectedModel || loadingEngines}
                                 >
                                     <option value="">
-                                        {loadingEngines ? 'Loading Engines...' : 'Choose Engine'}
+                                        {loadingEngines ? t('vfp_loading') : t('vfp_choose_engine')}
                                     </option>
                                     {engines.map(eng => (
                                         <option key={eng.id} value={eng.id}>
@@ -213,7 +215,7 @@ export default function VehicleFinderPage({ activeVehicle = null }) {
                                     disabled={!selectedEngineId}
                                 >
                                     <Search size={16} />
-                                    <span>Find Parts</span>
+                                    <span>{t('vf_find_parts')}</span>
                                 </button>
                             </div>
                         </form>

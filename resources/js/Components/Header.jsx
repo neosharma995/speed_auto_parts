@@ -31,7 +31,7 @@ export default function Header() {
     const { auth, navBrands = [], settings = {}, activeVehicle } = usePage().props;
     const { itemCount, setIsCartOpen } = useCart();
     const { activeCurrency, availableCurrencies, setSelectedCurrency } = useCurrency();
-    const { language: selectedLang, availableLanguages, setLanguage: setSelectedLang, t } = useLanguage();
+    const { language: selectedLang, availableLanguages, setLanguage: setSelectedLang, t, localize } = useLanguage();
     const { wishlist = [] } = useWishlist();
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -728,7 +728,7 @@ export default function Header() {
 
                             {/* ORDER NOW solid button -> redirect to /shop */}
                             <Link href="/shop" className="mobile-subbar-order-btn">
-                                ORDER NOW
+                                {t('nav_order_now')}
                             </Link>
                         </div>
                     </div>
@@ -739,7 +739,7 @@ export default function Header() {
                             <form onSubmit={handleSearchSubmit} className="mobile-search-form" autoComplete="off">
                                 <input
                                     type="text"
-                                    placeholder="Search by part number, product, brand..."
+                                    placeholder={t('search_placeholder')}
                                     value={searchQuery}
                                     onChange={(e) => handleSearchChange(e.target.value)}
                                     onFocus={handleSearchFocus}
@@ -797,12 +797,12 @@ export default function Header() {
                                         <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
                                     <div className="site-header-dropdown">
-                                        <Link href="/shop?sort=latest" className="site-header-dropdown-item">New Arrivals</Link>
-                                        <Link href="/shop?sort=rating" className="site-header-dropdown-item">Featured Parts</Link>
-                                        <Link href="/shop" className="site-header-dropdown-item">Shop All Parts</Link>
-                                        <Link href="/vehicle-finder" className="site-header-dropdown-item">Vehicle Fitment Finder</Link>
-                                        <Link href="/categories" className="site-header-dropdown-item">Browse Categories</Link>
-                                        <Link href="/brands" className="site-header-dropdown-item">Top Brands</Link>
+                                        <Link href="/shop?sort=latest" className="site-header-dropdown-item">{t('new_arrivals')}</Link>
+                                        <Link href="/shop?sort=rating" className="site-header-dropdown-item">{t('nav_featured_parts')}</Link>
+                                        <Link href="/shop" className="site-header-dropdown-item">{t('nav_shop_all_parts')}</Link>
+                                        <Link href="/vehicle-finder" className="site-header-dropdown-item">{t('nav_vehicle_fitment_finder')}</Link>
+                                        <Link href="/categories" className="site-header-dropdown-item">{t('nav_browse_categories')}</Link>
+                                        <Link href="/brands" className="site-header-dropdown-item">{t('nav_top_brands')}</Link>
                                     </div>
                                 </div>
 
@@ -812,11 +812,11 @@ export default function Header() {
                                         <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
                                     <div className="site-header-dropdown">
-                                        <Link href="/shop?category=tires" className="site-header-dropdown-item">Tires & Track Rubber</Link>
-                                        <Link href="/shop?category=brakes" className="site-header-dropdown-item">Rotors & Big Brake Kits</Link>
-                                        <Link href="/shop?category=intake" className="site-header-dropdown-item">Cold Air Intake Systems</Link>
-                                        <Link href="/shop?category=exhaust" className="site-header-dropdown-item">Stainless Cat-Back Exhausts</Link>
-                                        <Link href="/shop?category=suspension" className="site-header-dropdown-item">Adjustable Coilovers</Link>
+                                        <Link href="/shop?category=tires" className="site-header-dropdown-item">{t('nav_tires_track')}</Link>
+                                        <Link href="/shop?category=brakes" className="site-header-dropdown-item">{t('nav_rotors_brakes')}</Link>
+                                        <Link href="/shop?category=intake" className="site-header-dropdown-item">{t('nav_cold_air_intake')}</Link>
+                                        <Link href="/shop?category=exhaust" className="site-header-dropdown-item">{t('nav_cat_back_exhaust')}</Link>
+                                        <Link href="/shop?category=suspension" className="site-header-dropdown-item">{t('nav_adjustable_coilovers')}</Link>
                                     </div>
                                 </div>
 
@@ -841,7 +841,7 @@ export default function Header() {
                                     </Link>
                                     <div className="site-header-dropdown">
                                         {navBrands.map(b => (
-                                            <Link key={b.id} href={`/shop?brand=${b.slug}`} className="site-header-dropdown-item">{b.name}</Link>
+                                            <Link key={b.id} href={`/shop?brand=${b.slug}`} className="site-header-dropdown-item">{localize(b, 'name')}</Link>
                                         ))}
                                     </div>
                                 </div>
@@ -859,12 +859,12 @@ export default function Header() {
                                         <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
                                     <div className="site-header-dropdown">
-                                        <Link href="/contact-us" className="site-header-dropdown-item">Contact Us</Link>
-                                        <Link href="/about-us" className="site-header-dropdown-item">About Us</Link>
-                                        <Link href="/track-order" className="site-header-dropdown-item">Track Order</Link>
-                                        <Link href="/shipping-policy" className="site-header-dropdown-item">Shipping Policy</Link>
-                                        <Link href="/return-policy" className="site-header-dropdown-item">Return & Refund</Link>
-                                        <Link href="/terms" className="site-header-dropdown-item">Terms & Conditions</Link>
+                                        <Link href="/contact-us" className="site-header-dropdown-item">{t('footer_contact_us')}</Link>
+                                        <Link href="/about-us" className="site-header-dropdown-item">{t('footer_about_us')}</Link>
+                                        <Link href="/track-order" className="site-header-dropdown-item">{t('track_order')}</Link>
+                                        <Link href="/shipping-policy" className="site-header-dropdown-item">{t('nav_shipping_policy')}</Link>
+                                        <Link href="/return-policy" className="site-header-dropdown-item">{t('nav_return_refund')}</Link>
+                                        <Link href="/terms" className="site-header-dropdown-item">{t('footer_terms')}</Link>
                                     </div>
                                 </div>
 
@@ -1021,7 +1021,7 @@ export default function Header() {
                                 className="mobile-drawer-link highlight"
                                 onClick={() => setMobileDrawerOpen(false)}
                             >
-                                <List size={16} /> All Categories
+                                <List size={16} /> {t('all_categories')}
                             </Link>
 
                             {/* Home with Accordion */}
@@ -1032,7 +1032,7 @@ export default function Header() {
                                         className="mobile-drawer-link-text"
                                         onClick={() => setMobileDrawerOpen(false)}
                                     >
-                                        Home
+                                        {t('home')}
                                     </Link>
                                     <button
                                         type="button"
@@ -1045,13 +1045,13 @@ export default function Header() {
                                 </div>
                                 {expandedSubmenu === 'home' && (
                                     <div className="mobile-drawer-submenu">
-                                        <Link href="/" className="mobile-drawer-sublink highlight-sublink" onClick={() => setMobileDrawerOpen(false)}>Homepage</Link>
-                                        <Link href="/shop?sort=latest" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>New Arrivals</Link>
-                                        <Link href="/shop?sort=rating" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Featured Parts</Link>
-                                        <Link href="/shop" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Shop All Parts</Link>
-                                        <Link href="/vehicle-finder" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Vehicle Fitment Finder</Link>
-                                        <Link href="/categories" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Browse Categories</Link>
-                                        <Link href="/brands" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Top Brands</Link>
+                                        <Link href="/" className="mobile-drawer-sublink highlight-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_homepage')}</Link>
+                                        <Link href="/shop?sort=latest" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('new_arrivals')}</Link>
+                                        <Link href="/shop?sort=rating" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_featured_parts')}</Link>
+                                        <Link href="/shop" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_shop_all_parts')}</Link>
+                                        <Link href="/vehicle-finder" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_vehicle_fitment_finder')}</Link>
+                                        <Link href="/categories" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_browse_categories')}</Link>
+                                        <Link href="/brands" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_top_brands')}</Link>
                                     </div>
                                 )}
                             </div>
@@ -1064,7 +1064,7 @@ export default function Header() {
                                         className="mobile-drawer-link-text"
                                         onClick={() => setMobileDrawerOpen(false)}
                                     >
-                                        Performance Parts
+                                        {t('footer_performance_parts')}
                                     </Link>
                                     <button
                                         type="button"
@@ -1077,12 +1077,12 @@ export default function Header() {
                                 </div>
                                 {expandedSubmenu === 'performance' && (
                                     <div className="mobile-drawer-submenu">
-                                        <Link href="/shop" className="mobile-drawer-sublink highlight-sublink" onClick={() => setMobileDrawerOpen(false)}>All Performance Parts</Link>
-                                        <Link href="/shop?category=tires" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Tires & Track Rubber</Link>
-                                        <Link href="/shop?category=brakes" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Rotors & Big Brake Kits</Link>
-                                        <Link href="/shop?category=intake" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Cold Air Intake Systems</Link>
-                                        <Link href="/shop?category=exhaust" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Stainless Cat-Back Exhausts</Link>
-                                        <Link href="/shop?category=suspension" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Adjustable Coilovers</Link>
+                                        <Link href="/shop" className="mobile-drawer-sublink highlight-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_all_performance')}</Link>
+                                        <Link href="/shop?category=tires" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_tires_track')}</Link>
+                                        <Link href="/shop?category=brakes" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_rotors_brakes')}</Link>
+                                        <Link href="/shop?category=intake" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_cold_air_intake')}</Link>
+                                        <Link href="/shop?category=exhaust" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_cat_back_exhaust')}</Link>
+                                        <Link href="/shop?category=suspension" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_adjustable_coilovers')}</Link>
                                     </div>
                                 )}
                             </div>
@@ -1094,7 +1094,7 @@ export default function Header() {
                                 onClick={() => setMobileDrawerOpen(false)}
                             >
                                 <span className="vehicle-nav-text">
-                                    Shop By Vehicle
+                                    {t('shop_by_vehicle')}
                                     {activeVehicle && (
                                         <span
                                             className="vehicle-active-dot"
@@ -1112,7 +1112,7 @@ export default function Header() {
                                         className="mobile-drawer-link-text"
                                         onClick={() => setMobileDrawerOpen(false)}
                                     >
-                                        Brands
+                                        {t('brands')}
                                     </Link>
                                     <button
                                         type="button"
@@ -1126,12 +1126,12 @@ export default function Header() {
                                 {expandedSubmenu === 'brands' && (
                                     <div className="mobile-drawer-submenu">
                                         <Link href="/brands" className="mobile-drawer-sublink highlight-sublink" onClick={() => setMobileDrawerOpen(false)}>
-                                            View All Brands
+                                            {t('view_all_brands')}
                                         </Link>
                                         {navBrands.length > 0 ? (
                                             navBrands.map(b => (
                                                 <Link key={b.id} href={`/shop?brand=${b.slug}`} className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>
-                                                    {b.name}
+                                                    {localize(b, 'name')}
                                                 </Link>
                                             ))
                                         ) : (
@@ -1153,7 +1153,7 @@ export default function Header() {
                                 className="mobile-drawer-link deals-highlight"
                                 onClick={() => setMobileDrawerOpen(false)}
                             >
-                                <span className="site-header-deals-icon">%</span> Deals
+                                <span className="site-header-deals-icon">%</span> {t('deals')}
                             </Link>
 
                             {/* Support with Accordion */}
@@ -1164,7 +1164,7 @@ export default function Header() {
                                         className="mobile-drawer-link-text"
                                         onClick={() => setMobileDrawerOpen(false)}
                                     >
-                                        Support
+                                        {t('support')}
                                     </Link>
                                     <button
                                         type="button"
@@ -1177,21 +1177,21 @@ export default function Header() {
                                 </div>
                                 {expandedSubmenu === 'support' && (
                                     <div className="mobile-drawer-submenu">
-                                        <Link href="/contact-us" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Contact Us</Link>
-                                        <Link href="/about-us" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>About Us</Link>
-                                        <Link href="/track-order" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Track Order</Link>
-                                        <Link href="/shipping-policy" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Shipping Policy</Link>
-                                        <Link href="/return-policy" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Return & Refund</Link>
-                                        <Link href="/terms" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Terms & Conditions</Link>
-                                        <Link href="/faqs" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>FAQs</Link>
-                                        <Link href="/help-center" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>Help Center</Link>
+                                        <Link href="/contact-us" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('footer_contact_us')}</Link>
+                                        <Link href="/about-us" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('footer_about_us')}</Link>
+                                        <Link href="/track-order" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('track_order')}</Link>
+                                        <Link href="/shipping-policy" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_shipping_policy')}</Link>
+                                        <Link href="/return-policy" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_return_refund')}</Link>
+                                        <Link href="/terms" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('footer_terms')}</Link>
+                                        <Link href="/faqs" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('footer_faqs')}</Link>
+                                        <Link href="/help-center" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('footer_help_center')}</Link>
                                     </div>
                                 )}
                             </div>
 
                             {/* Mobile Drawer Language & Currency Selectors */}
                             <div className="mobile-drawer-utilities">
-                                <span className="mobile-drawer-util-title">Regional Settings</span>
+                                <span className="mobile-drawer-util-title">{t('regional_settings')}</span>
                                 <div className="mobile-drawer-util-row">
                                     {/* Mobile Language Selector */}
                                     <div

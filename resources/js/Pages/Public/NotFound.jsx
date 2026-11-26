@@ -2,8 +2,10 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { Home, ArrowLeft } from 'lucide-react';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function NotFound() {
+    const { t } = useLanguage();
     const handleGoBack = () => {
         if (typeof window !== 'undefined' && window.history.length > 1) {
             window.history.back();
@@ -13,7 +15,7 @@ export default function NotFound() {
     };
 
     return (
-        <AppLayout title="404 - Page Not Found" showHeader={false} showFooter={false}>
+        <AppLayout title={`404 - ${t('nf_page_not')} ${t('nf_found')}`} showHeader={false} showFooter={false}>
             <div className="not-found-page">
                 <div className="container not-found-inner">
                     <div className="not-found-content">
@@ -22,11 +24,11 @@ export default function NotFound() {
                         </div>
 
                         <h1 className="not-found-title">
-                            Page Not <span className="title-orange">Found</span>
+                            {t('nf_page_not')} <span className="title-orange">{t('nf_found')}</span>
                         </h1>
 
                         <p className="not-found-description">
-                            Looks like you've taken a wrong turn. The page you're looking for doesn't exist or has been moved.
+                            {t('nf_desc')}
                         </p>
 
                         <div className="not-found-action">
@@ -36,12 +38,12 @@ export default function NotFound() {
                                 className="btn hero-secondary-btn btn-go-back"
                             >
                                 <ArrowLeft size={16} />
-                                <span>Go Back</span>
+                                <span>{t('nf_go_back')}</span>
                             </button>
 
                             <Link href="/" className="btn btn-primary btn-back-home">
                                 <Home size={16} />
-                                <span>Back to Homepage</span>
+                                <span>{t('nf_back_home')}</span>
                             </Link>
                         </div>
                     </div>

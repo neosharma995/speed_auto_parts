@@ -2,11 +2,13 @@ import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { Home, Grid, Search, Heart, User } from 'lucide-react';
 import { useWishlist } from '@/Context/WishlistContext';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function MobileBottomBar() {
     const { url } = usePage();
     const { auth } = usePage().props;
     const { wishlistCount } = useWishlist();
+    const { t } = useLanguage();
 
     const isCurrent = (path) => {
         if (path === '/' && url === '/') return true;
@@ -23,7 +25,7 @@ export default function MobileBottomBar() {
                     className={`mobile-bottom-bar-item ${isCurrent('/') ? 'mobile-bottom-bar-item--active' : ''}`}
                 >
                     <Home size={20} />
-                    <span className="mobile-bottom-bar-label">Home</span>
+                    <span className="mobile-bottom-bar-label">{t('home')}</span>
                 </Link>
 
                 {/* 2. Categories */}
@@ -32,7 +34,7 @@ export default function MobileBottomBar() {
                     className={`mobile-bottom-bar-item ${isCurrent('/categories') ? 'mobile-bottom-bar-item--active' : ''}`}
                 >
                     <Grid size={20} />
-                    <span className="mobile-bottom-bar-label">Categories</span>
+                    <span className="mobile-bottom-bar-label">{t('categories')}</span>
                 </Link>
 
                 {/* 3. Search */}
@@ -41,7 +43,7 @@ export default function MobileBottomBar() {
                     className={`mobile-bottom-bar-item ${isCurrent('/shop') ? 'mobile-bottom-bar-item--active' : ''}`}
                 >
                     <Search size={20} />
-                    <span className="mobile-bottom-bar-label">Search</span>
+                    <span className="mobile-bottom-bar-label">{t('mob_search')}</span>
                 </Link>
 
                 {/* 4. Wishlist */}
@@ -51,7 +53,7 @@ export default function MobileBottomBar() {
                 >
                     <Heart size={20} />
                     {wishlistCount > 0 && <span className="badge-count">{wishlistCount}</span>}
-                    <span className="mobile-bottom-bar-label">Wishlist</span>
+                    <span className="mobile-bottom-bar-label">{t('mob_wishlist')}</span>
                 </Link>
 
                 {/* 5. Account */}
@@ -61,7 +63,7 @@ export default function MobileBottomBar() {
                 >
                     <User size={20} />
                     <span className="mobile-bottom-bar-label">
-                        {auth?.user ? 'Account' : 'Login'}
+                        {auth?.user ? t('account') : t('mob_login')}
                     </span>
                 </Link>
             </div>

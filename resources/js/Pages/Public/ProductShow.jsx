@@ -45,6 +45,7 @@ export default function ProductShow({
 
     const displayName = localize(product, 'name');
     const displayDescription = localize(product, 'description');
+    const displayTechSpecs = localize(product, 'technical_specifications');
     const displayCategoryName = product.category ? localize(product.category, 'name') : '';
     const displayBrandName = product.brand ? localize(product.brand, 'name') : '';
 
@@ -260,7 +261,7 @@ export default function ProductShow({
                             <div className="product-info-top-row">
                                 <span className="brand-subtitle">
                                     <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
-                                    {displayBrandName ? `${displayBrandName.toUpperCase()} PRECISION SPARES` : 'PRECISION AUTOMOTIVE HARDWARE'}
+                                    {displayBrandName ? `${displayBrandName.toUpperCase()} ${t('pdp_precision_spares')}` : t('pdp_precision_hardware')}
                                 </span>
                             </div>
 
@@ -272,24 +273,24 @@ export default function ProductShow({
                             {/* SKU, Part Number, Rating, Sold */}
                             <div className="product-meta-row">
                                 <div className="meta-item">
-                                    <span className="meta-label">SKU:</span>
+                                    <span className="meta-label">{t('sku')}:</span>
                                     <strong className="meta-value">{currentSku}</strong>
                                 </div>
                                 <span className="meta-divider">|</span>
                                 <div className="meta-item">
-                                    <span className="meta-label">Part #:</span>
+                                    <span className="meta-label">{t('part_number')}:</span>
                                     <strong className="meta-value">{currentPartNumber}</strong>
                                 </div>
                                 <span className="meta-divider">|</span>
                                 <div className="meta-item rating-item">
                                     <Star size={14} className="star-filled" />
                                     <strong className="rating-score">{Number(product.rating || 4.9).toFixed(1)}</strong>
-                                    <span className="rating-count">({product.rating_count || 84} reviews)</span>
+                                    <span className="rating-count">({product.rating_count || 84} {t('pdp_reviews')})</span>
                                 </div>
                                 <span className="meta-divider">|</span>
                                 <div className="meta-item sold-item">
                                     <ShoppingBag size={14} />
-                                    <span>1,240+ sold</span>
+                                    <span>1,240+ {t('pdp_sold')}</span>
                                 </div>
                             </div>
 
@@ -300,12 +301,12 @@ export default function ProductShow({
                                     {hasDiscount && (
                                         <>
                                             <span className="price-strikethrough">{formatPrice(currentPrice)}</span>
-                                            <span className="badge-discount">SAVE {discountPercentage}%</span>
+                                            <span className="badge-discount">{t('pdp_save')} {discountPercentage}%</span>
                                         </>
                                     )}
                                 </div>
                                 <p className="tax-notice-text">
-                                    UAE VAT (5%) calculated at checkout.
+                                    {t('pdp_vat_notice')}
                                 </p>
                             </div>
 
@@ -316,19 +317,19 @@ export default function ProductShow({
                                         <Car size={22} />
                                     </div>
                                     <div className="fitment-banner-text">
-                                        <strong>Vehicle Fitment Verification</strong>
+                                        <strong>{t('pdp_fitment_title')}</strong>
                                         <p>
                                             {activeVehicle
                                                 ? (fitmentStatus?.compatible
-                                                    ? `Guaranteed fit for ${activeVehicle.year} ${activeVehicle.make} ${activeVehicle.model}`
-                                                    : `May not fit ${activeVehicle.year} ${activeVehicle.make} ${activeVehicle.model}`)
-                                                : 'Select your vehicle to confirm fitment before ordering.'
+                                                    ? `${t('pdp_fitment_guaranteed')} ${activeVehicle.year} ${activeVehicle.make} ${activeVehicle.model}`
+                                                    : `${t('pdp_fitment_may_not')} ${activeVehicle.year} ${activeVehicle.make} ${activeVehicle.model}`)
+                                                : t('pdp_fitment_prompt')
                                             }
                                         </p>
                                     </div>
                                 </div>
                                 <Link href="/vehicle-finder" className="btn-fitment-action">
-                                    Select Vehicle <ArrowRight size={14} />
+                                    {t('pdp_select_vehicle')} <ArrowRight size={14} />
                                 </Link>
                             </div>
 
@@ -364,7 +365,7 @@ export default function ProductShow({
                             ) : (
                                 variations.length > 0 && (
                                     <div className="variations-selector-wrap">
-                                        <span className="selector-title">Select Specification / Size:</span>
+                                        <span className="selector-title">{t('pdp_select_spec')}</span>
                                         <div className="selector-pills-row">
                                             {variations.map(variation => (
                                                 <button
@@ -393,8 +394,8 @@ export default function ProductShow({
                                 <span className={`stock-dot ${isInStock ? 'stock-dot--in' : 'stock-dot--out'}`} />
                                 <span className="stock-text">
                                     {isInStock
-                                        ? <><strong>In Stock</strong> ({currentStock} units available at central depot)</>
-                                        : <strong className="text-danger">Temporarily Out of Stock</strong>
+                                        ? <><strong>{t('in_stock')}</strong> ({currentStock} {t('pdp_units_available')})</>
+                                        : <strong className="text-danger">{t('pdp_temp_out_of_stock')}</strong>
                                     }
                                 </span>
                             </div>
@@ -429,11 +430,11 @@ export default function ProductShow({
                                 >
                                     {addedToast ? (
                                         <>
-                                            <Check size={18} /> Added to Cart!
+                                            <Check size={18} /> {t('pdp_added_to_cart')}
                                         </>
                                     ) : (
                                         <>
-                                            <ShoppingCart size={18} /> Add to Cart — {formatPrice(effectivePrice * quantity)}
+                                            <ShoppingCart size={18} /> {t('add_to_cart')} — {formatPrice(effectivePrice * quantity)}
                                         </>
                                     )}
                                 </button>
@@ -453,15 +454,15 @@ export default function ProductShow({
                             <div className="trust-badges-bar">
                                 <div className="trust-badge-item">
                                     <Truck size={18} className="trust-icon" />
-                                    <span>Insured Dubai &amp; UAE Express Freight</span>
+                                    <span>{t('pdp_trust_freight')}</span>
                                 </div>
                                 <div className="trust-badge-item">
                                     <ShieldCheck size={18} className="trust-icon" />
-                                    <span>Manufacturer Direct Warranty</span>
+                                    <span>{t('pdp_trust_warranty')}</span>
                                 </div>
                                 <div className="trust-badge-item">
                                     <RotateCcw size={18} className="trust-icon" />
-                                    <span>30-Day Easy Returns</span>
+                                    <span>{t('pdp_trust_returns')}</span>
                                 </div>
                             </div>
                         </div>
@@ -478,7 +479,7 @@ export default function ProductShow({
                                 onClick={() => setActiveTab('specs')}
                             >
                                 <Sliders size={16} />
-                                <span>Technical Specifications</span>
+                                <span>{t('technical_specs')}</span>
                             </button>
                             <button
                                 type="button"
@@ -486,7 +487,7 @@ export default function ProductShow({
                                 onClick={() => setActiveTab('vehicles')}
                             >
                                 <Car size={16} />
-                                <span>Compatible Vehicles ({compatibleVehicles.length})</span>
+                                <span>{t('pdp_compatible_vehicles')} ({compatibleVehicles.length})</span>
                             </button>
                             <button
                                 type="button"
@@ -494,7 +495,7 @@ export default function ProductShow({
                                 onClick={() => setActiveTab('reviews')}
                             >
                                 <Star size={16} />
-                                <span>Customer Reviews ({reviews.length || 1})</span>
+                                <span>{t('customer_reviews')} ({reviews.length || 1})</span>
                             </button>
                         </div>
 
@@ -514,25 +515,25 @@ export default function ProductShow({
                                                 <div className="pillar-icon-box">
                                                     <Disc3 size={24} />
                                                 </div>
-                                                <span className="pillar-title">Superior Grip</span>
+                                                <span className="pillar-title">{t('pdp_pillar_grip')}</span>
                                             </div>
                                             <div className="pillar-item">
                                                 <div className="pillar-icon-box">
                                                     <Gauge size={24} />
                                                 </div>
-                                                <span className="pillar-title">High-Speed Stability</span>
+                                                <span className="pillar-title">{t('pdp_pillar_stability')}</span>
                                             </div>
                                             <div className="pillar-item">
                                                 <div className="pillar-icon-box">
                                                     <Activity size={24} />
                                                 </div>
-                                                <span className="pillar-title">Responsive Braking</span>
+                                                <span className="pillar-title">{t('pdp_pillar_braking')}</span>
                                             </div>
                                             <div className="pillar-item">
                                                 <div className="pillar-icon-box">
                                                     <CheckCircle2 size={24} />
                                                 </div>
-                                                <span className="pillar-title">Longer Tread Life</span>
+                                                <span className="pillar-title">{t('pdp_pillar_tread')}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -542,24 +543,24 @@ export default function ProductShow({
                                         <table className="specs-structured-table">
                                             <tbody>
                                                 <tr>
-                                                    <th>Manufacturer / Brand</th>
-                                                    <td>{product.brand?.name || 'Michelin'}</td>
+                                                    <th>{t('pdp_manufacturer_brand')}</th>
+                                                    <td>{displayBrandName || 'Michelin'}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Part Number</th>
+                                                    <th>{t('part_number')}</th>
                                                     <td>{currentPartNumber}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>SKU</th>
+                                                    <th>{t('sku')}</th>
                                                     <td>{currentSku}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Shipping Weight</th>
+                                                    <th>{t('pdp_shipping_weight')}</th>
                                                     <td>{product.weight || '11.20'} {product.weight_unit || 'kg'}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Engineering Specs</th>
-                                                    <td>{product.technical_specifications || 'Treadwear: 300 | Traction: AA | Temperature: A | Speed Rating: (Y) >300 km/h | Construction: Radial Steel Belted | Origin: France'}</td>
+                                                    <th>{t('pdp_engineering_specs')}</th>
+                                                    <td>{displayTechSpecs || 'Treadwear: 300 | Traction: AA | Temperature: A | Speed Rating: (Y) >300 km/h | Construction: Radial Steel Belted | Origin: France'}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -572,22 +573,22 @@ export default function ProductShow({
                         {activeTab === 'vehicles' && (
                             <div className="tab-pane-vehicles">
                                 <p className="tab-intro-text">
-                                    The following makes and models have verified direct or configured bolt-on fitment with this part:
+                                    {t('pdp_fitment_intro')}
                                 </p>
                                 <table className="specs-structured-table">
                                     <thead>
                                         <tr>
-                                            <th style={{ width: '15%' }}>Year</th>
-                                            <th style={{ width: '30%' }}>Make & Model</th>
-                                            <th style={{ width: '25%' }}>Engine</th>
-                                            <th style={{ width: '30%' }}>Fitment Position & Notes</th>
+                                            <th style={{ width: '15%' }}>{t('vf_year')}</th>
+                                            <th style={{ width: '30%' }}>{t('pdp_make_model')}</th>
+                                            <th style={{ width: '25%' }}>{t('vf_engine')}</th>
+                                            <th style={{ width: '30%' }}>{t('pdp_fitment_notes')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {compatibleVehicles.length === 0 ? (
                                             <tr>
                                                 <td colSpan="4" className="text-center-padded">
-                                                    Universal fitment or specific vehicle fitment chart available upon request.
+                                                    {t('pdp_universal_fitment')}
                                                 </td>
                                             </tr>
                                         ) : (
@@ -596,7 +597,7 @@ export default function ProductShow({
                                                     <td><strong>{item.vehicle?.year}</strong></td>
                                                     <td>{item.vehicle?.make} {item.vehicle?.model}</td>
                                                     <td>{item.vehicle?.engine}</td>
-                                                    <td>{item.notes || 'Direct OEM Replacement'}</td>
+                                                    <td>{item.notes || t('pdp_direct_oem')}</td>
                                                 </tr>
                                             ))
                                         )}
@@ -617,7 +618,7 @@ export default function ProductShow({
                                                 ))}
                                             </div>
                                             <strong>Benchmark Dry Traction & Crisp Turn-In</strong>
-                                            <span className="badge-verified">Verified Buyer</span>
+                                            <span className="badge-verified">{t('pdp_verified_buyer')}</span>
                                         </div>
                                         <p className="review-body">
                                             Installed these on my 992 GT3 for weekend track sessions. The dry grip is extraordinary right out of the pit box with immediate steering precision.
@@ -637,7 +638,7 @@ export default function ProductShow({
                                                 </div>
                                                 <strong>{rev.title || 'Verified Performance'}</strong>
                                                 {rev.is_verified_purchase && (
-                                                    <span className="badge-verified">Verified Buyer</span>
+                                                    <span className="badge-verified">{t('pdp_verified_buyer')}</span>
                                                 )}
                                             </div>
                                             <p className="review-body">
@@ -657,7 +658,7 @@ export default function ProductShow({
                     {relatedProducts.length > 0 && (
                         <div className="product-single-related">
                             <h3 className="related-heading">
-                                Related Performance Spares
+                                {t('pdp_related_heading')}
                             </h3>
                             <div className="product-grid">
                                 {relatedProducts.map(rel => (
@@ -683,7 +684,7 @@ export default function ProductShow({
                         </button>
                         <img
                             src={activeImage || product.main_image}
-                            alt={product.name}
+                            alt={displayName}
                             className="lightbox-img"
                         />
                     </div>
@@ -693,7 +694,7 @@ export default function ProductShow({
             {/* Sticky Mobile Add-to-Cart Bar */}
             <div className="product-single-sticky-mobile">
                 <div className="sticky-price">
-                    <span>Total</span>
+                    <span>{t('pdp_total')}</span>
                     <strong>{formatPrice(effectivePrice * quantity)}</strong>
                 </div>
                 <div className="sticky-actions">
@@ -724,11 +725,11 @@ export default function ProductShow({
                     >
                         {addedToast ? (
                             <>
-                                <Check size={15} /> Added!
+                                <Check size={15} /> {t('added')}
                             </>
                         ) : (
                             <>
-                                <ShoppingCart size={15} /> Add to Cart
+                                <ShoppingCart size={15} /> {t('add_to_cart')}
                             </>
                         )}
                     </button>

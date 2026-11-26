@@ -179,11 +179,13 @@ class CatalogTranslationsSeeder extends Seeder
                     'name' => 'إطار بايلوت سبورت 5 عالي الأداء',
                     'short_description' => 'إطار رياضي عالي الأداء لأقصى درجات الثبات والتحكم.',
                     'description' => 'مصمم لقيادة رياضية دقيقة مع ثبات فائق على الطرق الجافة والمبللة وعمر افتراضي أطول.',
+                    'technical_specifications' => 'مؤشر التآكل: 300 | التماسك: AA | الحرارة: A | تصنيف السرعة: (Y) >300 كم/س | المنشأ: فرنسا',
                 ],
                 'fr' => [
                     'name' => 'Pneu Performance Pilot Sport 5',
                     'short_description' => 'Pneu haute performance pour une adhérence et un contrôle maximaux.',
                     'description' => 'Conçu pour une conduite sportive précise avec une adhérence exceptionnelle sur sol sec et mouillé.',
+                    'technical_specifications' => 'Treadwear : 300 | Traction : AA | Température : A | Indice vitesse : (Y) >300 km/h | Origine : France',
                 ],
             ],
             'slotted-drilled-brake-rotor' => [
@@ -191,11 +193,13 @@ class CatalogTranslationsSeeder extends Seeder
                     'name' => 'قرص فرامل مشقوق ومثقب رياضي',
                     'short_description' => 'قوة كبح معززة وتبديد حرارة فائق الأداء.',
                     'description' => 'أقراص فرامل مهواة عالية الكربون لتقليل التآكل الحراري ومنح استجابة كبح فورية.',
+                    'technical_specifications' => 'المادة: سبيكة حديد عالية الكربون G3000 | التشطيب: طلاء زنك مقاوم للصدأ | التبريد: مهوى ومشقوق',
                 ],
                 'fr' => [
                     'name' => 'Disque de Frein Percé & Rainuré',
                     'short_description' => 'Puissance de freinage améliorée et dissipation thermique optimale.',
                     'description' => 'Disques de frein haute teneur en carbone réduisant le fading thermique pour un freinage constant.',
+                    'technical_specifications' => 'Matériau : Fonte haute teneur en carbone G3000 | Finition : Zingage anticorrosion | Type : Ventilé percé/rainuré',
                 ],
             ],
             'performance-cat-back-exhaust' => [
@@ -203,11 +207,13 @@ class CatalogTranslationsSeeder extends Seeder
                     'name' => 'نظام عادم كات-باك رياضي',
                     'short_description' => 'نظام من الفولاذ المقاوم للصدأ بصوت عميق ورياضي.',
                     'description' => 'مصنوع من فولاذ T-304 المقاوم للصدأ لزيادة تدفق العادم وتحسين القوة الحصانية وصوت المحرك.',
+                    'technical_specifications' => 'المادة: فولاذ T-304 مقاوم للصدأ | قطر الأنبوب: 3 بوصة | اللحام: TIG عالي الدقة | زيادة متوقعة: +18 حصان',
                 ],
                 'fr' => [
                     'name' => 'Échappement Sport Cat-Back',
                     'short_description' => 'Système en acier inoxydable au son profond et agressif.',
                     'description' => 'Fabriqué en acier inoxydable T-304 pour maximiser le flux des gaz et libérer la puissance moteur.',
+                    'technical_specifications' => 'Matériau : Acier inoxydable T-304 | Diamètre : 3 pouces | Soudure : TIG | Gain estimé : +18 ch',
                 ],
             ],
             'cold-air-intake-system' => [
@@ -215,11 +221,13 @@ class CatalogTranslationsSeeder extends Seeder
                     'name' => 'نظام سحب هواء بارد رياضي',
                     'short_description' => 'يزيد القوة الحصانية واستجابة دواسة الوقود.',
                     'description' => 'أنبوب سحب ألمنيوم مصقول مع فلتر هواء عالي التدفق لتوصيل هواء بارد وكثيف إلى المحرك.',
+                    'technical_specifications' => 'وسيط الفلتر: شاش قطني مزيت قابل للغسل | الأنبوب: ألمنيوم مطلي مقاس 3.5 بوصة | الزيادة المقدرة: +14.2 حصان عند 5800 دورة/دقيقة',
                 ],
                 'fr' => [
                     'name' => "Système d'Admission d'Air Froid",
                     'short_description' => "Augmente la puissance moteur et la réactivité de l'accélérateur.",
                     'description' => "Tubulure en aluminium poli avec filtre haut débit pour un apport d'air frais optimal.",
+                    'technical_specifications' => 'Média filtrant : Gaze de coton huilée lavable | Tube : Aluminium thermolaqué 3,5" | Gain estimé : +14,2 ch à 5800 tr/min',
                 ],
             ],
             'b16-pss10-coilover-suspension-kit' => [
@@ -227,11 +235,13 @@ class CatalogTranslationsSeeder extends Seeder
                     'name' => 'طقم تعليق كويلوفر B16 PSS10 رياضي',
                     'short_description' => 'تخميد وارتفاع قابل للتعديل لدقة القيادة على الحلبات.',
                     'description' => 'نظام تعليق ألماني بعشر درجات تعديل للتخميد لضبط مثالي بين الراحة والأداء الرياضي.',
+                    'technical_specifications' => 'التخميد: 10 مستويات قابلة للتعديل | خفض الارتفاع: 30-50 مم | التصميم: أحادي الأنبوب مقلوب | المنشأ: ألمانيا',
                 ],
                 'fr' => [
                     'name' => 'Kit Suspension Combinés Filetés B16 PSS10',
                     'short_description' => 'Amortissement et hauteur réglables pour une précision sur piste.',
                     'description' => 'Système de suspension allemand à 10 niveaux de réglage pour un équilibre parfait route et circuit.',
+                    'technical_specifications' => 'Amortissement : 10 réglages | Rabaissement : 30-50 mm | Conception : Monotube inversé | Origine : Allemagne',
                 ],
             ],
         ];
