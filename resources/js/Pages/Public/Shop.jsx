@@ -84,9 +84,9 @@ export default function Shop({
                 <div className="container">
                     {/* Breadcrumbs */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#888', marginBottom: '20px' }}>
-                        <Link href="/" style={{ color: '#252525' }}>Home</Link>
+                        <Link href="/" style={{ color: '#252525' }}>{t('home')}</Link>
                         <ChevronRight size={12} />
-                        <span style={{ color: '#F36B16', fontWeight: 600 }}>Shop Catalog</span>
+                        <span style={{ color: '#F36B16', fontWeight: 600 }}>{t('shop_catalog')}</span>
                         {safeFilters.category && (
                             <>
                                 <ChevronRight size={12} />
@@ -132,9 +132,9 @@ export default function Shop({
                         <div className="shop-page-top-info">
                             <h1>
                                 <img src="/assets/icons/heading-stripe.webp" alt="" className="title-stripe-icon" />
-                                Automotive Performance Catalog
+                                {t('shop_heading')}
                             </h1>
-                            <p>Showing {products.total || items.length} verified automotive spare parts</p>
+                            <p>{products.total || items.length} {t('products_count')}</p>
                         </div>
 
                         <div className="shop-page-top-actions">
@@ -143,7 +143,7 @@ export default function Shop({
                                 className="mobile-filter-btn"
                                 onClick={() => setMobileFiltersOpen(true)}
                             >
-                                <SlidersHorizontal size={15} /> Filters
+                                <SlidersHorizontal size={15} /> {t('filters')}
                             </button>
 
                             <select 
@@ -151,10 +151,10 @@ export default function Shop({
                                 value={selectedSort}
                                 onChange={(e) => handleSortChange(e.target.value)}
                             >
-                                <option value="latest">Sort by: Newest Arrivals</option>
-                                <option value="price_asc">Price: Low to High</option>
-                                <option value="price_desc">Price: High to Low</option>
-                                <option value="rating">Top Customer Rated</option>
+                                <option value="latest">{t('sort_newest')}</option>
+                                <option value="price_asc">{t('sort_price_asc')}</option>
+                                <option value="price_desc">{t('sort_price_desc')}</option>
+                                <option value="rating">{t('sort_rating')}</option>
                             </select>
                         </div>
                     </div>
@@ -166,7 +166,7 @@ export default function Shop({
                             <div className="sidebar-header">
                                 <div className="sidebar-header-title">
                                     <SlidersHorizontal size={15} />
-                                    <span>Filter Catalog</span>
+                                    <span>{t('filter_catalog')}</span>
                                 </div>
                                 <button 
                                     type="button" 
@@ -174,7 +174,7 @@ export default function Shop({
                                     onClick={handleClearAll}
                                 >
                                     <RotateCcw size={12} />
-                                    <span>Reset All</span>
+                                    <span>{t('reset_all')}</span>
                                 </button>
                                 {mobileFiltersOpen && (
                                     <button type="button" className="sidebar-close-btn" onClick={() => setMobileFiltersOpen(false)}>
@@ -187,7 +187,7 @@ export default function Shop({
                             <div className="filter-widget">
                                 <h4 className="filter-widget-title">
                                     <Barcode size={15} className="widget-title-icon" />
-                                    <span>Part Number</span>
+                                    <span>{t('part_number')}</span>
                                 </h4>
                                 <div className="filter-search-box">
                                     <Search size={14} className="filter-search-icon" />
@@ -206,7 +206,7 @@ export default function Shop({
                             <div className="filter-widget">
                                 <h4 className="filter-widget-title">
                                     <Layers size={14} className="widget-title-icon" />
-                                    <span>Category</span>
+                                    <span>{t('category')}</span>
                                 </h4>
                                 <div className="filter-widget-list filter-widget-list--scrollable">
                                     <label className={`filter-option ${selectedCategory === '' ? 'is-active' : ''}`}>
@@ -216,7 +216,7 @@ export default function Shop({
                                             checked={selectedCategory === ''} 
                                             onChange={() => { setSelectedCategory(''); applyFilters({ category: '' }); }}
                                         />
-                                        <span className="filter-option-name">All Categories</span>
+                                        <span className="filter-option-name">{t('all_categories')}</span>
                                     </label>
                                     {categories.map(cat => (
                                         <label key={cat.id} className={`filter-option ${selectedCategory === cat.slug ? 'is-active' : ''}`}>
@@ -236,7 +236,7 @@ export default function Shop({
                             <div className="filter-widget">
                                 <h4 className="filter-widget-title">
                                     <BadgeCheck size={14} className="widget-title-icon" />
-                                    <span>Brand</span>
+                                    <span>{t('brand')}</span>
                                 </h4>
                                 <div className="filter-widget-list filter-widget-list--scrollable">
                                     <label className={`filter-option ${selectedBrand === '' ? 'is-active' : ''}`}>
@@ -246,7 +246,7 @@ export default function Shop({
                                             checked={selectedBrand === ''} 
                                             onChange={() => { setSelectedBrand(''); applyFilters({ brand: '' }); }}
                                         />
-                                        <span className="filter-option-name">All Brands</span>
+                                        <span className="filter-option-name">{t('all_brands')}</span>
                                     </label>
                                     {brands.map(b => (
                                         <label key={b.id} className={`filter-option ${selectedBrand === b.slug ? 'is-active' : ''}`}>

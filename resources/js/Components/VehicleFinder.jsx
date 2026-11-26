@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { CarFront, Search, RotateCcw, Check, AlertCircle, ArrowRight } from 'lucide-react';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function VehicleFinder() {
     const { activeVehicle } = usePage().props;
+    const { t } = useLanguage();
 
     const [years, setYears] = useState([]);
     const [makes, setMakes] = useState([]);
@@ -119,8 +121,8 @@ export default function VehicleFinder() {
                             <CarFront size={32} strokeWidth={2.2} className="hvf-car-icon" />
                         </div>
                         <div className="hvf-text">
-                            <span className="hvf-sub">Find Parts For</span>
-                            <strong className="hvf-main">Your Vehicle</strong>
+                            <span className="hvf-sub">{t('vf_find_parts_for')}</span>
+                            <strong className="hvf-main">{t('vf_your_vehicle')}</strong>
                         </div>
                     </div>
 
@@ -128,15 +130,15 @@ export default function VehicleFinder() {
                     <form onSubmit={handleSearch} className="hvf-form">
                         {/* 1. Year */}
                         <div className="hvf-field">
-                            <label className="hvf-label">Year</label>
+                            <label className="hvf-label">{t('vf_year')}</label>
                             <select 
                                 className="hvf-select"
                                 value={selectedYear}
                                 onChange={(e) => handleYearChange(e.target.value)}
                                 disabled={loadingYears}
-                                aria-label="Select Year"
+                                aria-label={t('vf_select_year')}
                             >
-                                <option value="">Select Year</option>
+                                <option value="">{t('vf_select_year')}</option>
                                 {years.map(y => (
                                     <option key={y} value={y}>{y}</option>
                                 ))}
@@ -145,15 +147,15 @@ export default function VehicleFinder() {
 
                         {/* 2. Make */}
                         <div className="hvf-field">
-                            <label className="hvf-label">Make</label>
+                            <label className="hvf-label">{t('vf_make')}</label>
                             <select 
                                 className="hvf-select"
                                 value={selectedMake}
                                 onChange={(e) => handleMakeChange(e.target.value)}
                                 disabled={!selectedYear || loadingMakes}
-                                aria-label="Select Make"
+                                aria-label={t('vf_select_make')}
                             >
-                                <option value="">Select Make</option>
+                                <option value="">{t('vf_select_make')}</option>
                                 {makes.map(m => (
                                     <option key={m} value={m}>{m}</option>
                                 ))}
@@ -162,15 +164,15 @@ export default function VehicleFinder() {
 
                         {/* 3. Model */}
                         <div className="hvf-field">
-                            <label className="hvf-label">Model</label>
+                            <label className="hvf-label">{t('vf_model')}</label>
                             <select 
                                 className="hvf-select"
                                 value={selectedModel}
                                 onChange={(e) => handleModelChange(e.target.value)}
                                 disabled={!selectedMake || loadingModels}
-                                aria-label="Select Model"
+                                aria-label={t('vf_select_model')}
                             >
-                                <option value="">Select Model</option>
+                                <option value="">{t('vf_select_model')}</option>
                                 {models.map(m => (
                                     <option key={m} value={m}>{m}</option>
                                 ))}
@@ -179,7 +181,7 @@ export default function VehicleFinder() {
 
                         {/* 4. Engine */}
                         <div className="hvf-field">
-                            <label className="hvf-label">Engine</label>
+                            <label className="hvf-label">{t('vf_engine')}</label>
                             <select 
                                 className="hvf-select"
                                 value={selectedEngineId}
@@ -188,9 +190,9 @@ export default function VehicleFinder() {
                                     setErrorMessage('');
                                 }}
                                 disabled={!selectedModel || loadingEngines}
-                                aria-label="Select Engine"
+                                aria-label={t('vf_select_engine')}
                             >
-                                <option value="">Select Engine</option>
+                                <option value="">{t('vf_select_engine')}</option>
                                 {engines.map(eng => (
                                     <option key={eng.id} value={eng.id}>
                                         {eng.engine} {eng.submodel ? `(${eng.submodel})` : ''}
@@ -207,7 +209,7 @@ export default function VehicleFinder() {
                                 disabled={!selectedEngineId}
                             >
                                 <Search size={15} />
-                                <span>Find Parts</span>
+                                <span>{t('vf_find_parts')}</span>
                                 <ArrowRight size={15} />
                             </button>
 
