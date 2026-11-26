@@ -353,7 +353,8 @@ export default function Header() {
                     <div className="site-header-utility-right">
                         {/* Language Selector (Hover & Click) */}
                         <div
-                            className={`utility-select-dropdown ${langOpen ? 'is-open' : ''}`}
+                            className={`utility-select-dropdown notranslate ${langOpen ? 'is-open' : ''}`}
+                            translate="no"
                             ref={langRef}
                             onMouseEnter={handleLangMouseEnter}
                             onMouseLeave={handleLangMouseLeave}
@@ -407,7 +408,8 @@ export default function Header() {
 
                         {/* Currency Selector (Hover & Click) */}
                         <div
-                            className={`utility-select-dropdown ${currencyOpen ? 'is-open' : ''}`}
+                            className={`utility-select-dropdown notranslate ${currencyOpen ? 'is-open' : ''}`}
+                            translate="no"
                             ref={currencyRef}
                             onMouseEnter={handleCurrencyMouseEnter}
                             onMouseLeave={handleCurrencyMouseLeave}

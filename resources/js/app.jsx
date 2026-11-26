@@ -1,6 +1,25 @@
 import '../scss/app.scss';
 import './bootstrap';
 
+// Prevent React reconciler crashes when Google Translate wraps text nodes in <font> tags
+if (typeof Node === 'function' && Node.prototype) {
+    const originalRemoveChild = Node.prototype.removeChild;
+    Node.prototype.removeChild = function (child) {
+        if (child && child.parentNode !== this) {
+            return child;
+        }
+        return originalRemoveChild.apply(this, arguments);
+    };
+
+    const originalInsertBefore = Node.prototype.insertBefore;
+    Node.prototype.insertBefore = function (newNode, referenceNode) {
+        if (referenceNode && referenceNode.parentNode !== this) {
+            return newNode;
+        }
+        return originalInsertBefore.apply(this, arguments);
+    };
+}
+
 import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
