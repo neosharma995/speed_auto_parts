@@ -292,12 +292,12 @@ class AdminOperationsTest extends TestCase
         $admin = User::where('email', 'admin@autosparts.com')->first();
         $this->actingAs($admin);
 
-        // 1. Index returns paginated vehicles (8 per page across 10+ seeded vehicles)
+        // 1. Index returns paginated vehicles (10 per page across 10+ seeded vehicles)
         $indexResponse = $this->get('/admin/vehicles');
         $indexResponse->assertStatus(200);
         $indexResponse->assertInertia(fn ($page) => $page
             ->component('Admin/Vehicles/Index')
-            ->has('vehicles.data', 8)
+            ->has('vehicles.data', 10)
             ->where('vehicles.total', fn ($total) => $total >= 10)
             ->has('makes')
             ->has('years')

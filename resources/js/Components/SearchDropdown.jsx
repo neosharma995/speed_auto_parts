@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import { Search, Tag, TrendingUp, Check, ArrowRight, Loader2, AlertCircle, Layers, Grid } from 'lucide-react';
+import { useCurrency } from '@/Context/CurrencyContext';
 
 export default function SearchDropdown({
     isOpen,
@@ -12,6 +13,7 @@ export default function SearchDropdown({
     onClose,
     isMobile = false,
 }) {
+    const { formatPrice } = useCurrency();
     if (!isOpen) return null;
 
     const hasQuery = searchQuery.trim().length > 0;
@@ -216,11 +218,11 @@ export default function SearchDropdown({
                                         <div className="search-result-aside">
                                             <div className="search-result-price-group">
                                                 <span className="search-price-effective">
-                                                    ${sellingPrice.toFixed(2)}
+                                                    {formatPrice(sellingPrice)}
                                                 </span>
                                                 {hasDiscount && regularPrice > sellingPrice && (
                                                     <span className="search-price-regular">
-                                                        ${regularPrice.toFixed(2)}
+                                                        {formatPrice(regularPrice)}
                                                     </span>
                                                 )}
                                             </div>

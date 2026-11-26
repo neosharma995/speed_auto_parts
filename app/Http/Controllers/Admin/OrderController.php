@@ -37,7 +37,7 @@ class OrderController extends Controller
             $query->where('payment_status', $payment);
         }
 
-        $orders = $query->latest()->paginate(15)->withQueryString();
+        $orders = $query->latest()->paginate(10)->withQueryString();
 
         return Inertia::render('Admin/Orders/Index', [
             'orders' => $orders,

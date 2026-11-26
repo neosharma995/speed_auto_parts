@@ -33,6 +33,12 @@ class WarehouseController extends Controller
             ->with(['supplier', 'brand', 'category'])
             ->orderByDesc('warehouse_stock')
             ->orderByDesc('updated_at')
+            ->paginate(10)
+            ->withQueryString();
+
+        $bulkProducts = Product::query()
+            ->where('warehouse_stock', '>', 0)
+            ->orderByDesc('warehouse_stock')
             ->get();
 
         $transfersCount = StockTransfer::query()->count();
@@ -45,6 +51,7 @@ class WarehouseController extends Controller
         return Inertia::render('Admin/Warehouse/Index', [
             'pendingLotsCount' => $pendingLotsCount,
             'products' => $products,
+            'bulkProducts' => $bulkProducts,
             'transfersCount' => $transfersCount,
             'stats' => [
                 'pending_lots_count' => $pendingLotsCount,
@@ -87,7 +94,7 @@ class WarehouseController extends Controller
             $query->where('status', (string) $request->input('status'));
         }
 
-        $transfers = $query->latest()->paginate(15)->withQueryString();
+        $transfers = $query->latest()->paginate(10)->withQueryString();
 
         return Inertia::render('Admin/Transfers/Logs', [
             'transfers' => $transfers,

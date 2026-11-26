@@ -6,6 +6,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { CartProvider } from './Context/CartContext';
 import { CurrencyProvider } from './Context/CurrencyContext';
+import { LanguageProvider } from './Context/LanguageContext';
 import { WishlistProvider } from './Context/WishlistContext';
 
 const syncCsrfMeta = (page) => {
@@ -50,13 +51,15 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <CurrencyProvider initialSettings={props?.initialPage?.props?.settings}>
-                <CartProvider initialCart={props?.initialPage?.props?.cart}>
-                    <WishlistProvider>
-                        <App {...props} />
-                    </WishlistProvider>
-                </CartProvider>
-            </CurrencyProvider>
+            <LanguageProvider>
+                <CurrencyProvider initialSettings={props?.initialPage?.props?.settings}>
+                    <CartProvider initialCart={props?.initialPage?.props?.cart}>
+                        <WishlistProvider>
+                            <App {...props} />
+                        </WishlistProvider>
+                    </CartProvider>
+                </CurrencyProvider>
+            </LanguageProvider>
         );
     },
     progress: {

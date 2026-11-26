@@ -18,7 +18,10 @@ import {
     History,
 } from 'lucide-react';
 
-export default function AdminCatalogueIndex({ products = [], transfersCount = 0, filters = {}, stats = {} }) {
+export default function AdminCatalogueIndex({ products = [], bulkProducts = null, transfersCount = 0, filters = {}, stats = {} }) {
+    const productRows = Array.isArray(products) ? products : (products?.data || []);
+    const totalProducts = Array.isArray(products) ? products.length : (products?.total ?? productRows.length);
+    const bulkSource = Array.isArray(bulkProducts) ? bulkProducts : productRows;
     const safeFilters = filters && !Array.isArray(filters) ? filters : {};
     const { errors } = usePage().props;
     const { formatAdminPrice, defaultCurrency } = useCurrency();
@@ -51,8 +54,8 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
     const [submitting, setSubmitting] = useState(false);
 
     const warehouseAvailableProducts = useMemo(
-        () => products.filter((p) => Number(p.warehouse_stock) > 0),
-        [products]
+        () => bulkSource.filter((p) => Number(p.warehouse_stock) > 0),
+        [bulkSource]
     );
 
     const applyFilter = (nextFilter = activeFilter, nextSearch = search) => {
@@ -373,7 +376,7 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
 
             <AdminDataTable
                 title="Website Catalogue"
-                count={products.length}
+                count={totalProducts}
                 search={{
                     value: search,
                     onChange: setSearch,
@@ -404,7 +407,9 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
                     </button>
                 }
                 columns={columns}
-                rows={products}
+                rows={productRows}
+                pagination={Array.isArray(products) ? null : products}
+                itemLabel="products"
                 emptyMessage="No products found for the selected filter."
             />
 
@@ -412,7 +417,7 @@ export default function AdminCatalogueIndex({ products = [], transfersCount = 0,
             <BulkCatalogueTransferModal
                 isOpen={showBulkModal}
                 onClose={() => setShowBulkModal(false)}
-                products={products}
+                products={bulkSource}
             />
 
             {/* Single Transfer Warehouse -> Catalogue Modal */}

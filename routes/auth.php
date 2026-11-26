@@ -3,14 +3,17 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\PasswordResetOtpController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
+
+    Route::post('register/send-otp', [RegisteredUserController::class, 'sendOtp'])
+        ->middleware('throttle:10,1')
+        ->name('register.send-otp');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
@@ -19,16 +22,16 @@ Route::middleware('guest')->group(function () {
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
-    Route::get('forgot-password', function () {
-        return Inertia::render('Auth/ForgotPassword', [
-            'status' => session('status'),
-        ]);
-    })->name('password.request');
+    Route::get('forgot-password', [PasswordResetOtpController::class, 'create'])
+        ->name('password.request');
 
-    Route::post('forgot-password', function (Request $request) {
-        $request->validate(['email' => 'required|email']);
-        return back()->with('status', 'We have emailed your password reset link!');
-    })->name('password.email');
+    Route::post('forgot-password', [PasswordResetOtpController::class, 'sendOtp'])
+        ->middleware('throttle:10,1')
+        ->name('password.email');
+
+    Route::post('forgot-password/reset', [PasswordResetOtpController::class, 'reset'])
+        ->middleware('throttle:10,1')
+        ->name('password.otp-reset');
 });
 
 Route::middleware('auth')->group(function () {

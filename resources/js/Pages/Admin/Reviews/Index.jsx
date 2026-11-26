@@ -5,6 +5,8 @@ import AdminDataTable from '@/Components/Admin/AdminDataTable';
 import { Star, Trash2 } from 'lucide-react';
 
 export default function AdminReviewsIndex({ reviews = [] }) {
+    const rows = Array.isArray(reviews) ? reviews : (reviews?.data || []);
+    const totalCount = Array.isArray(reviews) ? reviews.length : (reviews?.total ?? rows.length);
     const handleToggleApprove = (id) => {
         router.post(`/admin/reviews/${id}/toggle-approve`);
     };
@@ -87,9 +89,11 @@ export default function AdminReviewsIndex({ reviews = [] }) {
         <AdminLayout title="Customer Reviews & Ratings">
             <AdminDataTable
                 title="Product Reviews Moderation"
-                count={reviews.length}
+                count={totalCount}
                 columns={columns}
-                rows={reviews}
+                rows={rows}
+                pagination={Array.isArray(reviews) ? null : reviews}
+                itemLabel="reviews"
                 emptyMessage="No customer reviews found."
             />
         </AdminLayout>

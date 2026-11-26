@@ -6,6 +6,21 @@ const CurrencyContext = createContext(null);
 
 const STORAGE_KEY = 'sap_selected_currency';
 
+const BASE_USD_RATES = {
+    AED: 3.6725,
+    USD: 1.0,
+    EUR: 0.9218,
+};
+
+function getDefaultRatesForBase(baseCode) {
+    const base = BASE_USD_RATES[baseCode] || 1;
+    const out = {};
+    Object.entries(BASE_USD_RATES).forEach(([c, usdRate]) => {
+        out[c] = c === baseCode ? 1 : Number((usdRate / base).toFixed(4));
+    });
+    return out;
+}
+
 function normalizeSettings(rawSettings = {}) {
     const code = String(rawSettings?.currency_code || 'AED').toUpperCase();
     const meta = getCurrencyMeta(code);
@@ -14,9 +29,19 @@ function normalizeSettings(rawSettings = {}) {
     const rateNum = Number(rawSettings?.currency_rate ?? 1);
     const rate = Number.isFinite(rateNum) && rateNum > 0 ? rateNum : 1;
 
-    const rawRates = rawSettings?.currency_rates && typeof rawSettings.currency_rates === 'object'
-        ? rawSettings.currency_rates
-        : {};
+    let rawRates = {};
+    if (typeof rawSettings?.currency_rates === 'string') {
+        try {
+            const parsed = JSON.parse(rawSettings.currency_rates);
+            if (parsed && typeof parsed === 'object') {
+                rawRates = parsed;
+            }
+        } catch {
+            rawRates = {};
+        }
+    } else if (rawSettings?.currency_rates && typeof rawSettings.currency_rates === 'object') {
+        rawRates = rawSettings.currency_rates;
+    }
 
     const supportedCodes = ['AED', 'USD', 'EUR'];
     const filteredRawRates = {};
@@ -28,9 +53,7 @@ function normalizeSettings(rawSettings = {}) {
     });
 
     const rates = {
-        AED: 1,
-        USD: 0.2723,
-        EUR: 0.251,
+        ...getDefaultRatesForBase(code),
         ...filteredRawRates,
         [code]: 1,
     };
@@ -125,12 +148,15 @@ export function CurrencyProvider({ initialSettings = {}, children }) {
         // Available currencies for storefront switcher (always puts default currency first)
         const rateKeys = Object.keys(config.rates);
         const orderedCodes = [config.code, ...rateKeys.filter((k) => k !== config.code)];
-        const availableCurrencies = orderedCodes.map((code) => ({
-            code,
-            symbol: code,
-            name: code,
-            rate: Number(config.rates[code] || 1),
-        }));
+        const availableCurrencies = orderedCodes.map((code) => {
+            const meta = getCurrencyMeta(code);
+            return {
+                code,
+                symbol: code,
+                name: meta.name || code,
+                rate: Number(config.rates[code] || 1),
+            };
+        });
 
         return {
             defaultCurrency,

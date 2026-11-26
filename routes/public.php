@@ -6,6 +6,7 @@ use App\Http\Controllers\Public\CartController;
 use App\Http\Controllers\Public\CheckoutController;
 use App\Http\Controllers\Public\CustomerAccountController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\NewsletterController;
 use App\Http\Controllers\Public\ProductController;
 use App\Http\Controllers\Public\ShopController;
 use App\Http\Controllers\Public\StaticPageController;
@@ -49,7 +50,6 @@ Route::get('/terms', [StaticPageController::class, 'terms'])->name('terms');
 Route::get('/help-center', [StaticPageController::class, 'helpCenter'])->name('help-center');
 Route::get('/faqs', [StaticPageController::class, 'faqs'])->name('faqs');
 Route::get('/404', [StaticPageController::class, 'notFound'])->name('not-found');
-Route::fallback([StaticPageController::class, 'notFound']);
 
 // Category & Product Redirects
 Route::get('/products', [ShopController::class, 'index'])->name('products');
@@ -86,8 +86,9 @@ Route::prefix('api/vehicles')->group(function () {
     Route::get('/engines', [VehicleFinderController::class, 'getEngines']);
 });
 
-// Order Tracking API
+// Order Tracking API & Newsletter Subscription
 Route::get('/api/orders/track', [StaticPageController::class, 'trackOrderApi']);
+Route::post('/api/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 
 // Customer Portal (Authenticated)
 Route::middleware(['auth'])->group(function () {
@@ -100,3 +101,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/customer/wishlist', [CustomerAccountController::class, 'wishlist'])->name('customer.wishlist');
     Route::post('/api/wishlist/toggle', [CustomerAccountController::class, 'toggleWishlist'])->name('wishlist.toggle');
 });
+
+Route::fallback([StaticPageController::class, 'notFound']);

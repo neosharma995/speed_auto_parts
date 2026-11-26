@@ -61,7 +61,7 @@ class SupplierController extends Controller
             });
         }
 
-        $suppliers = $query->latest()->paginate(15)->withQueryString();
+        $suppliers = $query->latest()->paginate(10)->withQueryString();
 
         $allSuppliers = User::query()
             ->whereHas('roles', fn ($q) => $q->where('name', UserRole::Supplier->value))

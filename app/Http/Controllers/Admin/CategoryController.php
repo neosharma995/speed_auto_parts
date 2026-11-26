@@ -19,7 +19,8 @@ class CategoryController extends Controller
         $categories = Category::query()
             ->withCount('products')
             ->orderBy('sort_order')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Admin/Categories/Index', [
             'categories' => $categories,

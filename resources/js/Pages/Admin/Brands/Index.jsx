@@ -5,6 +5,8 @@ import AdminDataTable from '@/Components/Admin/AdminDataTable';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 export default function AdminBrandsIndex({ brands = [] }) {
+    const rows = Array.isArray(brands) ? brands : (brands?.data || []);
+    const totalCount = Array.isArray(brands) ? brands.length : (brands?.total ?? rows.length);
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [name, setName] = useState('');
@@ -113,14 +115,16 @@ export default function AdminBrandsIndex({ brands = [] }) {
         <AdminLayout title="Brand Management">
             <AdminDataTable
                 title="All Certified Brands"
-                count={brands.length}
+                count={totalCount}
                 actions={
                     <button type="button" className="btn btn-primary btn-sm" onClick={openCreate}>
                         <Plus size={16} /> Add Brand
                     </button>
                 }
                 columns={columns}
-                rows={brands}
+                rows={rows}
+                pagination={Array.isArray(brands) ? null : brands}
+                itemLabel="brands"
                 emptyMessage="No brands found."
             />
 

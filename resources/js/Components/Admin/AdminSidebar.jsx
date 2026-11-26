@@ -17,6 +17,7 @@ import {
     Wrench,
     Store,
     Truck,
+    Mail,
 } from 'lucide-react';
 
 export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
@@ -119,6 +120,13 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
                     icon: Users,
                     permission: 'manage customers',
                     active: isCurrent('/admin/customers'),
+                },
+                {
+                    label: 'Subscribers',
+                    href: '/admin/subscribers',
+                    icon: Mail,
+                    permission: 'manage customers',
+                    active: isCurrent('/admin/subscribers'),
                 },
                 {
                     label: 'Coupons',

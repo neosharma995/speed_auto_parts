@@ -9,27 +9,57 @@ import axios from 'axios';
 export default function Cart() {
     const { cartItems, itemCount, subtotal, updateQuantity, removeFromCart, clearCart } = useCart();
     const { formatPrice } = useCurrency();
-    const [couponCode, setCouponCode] = useState('');
-    const [couponDiscount, setCouponDiscount] = useState(0);
-    const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [couponCode, setCouponCode] = useState(() => {
+        try {
+            const saved = JSON.parse(sessionStorage.getItem('sap_applied_coupon') || 'null');
+            return saved?.code || '';
+        } catch {
+            return '';
+        }
+    });
+    const [couponDiscount, setCouponDiscount] = useState(() => {
+        try {
+            const saved = JSON.parse(sessionStorage.getItem('sap_applied_coupon') || 'null');
+            return Number(saved?.discount || 0);
+        } catch {
+            return 0;
+        }
+    });
+    const [appliedCoupon, setAppliedCoupon] = useState(() => {
+        try {
+            const saved = JSON.parse(sessionStorage.getItem('sap_applied_coupon') || 'null');
+            return saved?.code || null;
+        } catch {
+            return null;
+        }
+    });
     const [couponError, setCouponError] = useState('');
     const [couponLoading, setCouponLoading] = useState(false);
 
     const handleApplyCoupon = async (e) => {
         e.preventDefault();
         setCouponError('');
-        if (!couponCode.trim()) return;
+        const normalizedCode = couponCode.trim().toUpperCase();
+        if (!normalizedCode) return;
 
         setCouponLoading(true);
         try {
             const res = await axios.post('/api/coupons/validate', {
-                code: couponCode.trim(),
+                code: normalizedCode,
                 subtotal: subtotal,
             });
 
             if (res.data.success) {
-                setCouponDiscount(res.data.discount_amount);
-                setAppliedCoupon(res.data.code);
+                const disc = Number(res.data.discount_amount ?? res.data.discount ?? 0);
+                const resolvedCode = res.data.code || res.data.coupon?.code || normalizedCode;
+                setCouponDiscount(disc);
+                setAppliedCoupon(resolvedCode);
+                setCouponCode(resolvedCode);
+                try {
+                    sessionStorage.setItem('sap_applied_coupon', JSON.stringify({ code: resolvedCode, discount: disc }));
+                } catch {
+                    // ignore storage errors
+                }
             } else {
                 setCouponError(res.data.message || 'Invalid coupon code');
             }
@@ -37,6 +67,18 @@ export default function Cart() {
             setCouponError(err.response?.data?.message || 'Failed to apply coupon');
         } finally {
             setCouponLoading(false);
+        }
+    };
+
+    const handleRemoveCoupon = () => {
+        setCouponCode('');
+        setCouponDiscount(0);
+        setAppliedCoupon(null);
+        setCouponError('');
+        try {
+            sessionStorage.removeItem('sap_applied_coupon');
+        } catch {
+            // ignore
         }
     };
 
@@ -224,9 +266,16 @@ export default function Cart() {
                                 )}
 
                                 {appliedCoupon && (
-                                    <span style={{ fontSize: '12px', color: '#168A35', fontWeight: 700 }}>
-                                        ✓ Coupon {appliedCoupon} applied: -{formatPrice(couponDiscount)}
-                                    </span>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: '#168A35', fontWeight: 700 }}>
+                                        <span>✓ Coupon {appliedCoupon} applied: -{formatPrice(couponDiscount)}</span>
+                                        <button
+                                            type="button"
+                                            onClick={handleRemoveCoupon}
+                                            style={{ background: 'none', border: 'none', color: '#D93025', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
                                 )}
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '16px', borderTop: '1px solid #EEE' }}>

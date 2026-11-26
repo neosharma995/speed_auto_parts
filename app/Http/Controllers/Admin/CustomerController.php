@@ -27,7 +27,7 @@ class CustomerController extends Controller
             });
         }
 
-        $customers = $query->latest()->paginate(15)->withQueryString();
+        $customers = $query->latest()->paginate(10)->withQueryString();
 
         return Inertia::render('Admin/Customers/Index', [
             'customers' => $customers,
