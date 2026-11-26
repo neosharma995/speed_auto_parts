@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import { Search, Tag, TrendingUp, Check, ArrowRight, Loader2, AlertCircle, Layers, Grid } from 'lucide-react';
 import { useCurrency } from '@/Context/CurrencyContext';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function SearchDropdown({
     isOpen,
@@ -14,6 +15,7 @@ export default function SearchDropdown({
     isMobile = false,
 }) {
     const { formatPrice } = useCurrency();
+    const { t, localize } = useLanguage();
     if (!isOpen) return null;
 
     const hasQuery = searchQuery.trim().length > 0;
@@ -49,7 +51,7 @@ export default function SearchDropdown({
                         <div className="search-dropdown-block">
                             <div className="search-dropdown-block-title">
                                 <TrendingUp size={13} className="block-title-icon" />
-                                <span>Popular Searches</span>
+                                <span>{t('sd_popular_searches')}</span>
                             </div>
                             <div className="search-popular-tags">
                                 {popularSearches.map((term, idx) => (
@@ -72,7 +74,7 @@ export default function SearchDropdown({
                         <div className="search-dropdown-block">
                             <div className="search-dropdown-block-title">
                                 <Grid size={13} className="block-title-icon" />
-                                <span>Browse Categories</span>
+                                <span>{t('nav_browse_categories')}</span>
                             </div>
                             <div className="search-quick-links">
                                 {categories.map((cat) => (
@@ -83,7 +85,7 @@ export default function SearchDropdown({
                                         onClick={onClose}
                                     >
                                         <Layers size={12} />
-                                        <span>{cat.name}</span>
+                                        <span>{localize(cat, 'name')}</span>
                                     </Link>
                                 ))}
                             </div>
@@ -95,7 +97,7 @@ export default function SearchDropdown({
                         <div className="search-dropdown-block">
                             <div className="search-dropdown-block-title">
                                 <Tag size={13} className="block-title-icon" />
-                                <span>Featured Brands</span>
+                                <span>{t('sd_featured_brands')}</span>
                             </div>
                             <div className="search-quick-links">
                                 {brands.map((b) => (
@@ -105,7 +107,7 @@ export default function SearchDropdown({
                                         className="search-quick-link-chip"
                                         onClick={onClose}
                                     >
-                                        <span>{b.name}</span>
+                                        <span>{localize(b, 'name')}</span>
                                     </Link>
                                 ))}
                             </div>
@@ -129,8 +131,8 @@ export default function SearchDropdown({
                                     className="search-match-chip category-chip"
                                     onClick={onClose}
                                 >
-                                    <span className="chip-label">Category:</span>
-                                    <span className="chip-value">{cat.name}</span>
+                                    <span className="chip-label">{t('category')}:</span>
+                                    <span className="chip-value">{localize(cat, 'name')}</span>
                                     <ArrowRight size={11} />
                                 </Link>
                             ))}
@@ -141,8 +143,8 @@ export default function SearchDropdown({
                                     className="search-match-chip brand-chip"
                                     onClick={onClose}
                                 >
-                                    <span className="chip-label">Brand:</span>
-                                    <span className="chip-value">{b.name}</span>
+                                    <span className="chip-label">{t('brand')}:</span>
+                                    <span className="chip-value">{localize(b, 'name')}</span>
                                     <ArrowRight size={11} />
                                 </Link>
                             ))}
@@ -153,8 +155,8 @@ export default function SearchDropdown({
                     {products.length > 0 && (
                         <div className="search-dropdown-products-list">
                             <div className="search-dropdown-header">
-                                <span>Matching Parts & Products</span>
-                                <span className="results-count">({totalCount} found)</span>
+                                <span>{t('sd_matching_parts')}</span>
+                                <span className="results-count">({totalCount} {t('sd_found')})</span>
                             </div>
 
                             {products.map((item, idx) => {
@@ -229,11 +231,11 @@ export default function SearchDropdown({
 
                                             {item.is_in_stock ? (
                                                 <span className="search-stock in-stock">
-                                                    <Check size={11} strokeWidth={2.5} /> In Stock
+                                                    <Check size={11} strokeWidth={2.5} /> {t('in_stock')}
                                                 </span>
                                             ) : (
                                                 <span className="search-stock out-of-stock">
-                                                    Out of Stock
+                                                    {t('out_of_stock')}
                                                 </span>
                                             )}
                                         </div>
@@ -251,7 +253,7 @@ export default function SearchDropdown({
                                 className="search-dropdown-view-all-btn"
                                 onClick={onClose}
                             >
-                                <span>View all {totalCount} results for &ldquo;<strong>{searchQuery.trim()}</strong>&rdquo;</span>
+                                <span>{t('sd_view_all_results')} &ldquo;<strong>{searchQuery.trim()}</strong>&rdquo; ({totalCount})</span>
                                 <ArrowRight size={14} />
                             </Link>
                         </div>
@@ -264,17 +266,17 @@ export default function SearchDropdown({
                                 <AlertCircle size={28} />
                             </div>
                             <div className="empty-title">
-                                No matching parts found for &ldquo;{searchQuery.trim()}&rdquo;
+                                {t('sd_no_results')} &ldquo;{searchQuery.trim()}&rdquo;
                             </div>
                             <p className="empty-desc">
-                                Try searching by exact part number (e.g. <em>AP-12345</em>), brand (e.g. <em>Brembo</em>), or a component category.
+                                {t('sd_try_searching')}
                             </p>
                             <Link
                                 href="/shop"
                                 className="empty-browse-btn"
                                 onClick={onClose}
                             >
-                                Browse Full Parts Catalog →
+                                {t('sd_browse_catalog')}
                             </Link>
                         </div>
                     )}

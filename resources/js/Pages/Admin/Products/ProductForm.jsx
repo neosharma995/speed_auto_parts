@@ -64,11 +64,13 @@ export default function ProductForm({
             name: product?.translations?.ar?.name || '',
             short_description: product?.translations?.ar?.short_description || '',
             description: product?.translations?.ar?.description || '',
+            technical_specifications: product?.translations?.ar?.technical_specifications || '',
         },
         fr: {
             name: product?.translations?.fr?.name || '',
             short_description: product?.translations?.fr?.short_description || '',
             description: product?.translations?.fr?.description || '',
+            technical_specifications: product?.translations?.fr?.technical_specifications || '',
         },
     }));
     const [techSpecs, setTechSpecs] = useState(product?.technical_specifications || '');
@@ -789,16 +791,32 @@ export default function ProductForm({
                                     </>
                                 )}
 
-                                <div className="form-group">
-                                    <label className="form-label">Engineering Specs (Table format)</label>
-                                    <textarea
-                                        className="form-textarea"
-                                        placeholder="e.g. Material: G3000 Alloy | Finish: Zinc Plated"
-                                        value={techSpecs}
-                                        onChange={(e) => setTechSpecs(e.target.value)}
-                                        style={{ minHeight: '80px' }}
-                                    />
-                                </div>
+                                {contentLang === 'en' ? (
+                                    <div className="form-group">
+                                        <label className="form-label">Engineering Specs (English)</label>
+                                        <textarea
+                                            className="form-textarea"
+                                            placeholder="e.g. Material: G3000 Alloy | Finish: Zinc Plated"
+                                            value={techSpecs}
+                                            onChange={(e) => setTechSpecs(e.target.value)}
+                                            style={{ minHeight: '80px' }}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="form-group">
+                                        <label className="form-label">
+                                            Engineering Specs ({contentLang === 'ar' ? 'Arabic — العربية' : 'French — Français'})
+                                        </label>
+                                        <textarea
+                                            className="form-textarea"
+                                            dir={contentLang === 'ar' ? 'rtl' : 'ltr'}
+                                            placeholder={contentLang === 'ar' ? 'المواصفات الهندسية بالعربية...' : 'Spécifications techniques en français...'}
+                                            value={translations[contentLang]?.technical_specifications || ''}
+                                            onChange={(e) => updateTranslation(contentLang, 'technical_specifications', e.target.value)}
+                                            style={{ minHeight: '80px' }}
+                                        />
+                                    </div>
+                                )}
 
                                 <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
                                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>

@@ -3,11 +3,13 @@ import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { useCart } from '@/Context/CartContext';
 import { useCurrency } from '@/Context/CurrencyContext';
+import { useLanguage } from '@/Context/LanguageContext';
 import { CheckCircle, ArrowRight, Truck, Printer } from 'lucide-react';
 
 export default function OrderSuccess({ order }) {
     const { clearCart } = useCart();
     const { formatPrice } = useCurrency();
+    const { t } = useLanguage();
 
     useEffect(() => {
         if (order?.order_number) {
@@ -44,13 +46,13 @@ export default function OrderSuccess({ order }) {
                         </div>
 
                         <span style={{ fontSize: '12px', fontWeight: 800, color: '#F36B16', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                            Order Verified & Confirmed
+                            {t('os_badge')}
                         </span>
                         <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#151515', marginTop: '4px' }}>
-                            THANK YOU FOR YOUR ORDER!
+                            {t('os_heading')}
                         </h1>
                         <p style={{ color: '#666', fontSize: '14px', maxWidth: '520px', margin: '8px auto 20px' }}>
-                            We have received your automotive spare parts order. Our logistics team will inspect and prepare your components for dispatch.
+                            {t('os_desc')}
                         </p>
 
                         <div style={{
@@ -62,9 +64,9 @@ export default function OrderSuccess({ order }) {
                             border: '1px solid #EEEEEE',
                             fontSize: '13px'
                         }}>
-                            <span>Order Number: <strong>{order.order_number}</strong></span>
-                            <span>Payment: <strong style={{ textTransform: 'uppercase', color: '#168A35' }}>{order.payment_status}</strong> ({order.payment_method})</span>
-                            <span>Total: <strong style={{ color: '#F36B16' }}>{formatPrice(order.total_amount)}</strong></span>
+                            <span>{t('os_order_number')} <strong>{order.order_number}</strong></span>
+                            <span>{t('os_payment')} <strong style={{ textTransform: 'uppercase', color: '#168A35' }}>{order.payment_status}</strong> ({order.payment_method})</span>
+                            <span>{t('pdp_total')}: <strong style={{ color: '#F36B16' }}>{formatPrice(order.total_amount)}</strong></span>
                         </div>
                     </div>
 
@@ -77,14 +79,14 @@ export default function OrderSuccess({ order }) {
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #EEE', paddingBottom: '16px' }}>
                             <h3 style={{ fontSize: '16px', fontWeight: 800, textTransform: 'uppercase' }}>
-                                Ordered Items
+                                {t('os_ordered_items')}
                             </h3>
                             <button 
                                 type="button" 
                                 onClick={() => window.print()} 
                                 className="btn btn-outline btn-sm"
                             >
-                                <Printer size={14} /> Print Receipt
+                                <Printer size={14} /> {t('os_print_receipt')}
                             </button>
                         </div>
 
@@ -118,20 +120,20 @@ export default function OrderSuccess({ order }) {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', backgroundColor: '#F8FAFC', padding: '20px', borderRadius: '4px' }}>
                             <div>
                                 <h4 style={{ fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', marginBottom: '6px' }}>
-                                    Shipping Destination
+                                    {t('os_shipping_dest')}
                                 </h4>
                                 <p style={{ fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
                                     <strong>{order.customer_name}</strong><br />
                                     {order.shipping_address}<br />
                                     {order.apartment && <>{order.apartment}<br /></>}
                                     {order.city}, {order.state} - {order.pincode}<br />
-                                    Phone: {order.customer_phone}
+                                    {order.customer_phone}
                                 </p>
                             </div>
 
                             <div>
                                 <h4 style={{ fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', marginBottom: '6px' }}>
-                                    Delivery Status
+                                    {t('os_delivery_status')}
                                 </h4>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#168A35', fontWeight: 700, fontSize: '14px', textTransform: 'uppercase' }}>
                                     <Truck size={18} />
@@ -139,7 +141,7 @@ export default function OrderSuccess({ order }) {
                                 </div>
                                 {order.tracking_number && (
                                     <p style={{ fontSize: '12px', color: '#666', marginTop: '6px' }}>
-                                        Carrier: {order.tracking_carrier} | AWB: {order.tracking_number}
+                                        {t('track_carrier')}: {order.tracking_carrier} | AWB: {order.tracking_number}
                                     </p>
                                 )}
                             </div>
@@ -147,10 +149,10 @@ export default function OrderSuccess({ order }) {
 
                         <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
                             <Link href="/customer/orders" className="btn btn-outline" style={{ flex: 1 }}>
-                                View All Orders in Account
+                                {t('os_view_orders')}
                             </Link>
                             <Link href="/shop" className="btn btn-primary" style={{ flex: 1 }}>
-                                Continue Shopping <ArrowRight size={16} />
+                                {t('continue_shopping')} <ArrowRight size={16} />
                             </Link>
                         </div>
                     </div>
