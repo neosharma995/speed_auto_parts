@@ -1,6 +1,41 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { router } from '@inertiajs/react';
 
 const STORAGE_KEY = 'sap_selected_language';
+
+function setGoogleTranslateCookie(langCode) {
+    if (typeof document === 'undefined') return;
+    const host = window.location.hostname;
+    const lower = String(langCode || 'EN').toLowerCase();
+
+    if (lower === 'en') {
+        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${host};`;
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${host};`;
+    } else {
+        const val = `/en/${lower}`;
+        document.cookie = `googtrans=${val}; path=/;`;
+        document.cookie = `googtrans=${val}; path=/; domain=${host};`;
+    }
+}
+
+function triggerGoogleTranslate(langCode, attempt = 0) {
+    if (typeof document === 'undefined') return;
+    const lower = String(langCode || 'EN').toLowerCase();
+    const combo = document.querySelector('select.goog-te-combo');
+
+    if (combo) {
+        if (combo.value !== lower) {
+            combo.value = lower;
+            combo.dispatchEvent(new Event('change'));
+        }
+        return;
+    }
+
+    if (attempt < 20) {
+        setTimeout(() => triggerGoogleTranslate(langCode, attempt + 1), 250);
+    }
+}
 
 export const LANGUAGE_CATALOG = [
     { code: 'EN', name: 'English', htmlLang: 'en', dir: 'ltr', currency: 'USD' },
@@ -241,12 +276,30 @@ export function LanguageProvider({ children }) {
         if (typeof document !== 'undefined') {
             document.documentElement.lang = activeMeta.htmlLang;
             document.documentElement.dir = activeMeta.dir;
+            setGoogleTranslateCookie(activeMeta.code);
+            if (activeMeta.code !== 'EN') {
+                triggerGoogleTranslate(activeMeta.code);
+            }
         }
     }, [activeMeta]);
+
+    // Re-apply Google Translate on Inertia SPA navigation when a non-English language is active
+    useEffect(() => {
+        const offNavigate = router.on('navigate', () => {
+            if (language !== 'EN') {
+                setTimeout(() => triggerGoogleTranslate(language), 150);
+            }
+        });
+        return () => {
+            if (typeof offNavigate === 'function') offNavigate();
+        };
+    }, [language]);
 
     const setLanguage = (code) => {
         const upper = String(code || 'EN').toUpperCase();
         const next = TRANSLATIONS[upper] ? upper : 'EN';
+        const prev = language;
+
         setLanguageState(next);
         if (typeof window !== 'undefined') {
             try {
@@ -255,6 +308,16 @@ export function LanguageProvider({ children }) {
                 // ignore storage errors
             }
         }
+
+        setGoogleTranslateCookie(next);
+
+        if (next === 'EN' && prev !== 'EN') {
+            // Cleanly restore original English DOM nodes when leaving Google Translate
+            window.location.reload();
+            return;
+        }
+
+        triggerGoogleTranslate(next);
     };
 
     const value = useMemo(() => {
