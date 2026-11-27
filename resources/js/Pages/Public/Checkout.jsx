@@ -21,7 +21,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
     const { regionalRules = [] } = usePage().props;
     const { cartItems, subtotal, clearCart } = useCart();
     const { formatPrice, activeCurrency } = useCurrency();
-    const { t } = useLanguage();
+    const { t, localize, translateTerm } = useLanguage();
 
     const defaultAddr = savedAddresses.find((a) => a.is_default) || savedAddresses[0] || null;
     const defaultRegion = regionalRules.find((r) => r.is_default) || regionalRules[0] || {
@@ -264,12 +264,12 @@ export default function Checkout({ savedAddresses = [], user = null }) {
 
     if (cartItems.length === 0) {
         return (
-            <AppLayout title="Checkout">
+            <AppLayout title={t('secure_checkout')}>
                 <div className="section bg-light" style={{ minHeight: '60vh', textAlign: 'center', padding: '64px 20px' }}>
-                    <h2>No items to checkout</h2>
-                    <p style={{ color: '#666', marginTop: '8px' }}>Your shopping cart is currently empty.</p>
+                    <h2>{t('chk_no_items')}</h2>
+                    <p style={{ color: '#666', marginTop: '8px' }}>{t('cart_empty')}</p>
                     <Link href="/shop" className="btn btn-primary" style={{ marginTop: '16px' }}>
-                        Browse Parts
+                        {t('chk_browse_parts')}
                     </Link>
                 </div>
             </AppLayout>
@@ -277,7 +277,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
     }
 
     return (
-        <AppLayout title="Secure Checkout">
+        <AppLayout title={t('secure_checkout')}>
             <div className="checkout-page bg-light">
                 <div className="container">
                     <h1 style={{ fontSize: '28px', fontWeight: 900, textTransform: 'uppercase', marginBottom: '24px' }}>
@@ -312,13 +312,13 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                             <div className="checkout-page-form-section">
                                 <h2 className="section-title">
                                     <span className="step-num">1</span>
-                                    <span>Customer Information</span>
+                                    <span>{t('customer_information')}</span>
                                 </h2>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
                                     <div className="form-group">
                                         <label className="form-label">
-                                            Full Name <span className="required">*</span>
+                                            {t('chk_full_name')} <span className="required">*</span>
                                         </label>
                                         <input
                                             type="text"
@@ -331,7 +331,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                                         <div className="form-group">
                                             <label className="form-label">
-                                                Email Address <span className="required">*</span>
+                                                {t('chk_email')} <span className="required">*</span>
                                             </label>
                                             <input
                                                 type="email"
@@ -343,7 +343,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                         </div>
                                         <div className="form-group">
                                             <label className="form-label">
-                                                UAE Phone Number <span className="required">*</span>
+                                                {t('chk_phone')} <span className="required">*</span>
                                             </label>
                                             <input
                                                 type="tel"
@@ -362,14 +362,14 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                             <div className="checkout-page-form-section">
                                 <h2 className="section-title">
                                     <span className="step-num">2</span>
-                                    <span>Shipping Address ({selectedRegion.country_name || 'United Arab Emirates'})</span>
+                                    <span>{t('shipping_address')} ({selectedRegion.country_name || 'United Arab Emirates'})</span>
                                 </h2>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
                                     {regionalRules.length > 0 && (
                                         <div className="form-group">
                                             <label className="form-label">
-                                                Destination Country <span className="required">*</span>
+                                                {t('destination_country')} <span className="required">*</span>
                                             </label>
                                             <select
                                                 className="form-select"
@@ -380,7 +380,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                                     .filter((r) => r.is_selling_enabled !== false)
                                                     .map((r) => (
                                                         <option key={r.country_code} value={r.country_code}>
-                                                            {r.country_name} ({r.country_code}) — VAT/Tax {r.tax_rate_percent}%
+                                                            {r.country_name} ({r.country_code}) — {t('chk_vat_tax')} {r.tax_rate_percent}%
                                                         </option>
                                                     ))}
                                             </select>
@@ -389,12 +389,12 @@ export default function Checkout({ savedAddresses = [], user = null }) {
 
                                     <div className="form-group">
                                         <label className="form-label">
-                                            Street / Building / Villa &amp; Area <span className="required">*</span>
+                                            {t('chk_street')} <span className="required">*</span>
                                         </label>
                                         <input
                                             type="text"
                                             className="form-input"
-                                            placeholder="e.g. Villa 18, Al Wasl Road, Jumeirah 1"
+                                            placeholder={t('chk_street_placeholder')}
                                             required
                                             value={address}
                                             onChange={(e) => setAddress(e.target.value)}
@@ -402,11 +402,11 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                     </div>
 
                                     <div className="form-group">
-                                        <label className="form-label">Apartment, Office, or Landmark (Optional)</label>
+                                        <label className="form-label">{t('chk_apartment')}</label>
                                         <input
                                             type="text"
                                             className="form-input"
-                                            placeholder="Apartment, floor, or nearby landmark"
+                                            placeholder={t('chk_apartment_placeholder')}
                                             value={apartment}
                                             onChange={(e) => setApartment(e.target.value)}
                                         />
@@ -415,7 +415,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px' }}>
                                         <div className="form-group">
                                             <label className="form-label">
-                                                City / District <span className="required">*</span>
+                                                {t('chk_city')} <span className="required">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -428,7 +428,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
 
                                         <div className="form-group">
                                             <label className="form-label">
-                                                Emirate <span className="required">*</span>
+                                                {t('chk_emirate')} <span className="required">*</span>
                                             </label>
                                             <select
                                                 className="form-select"
@@ -445,7 +445,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
 
                                         <div className="form-group">
                                             <label className="form-label">
-                                                PO Box / Postal Code <span className="required">*</span>
+                                                {t('chk_postal')} <span className="required">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -463,7 +463,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                             <div className="checkout-page-form-section">
                                 <h2 className="section-title">
                                     <span className="step-num">3</span>
-                                    <span>Payment Method</span>
+                                    <span>{t('payment_method')}</span>
                                 </h2>
 
                                 <div className="payment-options">
@@ -477,10 +477,8 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                             onChange={() => setPaymentMethod('stripe')}
                                         />
                                         <div className="payment-desc">
-                                            <strong>Online Card Payment via Stripe</strong>
-                                            <span>
-                                                Pay securely in {activeCurrency.code} with Visa, Mastercard, American Express, Apple Pay, or Google Pay via Stripe Checkout.
-                                            </span>
+                                            <strong>{t('chk_stripe_title')}</strong>
+                                            <span>{t('chk_stripe_desc')} ({activeCurrency.code})</span>
                                         </div>
                                     </label>
 
@@ -494,17 +492,17 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                             onChange={() => setPaymentMethod('cod')}
                                         />
                                         <div className="payment-desc">
-                                            <strong>Cash on Delivery (COD)</strong>
-                                            <span>Pay in {activeCurrency.code} upon delivery anywhere in Dubai and across the UAE.</span>
+                                            <strong>{t('chk_cod_title')}</strong>
+                                            <span>{t('chk_cod_desc')} ({activeCurrency.code})</span>
                                         </div>
                                     </label>
                                 </div>
 
                                 <div className="form-group" style={{ marginTop: '20px' }}>
-                                    <label className="form-label">Order Notes / Delivery Instructions (Optional)</label>
+                                    <label className="form-label">{t('chk_order_notes')}</label>
                                     <textarea
                                         className="form-textarea"
-                                        placeholder="Special handling instructions, villa gate code, workshop bay details..."
+                                        placeholder={t('chk_order_notes_placeholder')}
                                         value={orderNotes}
                                         onChange={(e) => setOrderNotes(e.target.value)}
                                         style={{ minHeight: '60px' }}
@@ -515,17 +513,17 @@ export default function Checkout({ savedAddresses = [], user = null }) {
 
                         {/* Order Summary Column */}
                         <div className="checkout-page-summary">
-                            <h3>Order Summary ({cartItems.length} items)</h3>
+                            <h3>{t('order_summary')} ({cartItems.length} {t('chk_items_label')})</h3>
 
                             <div className="order-items-list">
                                 {cartItems.map((item) => (
                                     <div key={item.id} className="summary-item">
                                         <img src={item.image || '/images/products/placeholder.jpg'} alt={item.name} />
                                         <div className="summary-item-info">
-                                            <h4>{item.name}</h4>
-                                            {item.variationLabel && <span>{item.variationLabel}</span>}
+                                            <h4>{localize(item, 'name')}</h4>
+                                            {item.variationLabel && <span>{translateTerm(item.variationLabel)}</span>}
                                             <span style={{ display: 'block', fontSize: '11px', color: '#888' }}>
-                                                Qty: {item.quantity} × {formatPrice(item.price)}
+                                                {t('chk_qty')}: {item.quantity} × {formatPrice(item.price)}
                                             </span>
                                         </div>
                                         <span className="summary-item-price">
@@ -539,12 +537,12 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                             <form onSubmit={handleApplyCoupon} className="coupon-box">
                                 <input
                                     type="text"
-                                    placeholder="COUPON (e.g. SPEED10)"
+                                    placeholder={t('chk_coupon_placeholder')}
                                     value={couponCode}
                                     onChange={(e) => setCouponCode(e.target.value)}
                                 />
                                 <button type="submit" className="btn btn-dark btn-sm">
-                                    Apply
+                                    {t('apply')}
                                 </button>
                             </form>
 
@@ -566,7 +564,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                         onClick={handleRemoveCoupon}
                                         style={{ background: 'none', border: 'none', color: '#D93025', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}
                                     >
-                                        Remove
+                                        {t('remove')}
                                     </button>
                                 </div>
                             )}
@@ -579,31 +577,31 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                             {/* Financial Breakdown with UAE VAT 5% */}
                             <div className="totals-breakdown">
                                 <div className="total-row">
-                                    <span>Subtotal</span>
+                                    <span>{t('subtotal')}</span>
                                     <strong>{formatPrice(subtotal)}</strong>
                                 </div>
 
                                 {discountAmount > 0 && (
                                     <div className="total-row total-row--discount">
-                                        <span>Coupon Savings</span>
+                                        <span>{t('chk_coupon_savings')}</span>
                                         <span>-{formatPrice(discountAmount)}</span>
                                     </div>
                                 )}
 
                                 <div className="total-row">
-                                    <span>Shipping ({selectedRegion.country_code || 'AE'})</span>
-                                    <span>{shippingCost === 0 ? 'FREE Delivery' : formatPrice(shippingCost)}</span>
+                                    <span>{t('shipping')} ({selectedRegion.country_code || 'AE'})</span>
+                                    <span>{shippingCost === 0 ? t('free_delivery') : formatPrice(shippingCost)}</span>
                                 </div>
 
                                 <div className="total-row">
                                     <span>
-                                        {selectedRegion.country_code || 'AE'} VAT / Tax ({taxData.tax_rate_percent ?? 5}%)
+                                        {selectedRegion.country_code || 'AE'} {t('chk_vat_tax')} ({taxData.tax_rate_percent ?? 5}%)
                                     </span>
                                     <span>{formatPrice(taxData.tax_amount || 0)}</span>
                                 </div>
 
                                 <div className="total-row total-row--grand">
-                                    <span>Total Payable</span>
+                                    <span>{t('total_payable')}</span>
                                     <span style={{ color: '#F36B16' }}>{formatPrice(grandTotal)}</span>
                                 </div>
                             </div>
@@ -616,10 +614,10 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                 disabled={processingOrder}
                             >
                                 {processingOrder
-                                    ? 'Processing Order...'
+                                    ? t('processing_order')
                                     : paymentMethod === 'stripe'
-                                        ? `Pay ${formatPrice(grandTotal)} with Stripe`
-                                        : `Place COD Order (${formatPrice(grandTotal)})`}
+                                        ? `${t('chk_pay_stripe')} (${formatPrice(grandTotal)})`
+                                        : `${t('chk_place_cod')} (${formatPrice(grandTotal)})`}
                             </button>
 
                             <div
@@ -634,7 +632,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                 }}
                             >
                                 <Lock size={12} />
-                                <span>256-Bit SSL Encrypted Stripe Checkout (Dubai, UAE)</span>
+                                <span>{t('chk_ssl_notice')}</span>
                             </div>
                         </div>
                     </div>

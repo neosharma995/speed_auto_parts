@@ -26,7 +26,7 @@ export default function Shop({
     activeVehicle = null 
 }) {
     const { activeCurrency } = useCurrency();
-    const { t, localize } = useLanguage();
+    const { t, localize, translateTerm } = useLanguage();
     const safeFilters = filters && !Array.isArray(filters) ? filters : {};
 
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -115,14 +115,16 @@ export default function Shop({
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 700 }}>
                                 <Check size={18} color="#168A35" />
-                                <span>Showing Parts Verified Compatible With: {activeVehicle.year} {activeVehicle.make} {activeVehicle.model} ({activeVehicle.engine})</span>
+                                <span>
+                                    {t('shop_compatible_with')} {activeVehicle.year} {translateTerm(`${activeVehicle.make || ''} ${activeVehicle.model || ''}`.trim())} ({translateTerm(activeVehicle.engine || '')})
+                                </span>
                             </div>
                             <button 
                                 type="button" 
                                 onClick={() => router.post('/vehicles/clear', {}, { onSuccess: () => router.get('/shop') })}
                                 style={{ fontSize: '12px', color: '#D93025', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}
                             >
-                                Clear Vehicle Filter
+                                {t('shop_clear_vehicle')}
                             </button>
                         </div>
                     )}
@@ -266,7 +268,7 @@ export default function Shop({
                             <div className="filter-widget">
                                 <h4 className="filter-widget-title">
                                     <PackageCheck size={14} className="widget-title-icon" />
-                                    <span>Availability</span>
+                                    <span>{t('shop_availability')}</span>
                                 </h4>
                                 <div className="filter-widget-list">
                                     <label className={`filter-option ${inStockOnly ? 'is-active' : ''}`}>
@@ -275,7 +277,7 @@ export default function Shop({
                                             checked={inStockOnly}
                                             onChange={(e) => { setInStockOnly(e.target.checked); applyFilters({ in_stock: e.target.checked ? 'true' : '' }); }}
                                         />
-                                        <span className="filter-option-name">In Stock Only</span>
+                                        <span className="filter-option-name">{t('shop_in_stock_only')}</span>
                                     </label>
                                 </div>
                             </div>
@@ -284,26 +286,26 @@ export default function Shop({
                             <div className="filter-widget">
                                 <h4 className="filter-widget-title">
                                     <CircleDollarSign size={14} className="widget-title-icon" />
-                                    <span>Price Range</span>
+                                    <span>{t('shop_price_range')}</span>
                                 </h4>
                                 <div className="filter-price-inputs">
                                     <div className="price-input-wrapper">
-                                        <span className="currency-prefix">{activeCurrency.symbol}</span>
+                                        <span className="currency-prefix">{activeCurrency.code}</span>
                                         <input 
                                             type="number" 
                                             className="price-field" 
-                                            placeholder="Min" 
+                                            placeholder={t('shop_min')} 
                                             value={minPrice}
                                             onChange={(e) => setMinPrice(e.target.value)}
                                         />
                                     </div>
-                                    <span className="price-separator">to</span>
+                                    <span className="price-separator">{t('shop_to')}</span>
                                     <div className="price-input-wrapper">
-                                        <span className="currency-prefix">{activeCurrency.symbol}</span>
+                                        <span className="currency-prefix">{activeCurrency.code}</span>
                                         <input 
                                             type="number" 
                                             className="price-field" 
-                                            placeholder="Max" 
+                                            placeholder={t('shop_max')} 
                                             value={maxPrice}
                                             onChange={(e) => setMaxPrice(e.target.value)}
                                         />
@@ -319,7 +321,7 @@ export default function Shop({
                                     onClick={() => applyFilters()}
                                 >
                                     <SlidersHorizontal size={15} />
-                                    <span>Apply Filters</span>
+                                    <span>{t('shop_apply_filters')}</span>
                                 </button>
                             </div>
                         </aside>
@@ -335,17 +337,17 @@ export default function Shop({
                                     borderRadius: '4px'
                                 }}>
                                     <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#151515', marginBottom: '8px' }}>
-                                        No Automotive Parts Found
+                                        {t('shop_empty_title')}
                                     </h3>
                                     <p style={{ color: '#666666', fontSize: '14px', marginBottom: '20px' }}>
-                                        Try broadening your vehicle selections, resetting filters, or searching a different part number.
+                                        {t('shop_empty_desc')}
                                     </p>
                                     <button 
                                         type="button" 
                                         className="btn btn-primary"
                                         onClick={handleClearAll}
                                     >
-                                        <RotateCcw size={16} /> Reset All Filters
+                                        <RotateCcw size={16} /> {t('shop_reset_all_filters')}
                                     </button>
                                 </div>
                             ) : (

@@ -58,6 +58,7 @@ export function CartProvider({ children, initialCart = [] }) {
                     productId: product.id,
                     variationId: variation?.id || null,
                     name: product.name,
+                    translations: product.translations || null,
                     variationLabel,
                     sku: itemSku,
                     partNumber: itemPartNumber,

@@ -859,13 +859,23 @@ export default function Header() {
                                         <ChevronDown size={12} strokeWidth={2.2} className="nav-chevron" />
                                     </Link>
                                     <div className="site-header-dropdown">
-                                        <Link href="/contact-us" className="site-header-dropdown-item">{t('footer_contact_us')}</Link>
-                                        <Link href="/about-us" className="site-header-dropdown-item">{t('footer_about_us')}</Link>
                                         <Link href="/track-order" className="site-header-dropdown-item">{t('track_order')}</Link>
                                         <Link href="/shipping-policy" className="site-header-dropdown-item">{t('nav_shipping_policy')}</Link>
                                         <Link href="/return-policy" className="site-header-dropdown-item">{t('nav_return_refund')}</Link>
                                         <Link href="/terms" className="site-header-dropdown-item">{t('footer_terms')}</Link>
                                     </div>
+                                </div>
+
+                                <div className="site-header-nav-item">
+                                    <Link href="/about-us" className="site-header-nav-link">
+                                        <span>{t('footer_about_us')}</span>
+                                    </Link>
+                                </div>
+
+                                <div className="site-header-nav-item">
+                                    <Link href="/contact-us" className="site-header-nav-link">
+                                        <span>{t('footer_contact_us')}</span>
+                                    </Link>
                                 </div>
 
                                 {/* Sticky bottom bar utilities (shown after Support when header is sticky) */}
@@ -1177,8 +1187,6 @@ export default function Header() {
                                 </div>
                                 {expandedSubmenu === 'support' && (
                                     <div className="mobile-drawer-submenu">
-                                        <Link href="/contact-us" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('footer_contact_us')}</Link>
-                                        <Link href="/about-us" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('footer_about_us')}</Link>
                                         <Link href="/track-order" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('track_order')}</Link>
                                         <Link href="/shipping-policy" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_shipping_policy')}</Link>
                                         <Link href="/return-policy" className="mobile-drawer-sublink" onClick={() => setMobileDrawerOpen(false)}>{t('nav_return_refund')}</Link>
@@ -1188,6 +1196,24 @@ export default function Header() {
                                     </div>
                                 )}
                             </div>
+
+                            {/* About Us */}
+                            <Link
+                                href="/about-us"
+                                className="mobile-drawer-link"
+                                onClick={() => setMobileDrawerOpen(false)}
+                            >
+                                {t('footer_about_us')}
+                            </Link>
+
+                            {/* Contact Us */}
+                            <Link
+                                href="/contact-us"
+                                className="mobile-drawer-link"
+                                onClick={() => setMobileDrawerOpen(false)}
+                            >
+                                {t('footer_contact_us')}
+                            </Link>
 
                             {/* Mobile Drawer Language & Currency Selectors */}
                             <div className="mobile-drawer-utilities">

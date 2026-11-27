@@ -17,6 +17,7 @@ import {
     Store,
     Truck,
     Mail,
+    FileText,
 } from 'lucide-react';
 
 export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
@@ -146,6 +147,13 @@ export default function AdminSidebar({ sidebarOpen, onCloseSidebar }) {
         {
             title: 'Settings',
             items: [
+                {
+                    label: 'Pages',
+                    href: '/admin/pages',
+                    icon: FileText,
+                    permission: 'manage settings',
+                    active: isCurrent('/admin/pages'),
+                },
                 {
                     label: 'Roles & Permissions',
                     href: '/admin/roles',

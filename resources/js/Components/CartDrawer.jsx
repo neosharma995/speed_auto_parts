@@ -7,7 +7,7 @@ import { useLanguage } from '@/Context/LanguageContext';
 
 export default function CartDrawer() {
     const { formatPrice } = useCurrency();
-    const { t } = useLanguage();
+    const { t, localize, translateTerm } = useLanguage();
     const { 
         cartItems, 
         itemCount, 
@@ -59,15 +59,15 @@ export default function CartDrawer() {
                                     <img src={item.image || '/images/products/placeholder.jpg'} alt={item.name} />
                                 </div>
                                 <div className="cart-drawer-item-info">
-                                    <span className="cart-drawer-item-title">{item.name}</span>
+                                    <span className="cart-drawer-item-title">{localize(item, 'name')}</span>
                                     {item.variationLabel && (
                                         <span className="cart-drawer-item-variation">
-                                            Spec: {item.variationLabel}
+                                            {t('cart_spec')}: {translateTerm(item.variationLabel)}
                                         </span>
                                     )}
                                     {item.partNumber && (
                                         <span style={{ fontSize: '11px', color: '#888', fontFamily: 'monospace' }}>
-                                            Part #: {item.partNumber}
+                                            {t('part_number')}: {item.partNumber}
                                         </span>
                                     )}
                                     <span className="cart-drawer-item-price">
@@ -94,7 +94,7 @@ export default function CartDrawer() {
                                             className="cart-drawer-item-remove"
                                             onClick={() => removeFromCart(item.id)}
                                         >
-                                            <Trash2 size={14} /> Remove
+                                            <Trash2 size={14} /> {t('remove')}
                                         </button>
                                     </div>
                                 </div>
@@ -117,14 +117,14 @@ export default function CartDrawer() {
                             className="btn btn-primary btn-full btn-lg"
                             onClick={() => setIsCartOpen(false)}
                         >
-                            Proceed to Checkout <ArrowRight size={18} />
+                            {t('proceed_to_checkout')} <ArrowRight size={18} />
                         </Link>
                         <Link 
                             href="/cart" 
                             className="btn btn-outline btn-full"
                             onClick={() => setIsCartOpen(false)}
                         >
-                            View Cart Details
+                            {t('cart_view_details')}
                         </Link>
                     </div>
                 )}

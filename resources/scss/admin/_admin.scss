@@ -90,10 +90,16 @@
       flex: 1;
       min-height: 0;
       overflow-y: auto;
-      padding: 16px 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 10px 0;
       display: flex;
       flex-direction: column;
       gap: 2px;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       .nav-group-title {
         font-size: 10px;
@@ -101,14 +107,14 @@
         text-transform: uppercase;
         letter-spacing: 0.1em;
         color: #64748B;
-        padding: 12px 20px 6px;
+        padding: 10px 20px 4px;
       }
 
       a {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 10px 20px;
+        padding: 8px 20px;
         font-size: 13px;
         font-weight: 600;
         color: #94A3B8;

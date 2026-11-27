@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             RoleAndPermissionSeeder::class,
             AutomotiveCatalogSeeder::class,
             CatalogTranslationsSeeder::class,
+            CmsPagesSeeder::class,
         ]);
     }
 }

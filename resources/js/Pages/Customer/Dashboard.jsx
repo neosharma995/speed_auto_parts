@@ -18,7 +18,7 @@ export default function CustomerDashboard({
     wishlistCount = 0 
 }) {
     const { formatPrice } = useCurrency();
-    const { t } = useLanguage();
+    const { t, translateTerm } = useLanguage();
 
     return (
         <AppLayout title={t('cust_dashboard_title')}>
@@ -79,13 +79,13 @@ export default function CustomerDashboard({
                                         <table className="orders-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Order #</th>
-                                                    <th>Date</th>
-                                                    <th>Items</th>
-                                                    <th>Total</th>
-                                                    <th>Payment</th>
-                                                    <th>Status</th>
-                                                    <th>Action</th>
+                                                    <th>{t('tbl_order_num')}</th>
+                                                    <th>{t('tbl_date')}</th>
+                                                    <th>{t('tbl_items')}</th>
+                                                    <th>{t('pdp_total')}</th>
+                                                    <th>{t('tbl_payment')}</th>
+                                                    <th>{t('tbl_status')}</th>
+                                                    <th>{t('tbl_action')}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -93,21 +93,21 @@ export default function CustomerDashboard({
                                                     <tr key={order.id}>
                                                         <td><strong>{order.order_number}</strong></td>
                                                         <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                                                        <td>{order.items_count || order.items?.length || 1} parts</td>
+                                                        <td>{order.items_count || order.items?.length || 1} {t('tbl_parts')}</td>
                                                         <td><strong>{formatPrice(order.total_amount)}</strong></td>
                                                         <td>
                                                             <span className="badge badge-success" style={{ textTransform: 'uppercase' }}>
-                                                                {order.payment_status}
+                                                                {translateTerm(order.payment_status)}
                                                             </span>
                                                         </td>
                                                         <td>
                                                             <span className="badge badge-primary" style={{ textTransform: 'uppercase' }}>
-                                                                {order.delivery_status}
+                                                                {translateTerm(order.delivery_status)}
                                                             </span>
                                                         </td>
                                                         <td>
                                                             <Link href={`/order-success/${order.order_number}`} className="btn btn-outline btn-sm">
-                                                                View
+                                                                {t('tbl_view')}
                                                             </Link>
                                                         </td>
                                                     </tr>
@@ -122,8 +122,8 @@ export default function CustomerDashboard({
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
                                 <div className="portal-card">
                                     <div className="portal-card-header">
-                                        <h2>Default Shipping Address</h2>
-                                        <Link href="/customer/addresses" className="btn btn-outline btn-sm">Manage</Link>
+                                        <h2>{t('cust_default_address')}</h2>
+                                        <Link href="/customer/addresses" className="btn btn-outline btn-sm">{t('cust_manage')}</Link>
                                     </div>
                                     {defaultAddress ? (
                                         <div style={{ fontSize: '13px', color: '#444', lineHeight: 1.6 }}>
@@ -131,24 +131,24 @@ export default function CustomerDashboard({
                                             {defaultAddress.address_line1}<br />
                                             {defaultAddress.address_line2 && <>{defaultAddress.address_line2}<br /></>}
                                             {defaultAddress.city}, {defaultAddress.state} - {defaultAddress.pincode}<br />
-                                            Phone: {defaultAddress.phone}
+                                            {t('cust_phone_label')} {defaultAddress.phone}
                                         </div>
                                     ) : (
                                         <p style={{ color: '#888', fontSize: '13px' }}>
-                                            No default shipping address saved yet.
+                                            {t('cust_no_address')}
                                         </p>
                                     )}
                                 </div>
 
                                 <div className="portal-card">
                                     <div className="portal-card-header">
-                                        <h2>Security & Credentials</h2>
+                                        <h2>{t('cust_security')}</h2>
                                     </div>
                                     <div style={{ fontSize: '13px', color: '#444', lineHeight: 1.6 }}>
-                                        <p><strong>Name:</strong> {user?.name}</p>
-                                        <p><strong>Email:</strong> {user?.email}</p>
-                                        <p><strong>Phone:</strong> {user?.phone || 'Not added'}</p>
-                                        <p style={{ color: '#168A35', marginTop: '6px' }}>✓ Account Status: Active & Verified</p>
+                                        <p><strong>{t('cust_name_label')}</strong> {user?.name}</p>
+                                        <p><strong>{t('cust_email_label')}</strong> {user?.email}</p>
+                                        <p><strong>{t('cust_phone_label')}</strong> {user?.phone || t('cust_not_added')}</p>
+                                        <p style={{ color: '#168A35', marginTop: '6px' }}>✓ {t('cust_active_verified')}</p>
                                     </div>
                                 </div>
                             </div>

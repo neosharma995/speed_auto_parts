@@ -321,8 +321,8 @@ export default function ProductShow({
                                         <p>
                                             {activeVehicle
                                                 ? (fitmentStatus?.compatible
-                                                    ? `${t('pdp_fitment_guaranteed')} ${activeVehicle.year} ${activeVehicle.make} ${activeVehicle.model}`
-                                                    : `${t('pdp_fitment_may_not')} ${activeVehicle.year} ${activeVehicle.make} ${activeVehicle.model}`)
+                                                    ? `${t('pdp_fitment_guaranteed')} ${activeVehicle.year} ${translateTerm(`${activeVehicle.make || ''} ${activeVehicle.model || ''}`.trim())}`
+                                                    : `${t('pdp_fitment_may_not')} ${activeVehicle.year} ${translateTerm(`${activeVehicle.make || ''} ${activeVehicle.model || ''}`.trim())}`)
                                                 : t('pdp_fitment_prompt')
                                             }
                                         </p>

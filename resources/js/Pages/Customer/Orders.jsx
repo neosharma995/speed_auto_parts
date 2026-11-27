@@ -8,7 +8,7 @@ import { Package, Truck } from 'lucide-react';
 
 export default function CustomerOrders({ orders = [] }) {
     const { formatPrice } = useCurrency();
-    const { t } = useLanguage();
+    const { t, translateTerm } = useLanguage();
 
     return (
         <AppLayout title={t('cust_my_orders')}>
@@ -56,19 +56,19 @@ export default function CustomerOrders({ orders = [] }) {
                                                 }}>
                                                     <div>
                                                         <span style={{ fontSize: '14px', fontWeight: 800, color: '#151515' }}>
-                                                            Order #{order.order_number}
+                                                            {t('track_order_prefix')}{order.order_number}
                                                         </span>
                                                         <span style={{ fontSize: '12px', color: '#888', marginLeft: '12px' }}>
-                                                            Placed on {new Date(order.created_at).toLocaleDateString()}
+                                                            {t('cust_placed_on')} {new Date(order.created_at).toLocaleDateString()}
                                                         </span>
                                                     </div>
 
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                         <span className="badge badge-success" style={{ textTransform: 'uppercase' }}>
-                                                            {order.payment_status}
+                                                            {translateTerm(order.payment_status)}
                                                         </span>
                                                         <span className="badge badge-primary" style={{ textTransform: 'uppercase' }}>
-                                                            {order.delivery_status}
+                                                            {translateTerm(order.delivery_status)}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -84,13 +84,13 @@ export default function CustomerOrders({ orders = [] }) {
                                                                     style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '4px', backgroundColor: '#F5F5F5' }}
                                                                 />
                                                                 <div>
-                                                                    <strong>{item.product_name}</strong>
+                                                                    <strong>{translateTerm(item.product_name)}</strong>
                                                                     {item.variation_name && (
-                                                                        <span style={{ display: 'block', fontSize: '11px', color: '#666' }}>{item.variation_name}</span>
+                                                                        <span style={{ display: 'block', fontSize: '11px', color: '#666' }}>{translateTerm(item.variation_name)}</span>
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <span>Qty: {item.quantity} × {formatPrice(item.unit_price)}</span>
+                                                            <span>{t('chk_qty')}: {item.quantity} × {formatPrice(item.unit_price)}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -106,7 +106,7 @@ export default function CustomerOrders({ orders = [] }) {
                                                     borderTop: '1px solid #EEE'
                                                 }}>
                                                     <div>
-                                                        <span style={{ fontSize: '13px', color: '#666' }}>Total Amount: </span>
+                                                        <span style={{ fontSize: '13px', color: '#666' }}>{t('cust_total_amount')} </span>
                                                         <strong style={{ fontSize: '16px', color: '#F36B16' }}>
                                                             {formatPrice(order.total_amount)}
                                                         </strong>
@@ -114,11 +114,11 @@ export default function CustomerOrders({ orders = [] }) {
 
                                                     <div style={{ display: 'flex', gap: '8px' }}>
                                                         <Link href={`/order-success/${order.order_number}`} className="btn btn-outline btn-sm">
-                                                            View Full Invoice
+                                                            {t('cust_view_invoice')}
                                                         </Link>
                                                         {order.tracking_number && (
                                                             <a href={order.tracking_url || '#'} target="_blank" rel="noreferrer" className="btn btn-dark btn-sm">
-                                                                <Truck size={14} /> Track Parcel
+                                                                <Truck size={14} /> {t('cust_track_parcel')}
                                                             </a>
                                                         )}
                                                     </div>

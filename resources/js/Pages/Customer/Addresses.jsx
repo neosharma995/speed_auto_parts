@@ -3,8 +3,10 @@ import { router } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import CustomerSidebar from '@/Components/CustomerSidebar';
 import { Plus, Trash2, CheckCircle2 } from 'lucide-react';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function CustomerAddresses({ addresses = [] }) {
+    const { t } = useLanguage();
     const [showAddModal, setShowAddModal] = useState(false);
     const [fullName, setFullName] = useState('');
     const [phone, setPhone] = useState('');
@@ -54,7 +56,7 @@ export default function CustomerAddresses({ addresses = [] }) {
     };
 
     return (
-        <AppLayout title="Saved Addresses">
+        <AppLayout title={t('cust_saved_addresses')}>
             <div className="customer-portal">
                 <div className="container">
                     <div className="customer-portal-layout">
@@ -64,19 +66,19 @@ export default function CustomerAddresses({ addresses = [] }) {
                         <div className="customer-portal-content">
                             <div className="portal-card">
                                 <div className="portal-card-header">
-                                    <h2>Address Book ({addresses.length})</h2>
+                                    <h2>{t('addr_book')} ({addresses.length})</h2>
                                     <button 
                                         type="button" 
                                         className="btn btn-primary btn-sm"
                                         onClick={() => setShowAddModal(true)}
                                     >
-                                        <Plus size={16} /> Add New Address
+                                        <Plus size={16} /> {t('addr_add_new')}
                                     </button>
                                 </div>
 
                                 {addresses.length === 0 ? (
                                     <p style={{ color: '#666', textAlign: 'center', padding: '32px' }}>
-                                        No saved delivery addresses. Add your home or garage shipping address for 1-click checkout.
+                                        {t('addr_empty')}
                                     </p>
                                 ) : (
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
@@ -90,7 +92,7 @@ export default function CustomerAddresses({ addresses = [] }) {
                                             }}>
                                                 {addr.is_default && (
                                                     <span className="badge badge-primary" style={{ marginBottom: '12px' }}>
-                                                        Default Address
+                                                        {t('addr_default_badge')}
                                                     </span>
                                                 )}
                                                 <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#151515', marginBottom: '6px' }}>
@@ -100,7 +102,7 @@ export default function CustomerAddresses({ addresses = [] }) {
                                                     {addr.address_line1}<br />
                                                     {addr.address_line2 && <>{addr.address_line2}<br /></>}
                                                     {addr.city}, {addr.state} - {addr.pincode}<br />
-                                                    Phone: {addr.phone}
+                                                    {addr.phone}
                                                 </p>
 
                                                 <div style={{ display: 'flex', gap: '12px', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #EEE' }}>
@@ -110,7 +112,7 @@ export default function CustomerAddresses({ addresses = [] }) {
                                                             className="btn btn-outline btn-sm"
                                                             onClick={() => handleSetDefault(addr.id)}
                                                         >
-                                                            Set as Default
+                                                            {t('addr_set_default')}
                                                         </button>
                                                     )}
                                                     <button 
@@ -119,7 +121,7 @@ export default function CustomerAddresses({ addresses = [] }) {
                                                         style={{ color: '#D93025', borderColor: '#FECDD3' }}
                                                         onClick={() => handleDeleteAddress(addr.id)}
                                                     >
-                                                        <Trash2 size={14} /> Delete
+                                                        <Trash2 size={14} /> {t('addr_delete')}
                                                     </button>
                                                 </div>
                                             </div>
@@ -150,33 +152,33 @@ export default function CustomerAddresses({ addresses = [] }) {
                         boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
                     }}>
                         <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '20px' }}>
-                            Add New Shipping Address
+                            {t('addr_modal_title')}
                         </h3>
 
                         <form onSubmit={handleCreateAddress} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             <div className="form-group">
-                                <label className="form-label">Full Name</label>
+                                <label className="form-label">{t('chk_full_name')}</label>
                                 <input type="text" className="form-input" required value={fullName} onChange={e => setFullName(e.target.value)} />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Phone Number</label>
+                                <label className="form-label">{t('addr_phone')}</label>
                                 <input type="tel" className="form-input" required value={phone} onChange={e => setPhone(e.target.value)} />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Street Address & Landmark</label>
+                                <label className="form-label">{t('addr_street_landmark')}</label>
                                 <input type="text" className="form-input" required value={addressLine1} onChange={e => setAddressLine1(e.target.value)} />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Apartment / Unit (Optional)</label>
+                                <label className="form-label">{t('addr_apt_opt')}</label>
                                 <input type="text" className="form-input" value={addressLine2} onChange={e => setAddressLine2(e.target.value)} />
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div className="form-group">
-                                    <label className="form-label">City / Area</label>
+                                    <label className="form-label">{t('addr_city_area')}</label>
                                     <input type="text" className="form-input" required value={city} onChange={e => setCity(e.target.value)} />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label">Emirate</label>
+                                    <label className="form-label">{t('chk_emirate')}</label>
                                     <select className="form-select" value={state} onChange={e => setState(e.target.value)}>
                                         <option value="Dubai">Dubai</option>
                                         <option value="Abu Dhabi">Abu Dhabi</option>
@@ -189,20 +191,20 @@ export default function CustomerAddresses({ addresses = [] }) {
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label className="form-label">PO Box / Postal Code</label>
+                                <label className="form-label">{t('chk_postal')}</label>
                                 <input type="text" className="form-input" required value={pincode} onChange={e => setPincode(e.target.value)} placeholder="e.g. 00000" />
                             </div>
                             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
                                 <input type="checkbox" checked={isDefault} onChange={e => setIsDefault(e.target.checked)} />
-                                <span>Make this my default shipping address</span>
+                                <span>{t('addr_make_default')}</span>
                             </label>
 
                             <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
                                 <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={() => setShowAddModal(false)}>
-                                    Cancel
+                                    {t('addr_cancel')}
                                 </button>
                                 <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={submitting}>
-                                    Save Address
+                                    {t('addr_save')}
                                 </button>
                             </div>
                         </form>
