@@ -180,6 +180,7 @@ class HandleInertiaRequests extends Middleware
                         'flat_shipping_cost',
                         'free_shipping_threshold',
                         'min_order_amount',
+                        'is_selling_enabled',
                         'is_default',
                     ]);
             },

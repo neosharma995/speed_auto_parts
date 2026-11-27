@@ -207,6 +207,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
             city,
             state,
             pincode,
+            country_code: countryCode,
             billing_same_as_shipping: billingSame,
             billing_address: billingSame ? address : billingAddress,
             billing_city: billingSame ? city : billingCity,
@@ -376,7 +377,7 @@ export default function Checkout({ savedAddresses = [], user = null }) {
                                                 onChange={(e) => setCountryCode(e.target.value)}
                                             >
                                                 {regionalRules
-                                                    .filter((r) => r.is_selling_enabled)
+                                                    .filter((r) => r.is_selling_enabled !== false)
                                                     .map((r) => (
                                                         <option key={r.country_code} value={r.country_code}>
                                                             {r.country_name} ({r.country_code}) — VAT/Tax {r.tax_rate_percent}%
