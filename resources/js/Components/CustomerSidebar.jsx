@@ -83,7 +83,7 @@ export default function CustomerSidebar({
                     onClick={() => setMobileModalOpen(true)}
                 >
                     <Menu size={16} strokeWidth={2.4} />
-                    <span>My Account</span>
+                    <span>{t('my_account')}</span>
                 </button>
             </div>
 
@@ -119,7 +119,7 @@ export default function CustomerSidebar({
                         className="portal-nav-link portal-nav-link--logout"
                     >
                         <LogOut size={18} />
-                        <span>Sign Out</span>
+                        <span>{t('sign_out')}</span>
                     </Link>
                 </nav>
             </aside>
@@ -136,7 +136,7 @@ export default function CustomerSidebar({
                     >
                         <div className="customer-account-modal-header">
                             <div className="modal-title-group">
-                                <h3>My Account</h3>
+                                <h3>{t('my_account')}</h3>
                                 {user?.name && <span>{user.name}</span>}
                             </div>
                             <button
@@ -174,7 +174,7 @@ export default function CustomerSidebar({
                                 onClick={() => setMobileModalOpen(false)}
                             >
                                 <LogOut size={20} strokeWidth={2} />
-                                <span>Sign Out</span>
+                                <span>{t('sign_out')}</span>
                             </Link>
                         </div>
                     </div>

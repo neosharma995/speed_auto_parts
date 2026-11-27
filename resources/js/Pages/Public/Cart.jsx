@@ -3,12 +3,14 @@ import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { useCart } from '@/Context/CartContext';
 import { useCurrency } from '@/Context/CurrencyContext';
+import { useLanguage } from '@/Context/LanguageContext';
 import { Trash2, ShoppingBag, ArrowRight, ArrowLeft, ShieldCheck, Tag } from 'lucide-react';
 import axios from 'axios';
 
 export default function Cart() {
     const { cartItems, itemCount, subtotal, updateQuantity, removeFromCart, clearCart } = useCart();
     const { formatPrice } = useCurrency();
+    const { t, localize, translateTerm } = useLanguage();
     const [couponCode, setCouponCode] = useState(() => {
         try {
             const saved = JSON.parse(sessionStorage.getItem('sap_applied_coupon') || 'null');
@@ -86,17 +88,17 @@ export default function Cart() {
 
     if (cartItems.length === 0) {
         return (
-            <AppLayout title="Shopping Cart">
+            <AppLayout title={t('shopping_cart')}>
                 <div className="section bg-light" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
                     <div className="container" style={{ textAlign: 'center' }}>
                         <div style={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
                             <ShoppingBag size={64} color="#DCDCDC" />
-                            <h2 style={{ fontSize: '24px', fontWeight: 800 }}>Your Cart is Empty</h2>
+                            <h2 style={{ fontSize: '24px', fontWeight: 800 }}>{t('cart_empty_title')}</h2>
                             <p style={{ color: '#666', fontSize: '14px' }}>
-                                Looks like you haven't added any automotive performance spares to your build list yet.
+                                {t('cart_empty_desc')}
                             </p>
                             <Link href="/shop" className="btn btn-primary btn-lg">
-                                Explore Products <ArrowRight size={16} />
+                                {t('explore_products')} <ArrowRight size={16} />
                             </Link>
                         </div>
                     </div>
@@ -106,11 +108,11 @@ export default function Cart() {
     }
 
     return (
-        <AppLayout title={`Shopping Cart (${itemCount} items)`}>
+        <AppLayout title={`${t('shopping_cart')} (${itemCount})`}>
             <div className="section bg-light" style={{ minHeight: '80vh' }}>
                 <div className="container">
                     <h1 style={{ fontSize: '28px', fontWeight: 900, textTransform: 'uppercase', marginBottom: '24px' }}>
-                        Shopping Cart ({itemCount} {itemCount === 1 ? 'item' : 'items'})
+                        {t('shopping_cart')} ({itemCount} {itemCount === 1 ? t('chk_item_label') : t('chk_items_label')})
                     </h1>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '32px' }} className="cart-grid-desktop">
@@ -133,8 +135,8 @@ export default function Cart() {
                                     textTransform: 'uppercase',
                                     color: '#64748B'
                                 }}>
-                                    <span>Product Details</span>
-                                    <span>Quantity & Line Total</span>
+                                    <span>{t('cart_product_details')}</span>
+                                    <span>{t('cart_qty_total')}</span>
                                 </div>
 
                                 <div style={{ padding: '0 24px' }}>
@@ -159,16 +161,16 @@ export default function Cart() {
                                                 />
                                                 <div>
                                                     <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#151515', lineHeight: 1.3 }}>
-                                                        <Link href={`/product/${item.slug}`}>{item.name}</Link>
+                                                        <Link href={`/product/${item.slug}`}>{localize(item, 'name')}</Link>
                                                     </h3>
                                                     {item.variationLabel && (
                                                         <span style={{ fontSize: '12px', color: '#666', display: 'block', marginTop: '2px' }}>
-                                                            Specification: {item.variationLabel}
+                                                            {t('cart_spec')}: {translateTerm(item.variationLabel)}
                                                         </span>
                                                     )}
                                                     {item.partNumber && (
                                                         <span style={{ fontSize: '11px', color: '#888', fontFamily: 'monospace' }}>
-                                                            Part #: {item.partNumber}
+                                                            {t('part_number')}: {item.partNumber}
                                                         </span>
                                                     )}
                                                     <span style={{ fontSize: '14px', fontWeight: 700, color: '#F36B16', display: 'block', marginTop: '4px' }}>
@@ -217,14 +219,14 @@ export default function Cart() {
 
                                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 24px', backgroundColor: '#FAFAFA' }}>
                                     <Link href="/shop" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#252525' }}>
-                                        <ArrowLeft size={16} /> Continue Shopping
+                                        <ArrowLeft size={16} /> {t('continue_shopping')}
                                     </Link>
                                     <button 
                                         type="button" 
                                         onClick={clearCart}
                                         style={{ fontSize: '13px', color: '#D93025', fontWeight: 600, background: 'none', border: 'none' }}
                                     >
-                                        Clear Entire Cart
+                                        {t('clear_entire_cart')}
                                     </button>
                                 </div>
                             </div>
@@ -240,14 +242,14 @@ export default function Cart() {
                                 gap: '16px'
                             }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 800, textTransform: 'uppercase' }}>
-                                    Order Summary & Promo Codes
+                                    {t('order_summary_promo')}
                                 </h3>
 
                                 <form onSubmit={handleApplyCoupon} style={{ display: 'flex', gap: '8px' }}>
                                     <input 
                                         type="text" 
                                         className="form-input"
-                                        placeholder="Promo code (e.g. SPEED10, TRACKDAY)"
+                                        placeholder={t('cart_promo_placeholder')}
                                         value={couponCode}
                                         onChange={(e) => setCouponCode(e.target.value)}
                                         style={{ textTransform: 'uppercase' }}
@@ -257,7 +259,7 @@ export default function Cart() {
                                         className="btn btn-dark"
                                         disabled={couponLoading}
                                     >
-                                        Apply
+                                        {t('apply')}
                                     </button>
                                 </form>
 
@@ -267,36 +269,36 @@ export default function Cart() {
 
                                 {appliedCoupon && (
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: '#168A35', fontWeight: 700 }}>
-                                        <span>✓ Coupon {appliedCoupon} applied: -{formatPrice(couponDiscount)}</span>
+                                        <span>✓ {appliedCoupon}: -{formatPrice(couponDiscount)}</span>
                                         <button
                                             type="button"
                                             onClick={handleRemoveCoupon}
                                             style={{ background: 'none', border: 'none', color: '#D93025', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}
                                         >
-                                            Remove
+                                            {t('remove')}
                                         </button>
                                     </div>
                                 )}
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '16px', borderTop: '1px solid #EEE' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#666' }}>
-                                        <span>Estimated Item Subtotal</span>
+                                        <span>{t('cart_estimated_item_subtotal')}</span>
                                         <strong>{formatPrice(subtotal)}</strong>
                                     </div>
                                     {couponDiscount > 0 && (
                                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#168A35', fontWeight: 600 }}>
-                                            <span>Coupon Discount</span>
+                                            <span>{t('coupon_discount')}</span>
                                             <span>-{formatPrice(couponDiscount)}</span>
                                         </div>
                                     )}
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: 900, color: '#151515', paddingTop: '12px', borderTop: '1px solid #DCDCDC' }}>
-                                        <span>Order Total (Excl. Tax & Shipping)</span>
+                                        <span>{t('cart_order_total_excl')}</span>
                                         <span>{formatPrice(finalTotal)}</span>
                                     </div>
                                 </div>
 
                                 <Link href="/checkout" className="btn btn-primary btn-lg btn-full" style={{ marginTop: '8px' }}>
-                                    Proceed to Checkout <ArrowRight size={18} />
+                                    {t('proceed_to_checkout')} <ArrowRight size={18} />
                                 </Link>
                             </div>
                         </div>

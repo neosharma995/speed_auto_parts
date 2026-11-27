@@ -93,8 +93,8 @@ class ShopController extends Controller
 
         $products = $query->paginate(12)->withQueryString();
 
-        $categories = Category::where('is_active', true)->orderBy('name')->get(['id', 'name', 'slug']);
-        $brands = Brand::where('is_active', true)->orderBy('name')->get(['id', 'name', 'slug']);
+        $categories = Category::where('is_active', true)->orderBy('name')->get(['id', 'name', 'slug', 'translations']);
+        $brands = Brand::where('is_active', true)->orderBy('name')->get(['id', 'name', 'slug', 'translations']);
         $activeVehicle = $vehicleId ? Vehicle::find($vehicleId) : null;
 
         return Inertia::render('Public/Shop', [
@@ -114,7 +114,7 @@ class ShopController extends Controller
             $popularCategories = Category::where('is_active', true)
                 ->orderBy('sort_order')
                 ->limit(5)
-                ->get(['id', 'name', 'slug']);
+                ->get(['id', 'name', 'slug', 'translations']);
 
             $featuredBrands = Brand::where('is_active', true)
                 ->where('is_featured', true)

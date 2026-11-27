@@ -12,6 +12,7 @@ use App\Mail\OrderStatusUpdatedMail;
 use App\Mail\SupplierInvitationMail;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\CmsPage;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\RegionalPricingRule;
@@ -583,5 +584,79 @@ class Milestone2DeliverablesTest extends TestCase
         $freshProduct = $product->fresh();
         $this->assertSame('منتج اختبار عربي', $freshProduct->translations['ar']['name'] ?? null);
         $this->assertSame('Produit Test FR', $freshProduct->translations['fr']['name'] ?? null);
+    }
+
+    public function test_admin_can_manage_dynamic_multilingual_cms_pages(): void
+    {
+        $page = CmsPage::where('slug', 'contact-us')->firstOrFail();
+
+        $this->actingAs($this->admin)
+            ->get('/admin/pages')
+            ->assertOk()
+            ->assertInertia(fn ($inertia) => $inertia->component('Admin/Pages/Index'));
+
+        $this->actingAs($this->admin)
+            ->get('/admin/pages/create')
+            ->assertOk()
+            ->assertInertia(fn ($inertia) => $inertia->component('Admin/Pages/Create'));
+
+        $this->actingAs($this->admin)
+            ->get("/admin/pages/{$page->id}/edit")
+            ->assertOk()
+            ->assertInertia(fn ($inertia) => $inertia
+                ->component('Admin/Pages/Edit')
+                ->where('page.id', $page->id)
+            );
+
+        $this->actingAs($this->admin)
+            ->put("/admin/pages/{$page->id}", [
+                'title' => 'Contact Dubai Support Desk',
+                'slug' => 'contact-us',
+                'subtitle' => 'Updated English subtitle',
+                'content' => 'Updated English body',
+                'is_active' => true,
+                'translations' => [
+                    'ar' => [
+                        'title' => 'تواصل مع مكتب دعم دبي',
+                        'subtitle' => 'عنوان فرعي محدث',
+                        'content' => 'محتوى عربي محدث',
+                    ],
+                    'fr' => [
+                        'title' => 'Contacter le Support Dubaï',
+                        'subtitle' => 'Sous-titre mis à jour',
+                        'content' => 'Contenu français mis à jour',
+                    ],
+                ],
+                'sections' => [
+                    [
+                        'id' => 'sec_1',
+                        'type' => 'highlight_banner',
+                        'heading' => 'Express Support Hours',
+                        'body' => 'Open daily from 9 AM to 9 PM GST.',
+                        'translations' => [
+                            'ar' => [
+                                'heading' => 'ساعات الدعم السريع',
+                                'body' => 'مفتوح يومياً من 9 صباحاً حتى 9 مساءً.',
+                            ],
+                            'fr' => [
+                                'heading' => 'Horaires du Support Express',
+                                'body' => 'Ouvert tous les jours de 9h à 21h.',
+                            ],
+                        ],
+                    ],
+                ],
+            ])
+            ->assertRedirect('/admin/pages');
+
+        $this->get('/ar/contact-us')
+            ->assertOk()
+            ->assertInertia(fn ($inertia) => $inertia
+                ->component('Public/StaticPage')
+                ->where('title', 'Contact Dubai Support Desk')
+                ->where('translations.ar.title', 'تواصل مع مكتب دعم دبي')
+                ->where('translations.fr.title', 'Contacter le Support Dubaï')
+                ->where('sections.0.type', 'highlight_banner')
+                ->where('sections.0.translations.ar.heading', 'ساعات الدعم السريع')
+            );
     }
 }
