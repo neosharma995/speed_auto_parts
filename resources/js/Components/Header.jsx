@@ -461,7 +461,7 @@ export default function Header() {
                                         }}
                                     >
                                         <span className="item-code">{curr.code}</span>
-                                        <span className="item-name">{curr.name}</span>
+                                        <span className="item-name">{curr.name} ({curr.symbol})</span>
                                     </button>
                                 ))}
                             </div>
@@ -975,7 +975,7 @@ export default function Header() {
                                                 }}
                                             >
                                                 <span className="item-code">{curr.code}</span>
-                                                <span className="item-name">{curr.name}</span>
+                                                <span className="item-name">{curr.name} ({curr.symbol})</span>
                                             </button>
                                         ))}
                                     </div>
@@ -1301,7 +1301,7 @@ export default function Header() {
                                                             setMobileDrawerCurrOpen(false);
                                                         }}
                                                     >
-                                                        <span>{curr.name}</span>
+                                                        <span>{curr.code} ({curr.symbol}) — {curr.name}</span>
                                                     </button>
                                                 ))}
                                             </div>

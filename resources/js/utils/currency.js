@@ -1,5 +1,5 @@
 export const CURRENCY_CATALOG = [
-    { code: 'AED', name: 'UAE Dirham', symbol: 'د.إ', locale: 'en-AE', defaultRate: 1.0 },
+    { code: 'AED', name: 'UAE Dirham', symbol: '\u20C3', locale: 'en-AE', defaultRate: 1.0 },
     { code: 'USD', name: 'US Dollar', symbol: '$', locale: 'en-US', defaultRate: 0.2723 },
     { code: 'EUR', name: 'Euro', symbol: '€', locale: 'de-DE', defaultRate: 0.251 },
 ];
@@ -22,7 +22,7 @@ export function getCurrencyMeta(code) {
  * Multi-character currency symbols like "AED" get a separating space ("AED 1,250");
  * single-character symbols like "$", "€", "£", "₹" attach directly ("$1,250").
  */
-export function formatWithSymbol(amount, symbol = 'د.إ', locale = 'en-AE', options = {}) {
+export function formatWithSymbol(amount, symbol = '\u20C3', locale = 'en-AE', options = {}) {
     const num = Number(amount || 0);
     const safeNum = Number.isFinite(num) ? num : 0;
     const isNegative = safeNum < 0;
