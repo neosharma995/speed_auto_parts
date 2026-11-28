@@ -24,7 +24,7 @@ function getDefaultRatesForBase(baseCode) {
 function normalizeSettings(rawSettings = {}) {
     const code = String(rawSettings?.currency_code || 'AED').toUpperCase();
     const meta = getCurrencyMeta(code);
-    const symbol = code;
+    const symbol = meta.symbol || code;
     const locale = String(rawSettings?.currency_locale || meta.locale || 'en-AE');
     const rateNum = Number(rawSettings?.currency_rate ?? 1);
     const rate = Number.isFinite(rateNum) && rateNum > 0 ? rateNum : 1;
@@ -127,7 +127,7 @@ export function CurrencyProvider({ initialSettings = {}, children }) {
 
         const activeCode = config.rates[selectedCode] ? selectedCode : config.code;
         const activeMeta = getCurrencyMeta(activeCode);
-        const activeSymbol = activeCode;
+        const activeSymbol = activeMeta.symbol || activeCode;
         const activeLocale = activeCode === config.code ? config.locale : activeMeta.locale;
         const storefrontMultiplier = Number(config.rates[activeCode] || 1);
 
@@ -137,13 +137,13 @@ export function CurrencyProvider({ initialSettings = {}, children }) {
         // Convert stored DB base price -> currently selected storefront display currency
         const convertForDisplay = (baseAmount) => convertToDefault(baseAmount) * storefrontMultiplier;
 
-        // Format price for Admin / Supplier Dashboard (always uses Admin's configured Default Currency shortform)
+        // Format price for Admin / Supplier Dashboard (always uses Admin's configured Default Currency symbol)
         const formatAdminPrice = (baseAmount, options = {}) =>
-            formatWithSymbol(convertToDefault(baseAmount), defaultCurrency.code, defaultCurrency.locale, options);
+            formatWithSymbol(convertToDefault(baseAmount), defaultCurrency.symbol, defaultCurrency.locale, options);
 
-        // Format price for Public Storefront (uses Default Currency * visitor's selected currency rate, always ISO shortform)
+        // Format price for Public Storefront (uses Default Currency * visitor's selected currency rate)
         const formatPrice = (baseAmount, options = {}) =>
-            formatWithSymbol(convertForDisplay(baseAmount), activeCode, activeLocale, options);
+            formatWithSymbol(convertForDisplay(baseAmount), activeSymbol, activeLocale, options);
 
         // Available currencies for storefront switcher (always puts default currency first)
         const rateKeys = Object.keys(config.rates);
@@ -152,7 +152,7 @@ export function CurrencyProvider({ initialSettings = {}, children }) {
             const meta = getCurrencyMeta(code);
             return {
                 code,
-                symbol: code,
+                symbol: meta.symbol || code,
                 name: meta.name || code,
                 rate: Number(config.rates[code] || 1),
             };
@@ -183,19 +183,19 @@ export function useCurrency() {
     const ctx = useContext(CurrencyContext);
     if (!ctx) {
         return {
-            defaultCurrency: { code: 'AED', symbol: 'AED', locale: 'en-AE', rate: 1 },
-            activeCurrency: { code: 'AED', symbol: 'AED', locale: 'en-AE', rate: 1 },
+            defaultCurrency: { code: 'AED', symbol: '\u20C3', locale: 'en-AE', rate: 1 },
+            activeCurrency: { code: 'AED', symbol: '\u20C3', locale: 'en-AE', rate: 1 },
             availableCurrencies: [
-                { code: 'AED', symbol: 'AED', name: 'UAE Dirham', rate: 1 },
-                { code: 'USD', symbol: 'USD', name: 'US Dollar', rate: 0.2723 },
-                { code: 'EUR', symbol: 'EUR', name: 'Euro', rate: 0.251 },
+                { code: 'AED', symbol: '\u20C3', name: 'UAE Dirham', rate: 1 },
+                { code: 'USD', symbol: '$', name: 'US Dollar', rate: 0.2723 },
+                { code: 'EUR', symbol: '€', name: 'Euro', rate: 0.251 },
             ],
             currencyCatalog: CURRENCY_CATALOG,
             setSelectedCurrency: () => { },
             convertToDefault: (v) => Number(v || 0),
             convertForDisplay: (v) => Number(v || 0),
-            formatAdminPrice: (v, opts) => formatWithSymbol(v, 'AED', 'en-AE', opts),
-            formatPrice: (v, opts) => formatWithSymbol(v, 'AED', 'en-AE', opts),
+            formatAdminPrice: (v, opts) => formatWithSymbol(v, '\u20C3', 'en-AE', opts),
+            formatPrice: (v, opts) => formatWithSymbol(v, '\u20C3', 'en-AE', opts),
         };
     }
     return ctx;
